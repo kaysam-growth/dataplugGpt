@@ -11,129 +11,195 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
 :root {
-  --bg: #ffffff;
-  --card: #f1f5f9;
+  --bg: radial-gradient(circle at top, #0f172a, #020617);
+  --glass: rgba(255,255,255,0.08);
+  --border: rgba(255,255,255,0.15);
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+}
+
+.light {
+  --bg: linear-gradient(180deg, #f8fafc, #e2e8f0);
+  --glass: rgba(255,255,255,0.8);
+  --border: rgba(0,0,0,0.08);
   --text: #020617;
+  --muted: #475569;
   --accent: #2563eb;
 }
 
-.dark {
-  --bg: #020617;
-  --card: #0f172a;
-  --text: #f8fafc;
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  font-family: Inter, system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
-  transition: 0.3s;
+  min-height: 100vh;
 }
 
+/* ANNOUNCEMENT */
+#announcement {
+  display: none;
+  padding: 10px;
+  text-align: center;
+  background: linear-gradient(90deg, #38bdf8, #6366f1);
+  color: #020617;
+  font-weight: 600;
+}
+
+/* HEADER */
 header {
-  padding: 16px;
+  padding: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-button {
-  padding: 10px 14px;
-  border-radius: 8px;
-  border: none;
+header strong {
+  font-size: 20px;
+  letter-spacing: 0.5px;
+}
+
+.toggle {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 999px;
   cursor: pointer;
 }
 
+/* LAYOUT */
 .container {
-  max-width: 900px;
+  max-width: 960px;
   margin: auto;
-  padding: 16px;
+  padding: 20px;
 }
 
+/* GLASS CARD */
 .card {
-  background: var(--card);
-  padding: 16px;
-  border-radius: 12px;
-  margin-bottom: 12px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
 }
 
-.whatsapp-float {
+/* PRODUCT */
+.card h3 {
+  margin: 0 0 6px;
+}
+
+.price {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* BUTTON */
+button {
+  background: linear-gradient(135deg, var(--accent), #6366f1);
+  color: #020617;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+/* ADMIN INPUTS */
+input, select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+/* AD BANNER */
+.ad {
+  text-align: center;
+  border: 1px dashed var(--accent);
+}
+
+/* FOOTER */
+footer {
+  margin-top: 40px;
+  padding: 30px 20px;
+  background: rgba(0,0,0,0.25);
+}
+
+footer p {
+  color: var(--muted);
+}
+
+/* WHATSAPP */
+.whatsapp {
   position: fixed;
   right: 20px;
   bottom: 20px;
   background: #25d366;
-  color: #fff;
+  color: white;
   padding: 14px 18px;
-  border-radius: 30px;
+  border-radius: 999px;
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 700;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ANNOUNCEMENT BAR -->
-<div id="announcement"
-     style="display:none;
-            padding:10px;
-            text-align:center;
-            background:#2563eb;
-            color:white;
-            font-size:14px;">
-</div>
+<div id="announcement"></div>
 
 <header>
   <strong>DATAPLUS GH</strong>
-  <button onclick="toggleTheme()">🌓</button>
+  <button class="toggle" onclick="toggleTheme()">🌓</button>
 </header>
 
 <div class="container" id="app">Loading…</div>
 
-<!-- WEBSITE DEVELOPMENT AD -->
 <div class="container">
-  <div class="card" style="border:2px dashed var(--accent); text-align:center;">
-    <h3>🚀 Website Development</h3>
+  <div class="card ad">
+    <h3>🚀 Custom Website Development</h3>
     <p><strong>WANT CUSTOM WEBSITES JUST LIKE THIS FOR YOUR BUSINESS?</strong></p>
-    <p style="color:var(--accent); font-size:18px;">
-      GET ONE FOR AS LOW AS GHC 180 ONLY
-    </p>
+    <p class="price">GET ONE FOR AS LOW AS GHC 180 ONLY</p>
     <a href="https://wa.me/233554222103" target="_blank">
       <button>Chat on WhatsApp</button>
     </a>
   </div>
 </div>
 
-<!-- FOOTER -->
-<footer style="background:var(--card); padding:24px; margin-top:40px;">
+<footer>
   <div class="container">
     <h3>KAYSAM GROWTH</h3>
-    <p>Your trusted hub for data bundles & digital services.</p>
-    <hr>
-    <p><strong>Customer Support</strong></p>
     <p>📞 0554222103 / 0532942413</p>
     <p>📧 kaysamgrowth@gmail.com</p>
     <p>📍 Near the All Nations University, Koforidua</p>
-    <p style="font-size:12px;">
-      © <span id="year"></span> Kaysam Growth
-    </p>
+    <p style="font-size:12px;">© <span id="year"></span></p>
   </div>
 </footer>
 
-<!-- WHATSAPP FLOAT -->
-<a class="whatsapp-float"
+<a class="whatsapp"
    href="https://whatsapp.com/channel/0029VbBxGK6KrWR2RGMUlm1Z"
    target="_blank">
-  Join WhatsApp
+  WhatsApp
 </a>
 
 <script>
 document.getElementById("year").textContent =
   new Date().getFullYear();
 
-/* ================= FIREBASE ================= */
+/* FIREBASE */
 firebase.initializeApp({
   apiKey: "AIzaSyCs7lN4itvWZPichtFLdEE4swNQHSX_j1M",
   authDomain: "dataplus-a93c7.firebaseapp.com",
@@ -145,23 +211,20 @@ firebase.initializeApp({
 
 const auth = firebase.auth();
 const db = firebase.firestore();
-
-/* ================= ADMIN ================= */
 const ADMIN_UID = "ANwgaBBGe2fLyom7yzujdzQAY1k1";
 let isAdmin = false;
 
-/* ================= THEME ================= */
-if (localStorage.theme === "dark") {
-  document.body.classList.add("dark");
+/* THEME */
+if (localStorage.theme === "light") {
+  document.body.classList.add("light");
 }
-
 function toggleTheme() {
-  document.body.classList.toggle("dark");
+  document.body.classList.toggle("light");
   localStorage.theme =
-    document.body.classList.contains("dark") ? "dark" : "light";
+    document.body.classList.contains("light") ? "light" : "dark";
 }
 
-/* ================= AUTH ================= */
+/* AUTH */
 auth.signInAnonymously();
 auth.onAuthStateChanged(user => {
   if (!user) return;
@@ -169,20 +232,16 @@ auth.onAuthStateChanged(user => {
   loadProducts();
 });
 
-/* ================= ANNOUNCEMENTS ================= */
+/* ANNOUNCEMENTS */
 db.collection("config").doc("app").onSnapshot(doc => {
   if (!doc.exists) return;
   const d = doc.data();
   const bar = document.getElementById("announcement");
-  if (d.announcementActive) {
-    bar.style.display = "block";
-    bar.textContent = d.announcementText;
-  } else {
-    bar.style.display = "none";
-  }
+  bar.style.display = d.announcementActive ? "block" : "none";
+  bar.textContent = d.announcementText || "";
 });
 
-/* ================= PRODUCTS ================= */
+/* PRODUCTS */
 async function loadProducts() {
   const snap = await db.collection("products")
     .where("active", "==", true).get();
@@ -193,7 +252,7 @@ async function loadProducts() {
     html += `
       <div class="card">
         <h3>${p.name}</h3>
-        <p>GHS ${p.price}</p>
+        <p class="price">GHS ${p.price}</p>
         ${
           p.category === "physical"
           ? `<a href="${p.buyLink}" target="_blank"><button>Buy Item</button></a>`
@@ -206,11 +265,11 @@ async function loadProducts() {
   document.getElementById("app").innerHTML = html;
 }
 
-/* ================= ORDER ================= */
+/* ORDER */
 function order(id, name, price) {
-  const phone = prompt("Enter phone number:");
-  const ref = prompt("Enter MoMo reference:");
-  if (!phone || !ref) return alert("All fields required");
+  const phone = prompt("Enter phone number");
+  const ref = prompt("Enter MoMo reference");
+  if (!phone || !ref) return;
 
   db.collection("orders").add({
     productId: id,
@@ -222,26 +281,26 @@ function order(id, name, price) {
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
 
-  alert("Order submitted. Awaiting approval.");
+  alert("Order submitted");
 }
 
-/* ================= ADMIN PANEL ================= */
+/* ADMIN */
 function adminPanel() {
   return `
-  <div class="card">
-    <h3>Admin Panel</h3>
-    <input id="pname" placeholder="Product name"><br>
-    <input id="pprice" placeholder="Price"><br>
-    <select id="pcat">
-      <option value="data">Data</option>
-      <option value="physical">Physical</option>
-    </select><br>
-    <input id="plink" placeholder="Buy link (physical only)"><br>
-    <button onclick="addProduct()">Add Product</button>
-    <hr>
-    <button onclick="loadOrders()">View Orders</button>
-    <div id="orders"></div>
-  </div>`;
+    <div class="card">
+      <h3>Admin Panel</h3>
+      <input id="pname" placeholder="Product name">
+      <input id="pprice" placeholder="Price">
+      <select id="pcat">
+        <option value="data">Data</option>
+        <option value="physical">Physical</option>
+      </select>
+      <input id="plink" placeholder="Buy link (physical only)">
+      <button onclick="addProduct()">Add Product</button>
+      <hr>
+      <button onclick="loadOrders()">View Orders</button>
+      <div id="orders"></div>
+    </div>`;
 }
 
 function addProduct() {
@@ -279,4 +338,4 @@ function approve(id) {
 </script>
 
 </body>
-  </html>
+                                      </html>
