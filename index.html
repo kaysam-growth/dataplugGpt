@@ -5,88 +5,58 @@
 <title>DATAPLUS GH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+<!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
 
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
 
+<!-- Paystack -->
+<script src="https://js.paystack.co/v1/inline.js"></script>
+
 <style>
-:root{
-  --bg:#020617;--card:rgba(15,23,42,.85);
-  --border:rgba(255,255,255,.08);--text:#f8fafc;
-  --accent:#38bdf8;
+:root {
+  --bg: #020617;
+  --card: rgba(15,23,42,0.8);
+  --text: #f8fafc;
+  --accent: #38bdf8;
 }
-.light{
-  --bg:#f8fafc;--card:#fff;
-  --border:rgba(0,0,0,.1);--text:#020617;
-  --accent:#2563eb;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;font-family:'Space Grotesk',sans-serif;
-  background:radial-gradient(circle at top,#0f172a,var(--bg));
-  color:var(--text);
-}
-header{
-  padding:20px;display:flex;justify-content:space-between;align-items:center;
-}
-button{
-  background:linear-gradient(135deg,var(--accent),#6366f1);
-  border:none;padding:10px 16px;border-radius:14px;
-  font-weight:700;cursor:pointer;
+.light { --bg:#f8fafc; --card:rgba(255,255,255,0.9); --text:#020617; --accent:#2563eb; }
+
+body {
+  margin:0;
+  font-family:'Space Grotesk',sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition:0.3s;
 }
 .container{max-width:1000px;margin:auto;padding:20px;}
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:20px;padding:22px;margin-bottom:18px;
-}
-.price{color:var(--accent);font-size:20px;font-weight:700}
-input,select{
-  width:100%;padding:12px;border-radius:12px;
-  border:1px solid var(--border);
-  background:transparent;color:var(--text);
-  margin-bottom:10px;
-}
-#ad{border:1px dashed var(--accent);text-align:center}
-#announcement{
-  display:none;padding:12px;text-align:center;
-  background:linear-gradient(90deg,#38bdf8,#6366f1);
-  color:#020617;font-weight:700;
-}
-footer{
-  margin-top:60px;padding:40px 20px;
-  background:rgba(0,0,0,.3);
-}
-.whatsapp{
-  position:fixed;right:20px;bottom:20px;
-  background:#25d366;color:#fff;
-  padding:14px 20px;border-radius:999px;
-  font-weight:800;text-decoration:none;
-}
+.card{background:var(--card);border-radius:16px;padding:20px;margin-bottom:16px;backdrop-filter:blur(10px);}
+button{padding:10px 16px;border:none;border-radius:10px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,var(--accent),#6366f1);}
+.price{color:var(--accent);font-weight:700;}
+footer{padding:40px;background:var(--bg);border-top:1px solid #1e293b;}
+.whatsapp{position:fixed;right:20px;bottom:20px;background:#25d366;color:#fff;padding:14px 18px;border-radius:999px;text-decoration:none;}
+#ad{border:2px dashed var(--accent);text-align:center;padding:20px;}
+.toggle{position:absolute;right:30px;top:30px;padding:8px 12px;border-radius:999px;border:none;background:var(--card);cursor:pointer;}
 </style>
 </head>
 
 <body>
 
-<div id="announcement"></div>
-
 <header>
-  <strong>DATAPLUS GH</strong>
-  <button onclick="toggleTheme()">🌓</button>
+  <h1 style="display:inline-block;">DATAPLUS GH</h1>
+  <button class="toggle" onclick="toggleTheme()">🌓</button>
 </header>
 
-<div class="container">
-  <div id="products"></div>
-  <div id="admin"></div>
-</div>
+<div class="container" id="app">Loading…</div>
 
 <div class="container">
   <div class="card" id="ad">
     <h3>🚀 Website Development</h3>
-    <p><strong>WANT CUSTOM WEBSITES JUST LIKE THIS FOR YOUR BUSINESS?</strong></p>
-    <p class="price">GET ONE FOR AS LOW AS GHC 180 ONLY</p>
+    <p><strong>WANT CUSTOM WEBSITES JUST LIKE THIS?</strong></p>
+    <p class="price">FROM GHC 180 ONLY</p>
     <a href="https://wa.me/233554222103" target="_blank">
       <button>Chat on WhatsApp</button>
     </a>
@@ -95,143 +65,143 @@ footer{
 
 <footer>
   <div class="container">
-    <h3>KAYSAM GROWTH</h3>
     <p>📞 0554222103 / 0532942413</p>
     <p>📧 kaysamgrowth@gmail.com</p>
-    <p>📍 Near the All Nations University, Koforidua</p>
+    <p>📍 Near All Nations University, Koforidua</p>
     <p style="font-size:12px;">© <span id="year"></span></p>
   </div>
 </footer>
 
-<a class="whatsapp"
- href="https://whatsapp.com/channel/0029VbBxGK6KrWR2RGMUlm1Z"
- target="_blank">Join WhatsApp</a>
+<a class="whatsapp" href="https://whatsapp.com/channel/0029VbBxGK6KrWR2RGMUlm1Z" target="_blank">Join WhatsApp</a>
 
 <script>
-year.textContent=new Date().getFullYear();
+document.getElementById("year").textContent=new Date().getFullYear();
 
-/* FIREBASE */
+/* =================== THEME =================== */
+if(localStorage.theme==='light') document.body.classList.add('light');
+function toggleTheme(){
+  document.body.classList.toggle('light');
+  localStorage.theme = document.body.classList.contains('light')?'light':'dark';
+}
+
+/* =================== FIREBASE =================== */
 firebase.initializeApp({
   apiKey:"AIzaSyCs7lN4itvWZPichtFLdEE4swNQHSX_j1M",
   authDomain:"dataplus-a93c7.firebaseapp.com",
-  projectId:"dataplus-a93c7",
-  storageBucket:"dataplus-a93c7.appspot.com",
-  messagingSenderId:"1040979049946",
-  appId:"1:1040979049946:web:d5d7957a6c209f56dd94e3"
+  projectId:"dataplus-a93c7"
 });
 const auth=firebase.auth();
 const db=firebase.firestore();
 
-const ADMIN_UID="ANwgaBBGe2fLyom7yzujdzQAY1k1";
-let isAdmin=false;
+/* =================== ADMIN =================== */
+const ADMIN_EMAIL="kaysamgrowth@gmail.com"; // 👈 put your email here
 
-/* THEME */
-if(localStorage.theme==="light")document.body.classList.add("light");
-function toggleTheme(){
-  document.body.classList.toggle("light");
-  localStorage.theme=document.body.classList.contains("light")?"light":"dark";
-}
-
-/* AUTH */
-auth.onAuthStateChanged(async user=>{
-  if(user){
-    isAdmin=user.uid===ADMIN_UID;
-    loadProducts();
-  }else{
-    await auth.signInAnonymously();
+/* =================== AUTH =================== */
+auth.onAuthStateChanged(user=>{
+  if(!user){
+    auth.signInAnonymously().catch(console.error);
+    return;
   }
+  const isAdmin = (user.email===ADMIN_EMAIL);
+  loadProducts(isAdmin);
 });
 
-/* ANNOUNCEMENT */
-db.collection("config").doc("app").onSnapshot(d=>{
-  if(!d.exists)return;
-  announcement.style.display=d.data().announcementActive?"block":"none";
-  announcement.textContent=d.data().announcementText||"";
-});
-
-/* PRODUCTS */
-async function loadProducts(){
-  const snap=await db.collection("products").where("active","==",true).get();
+/* =================== LOAD PRODUCTS =================== */
+async function loadProducts(isAdmin=false){
+  const snap = await db.collection("products").where("active","==",true).get();
   let html="";
-  snap.forEach(doc=>{
-    const p=doc.data();
+  snap.forEach(d=>{
+    const p=d.data();
     html+=`
-    <div class="card">
-      <h3>${p.name}</h3>
-      <div class="price">GHS ${p.price}</div>
-      ${
-        p.category==="physical"
-        ? `<a href="${p.buyLink}" target="_blank"><button>Buy Item</button></a>`
-        : `<button onclick="order('${doc.id}','${p.name}',${p.price})">Buy Data</button>`
-      }
-    </div>`;
+      <div class="card">
+        <h3>${p.name}</h3>
+        <div class="price">GHS ${p.price}</div>
+        ${
+          p.category==='physical'
+          ? `<a href="${p.buyLink}" target="_blank"><button>Buy Item</button></a>`
+          : `<button onclick="paystackPayment('${p.name}',${p.price})">Pay with Paystack</button>
+             <button onclick="momoOrder('${p.name}',${p.price})">Pay with MoMo</button>`
+        }
+      </div>
+    `;
   });
-  products.innerHTML=html;
-  admin.innerHTML=isAdmin?adminPanel():"";
+  if(isAdmin) html+=adminPanel();
+  document.getElementById("app").innerHTML=html;
 }
 
-/* ORDER */
-function order(id,name,price){
-  const phone=prompt("Enter phone number");
-  const ref=prompt("Enter MoMo reference");
-  if(!phone||!ref)return;
+/* =================== PAYSTACK =================== */
+function paystackPayment(name,price){
+  const email = prompt("Enter your email");
+  if(!email) return;
+  const handler = PaystackPop.setup({
+    key:"pk_test_xxxxxxxxxxxxx", // 👈 replace with your paystack public key
+    email,
+    amount:price*100,
+    currency:"GHS",
+    callback:function(res){
+      db.collection("orders").add({
+        productName:name,
+        price,
+        email,
+        paymentMethod:"Paystack",
+        reference:res.reference,
+        status:"PAID",
+        createdAt:new Date()
+      });
+      alert("Payment successful!");
+    },
+    onClose:function(){ alert("Payment cancelled"); }
+  });
+  handler.openIframe();
+}
+
+/* =================== MOMO MANUAL =================== */
+function momoOrder(name,price){
+  const phone = prompt("Enter MoMo number");
+  const ref = prompt("Enter MoMo reference");
+  if(!phone||!ref) return;
   db.collection("orders").add({
-    productId:id,productName:name,price,
-    phone,momoRef:ref,status:"Pending Approval",
-    createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    productName:name,
+    price,
+    phone,
+    momoRef:ref,
+    paymentMethod:"MoMo",
+    status:"Pending",
+    createdAt:new Date()
   });
-  alert("Order submitted");
+  alert("Order submitted. Awaiting approval.");
 }
 
-/* ADMIN PANEL */
+/* =================== ADMIN PANEL =================== */
 function adminPanel(){
-  return`
-  <div class="card">
-    <h3>🛠 Admin Panel</h3>
-    <input id="pname" placeholder="Product name">
-    <input id="pprice" type="number" placeholder="Price">
-    <select id="pcat">
-      <option value="data">Data</option>
-      <option value="physical">Physical</option>
-    </select>
-    <input id="plink" placeholder="Buy link">
-    <button onclick="addProduct()">Add Product</button>
-    <hr>
-    <button onclick="loadOrders()">View Orders</button>
-    <div id="orders"></div>
-  </div>`;
+  return `
+    <div class="card">
+      <h3>🛠 Admin Panel</h3>
+      <input id="pn" placeholder="Product name">
+      <input id="pp" type="number" placeholder="Price">
+      <select id="pc"><option value="data">Data</option><option value="physical">Physical</option></select>
+      <input id="pl" placeholder="Buy link (physical)">
+      <button onclick="addProduct()">Add Product</button>
+    </div>
+  `;
 }
 
 function addProduct(){
+  const name = document.getElementById("pn").value;
+  const price = Number(document.getElementById("pp").value);
+  const category = document.getElementById("pc").value;
+  const link = document.getElementById("pl").value;
+
+  if(!name || !price){ alert("Product name & price required"); return; }
+
   db.collection("products").add({
-    name:pname.value,
-    price:Number(pprice.value),
-    category:pcat.value,
-    buyLink:plink.value||"",
-    active:true,
-    createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    name, price, category, buyLink:category==='physical'?link:"", active:true, createdAt:new Date()
   });
-  loadProducts();
-}
 
-async function loadOrders(){
-  const snap=await db.collection("orders").orderBy("createdAt","desc").get();
-  orders.innerHTML=snap.docs.map(d=>{
-    const o=d.data();
-    return`
-    <div class="card">
-      <b>${o.productName}</b>
-      <p>${o.phone}</p>
-      <p>${o.status}</p>
-      <button onclick="approve('${d.id}')">Approve</button>
-    </div>`;
-  }).join("");
-}
-
-function approve(id){
-  db.collection("orders").doc(id).update({status:"Approved"});
-  loadOrders();
+  alert("Product added!");
+  loadProducts(true);
 }
 </script>
+
 </body>
-  </html>
+</html>
