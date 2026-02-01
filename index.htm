@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Kaysam Growth Store</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+
+<style>
+:root {
+  --bg: #ffffff;
+  --card: #f1f5f9;
+  --text: #020617;
+  --accent: #2563eb;
+}
+
+.dark {
+  --bg: #020617;
+  --card: #0f172a;
+  --text: #f8fafc;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: 0.3s;
+}
+
+header {
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+button {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 16px;
+}
+
+.card {
+  background: var(--card);
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.whatsapp-float {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  background: #25d366;
+  color: #fff;
+  padding: 14px 18px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <strong>KAYSAM GROWTH</strong>
+  <button onclick="toggleTheme()">🌓</button>
+</header>
+
+<div class="container" id="app">Loading…</div>
+
+<a class="whatsapp-float"
+   href="https://whatsapp.com/channel/YOUR_CHANNEL_LINK"
+   target="_blank">
+  Join WhatsApp
+</a>
+
+<script>
+/* ================= FIREBASE ================= */
+
+firebase.initializeApp({
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID"
+});
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+/* ================= ADMIN ================= */
+
+// 🔐 AFTER FIRST LOGIN, PUT YOUR UID HERE
+const ADMIN_UID = "PASTE_YOUR_UID_HERE";
+let isAdmin = false;
+
+/* ================= THEME ================= */
+
+if (localStorage.theme === "dark") {
+  document.body.classList.add("dark");
+}
+
+function toggleTheme() {
+  document.body.classList.toggle("dark");
+  localStorage.theme =
+    document.body.classList.contains("dark") ? "dark" : "light";
+}
+
+/* ================= AUTH ================= */
+
+auth.signInAnonymously();
+
+auth.onAuthStateChanged(user => {
+  if (!user) return;
+  isAdmin = user.uid === ADMIN_UID;
+  loadProducts();
+});
+
+/* ================= PRODUCTS ================= */
+
+async function loadProducts() {
+  const snap = await db.collection("products")
+    .where("active", "==", true)
+    .get();
+
+  let html = "";
+
+  snap.forEach(doc => {
+    const p = doc.data();
+
+    html += `
+      <div class="card">
+        <h3>${p.name}</h3>
+        <p>GHS ${p.price}</p>
+
+        ${
+          p.category === "physical"
+          ? `<a href="${p.buyLink}" target="_blank">
+               <button>Buy Item</button>
+             </a>`
+          : `<button onclick="order('${doc.id}','${p.name}',${p.price})">
+               Buy Data
+             </button>`
+        }
+      </div>
+    `;
+  });
+
+  if (isAdmin) html += adminPanel();
+
+  document.getElementById("app").innerHTML = html;
+}
+
+/* ================= ORDER ================= */
+
+function order(id, name, price) {
+  const phone = prompt("Enter phone number:");
+  const ref = prompt("Enter MoMo reference:");
+
+  if (!phone || !ref) {
+    alert("All fields required");
+    return;
+  }
+
+  db.collection("orders").add({
+    productId: id,
+    productName: name,
+    price,
+    phone,
+    momoRef: ref,
+    status: "Pending Approval",
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  alert("Order submitted. Awaiting approval.");
+}
+
+/* ================= ADMIN PANEL ================= */
+
+function adminPanel() {
+  return `
+    <div class="card">
+      <h3>Admin Panel</h3>
+
+      <input id="pname" placeholder="Product name">
+      <input id="pprice" placeholder="Price">
+      <select id="pcat">
+        <option value="data">Data</option>
+        <option value="physical">Physical</option>
+      </select>
+      <input id="plink" placeholder="Buy link (physical only)">
+      <button onclick="addProduct()">Add Product</button>
+
+      <hr><h4>Orders</h4>
+      <button onclick="loadOrders()">View Orders</button>
+      <div id="orders"></div>
+    </div>
+  `;
+}
+
+function addProduct() {
+  db.collection("products").add({
+    name: pname.value,
+    price: Number(pprice.value),
+    category: pcat.value,
+    buyLink: plink.value || "",
+    active: true,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  loadProducts();
+}
+
+async function loadOrders() {
+  const snap = await db.collection("orders").get();
+  let html = "";
+
+  snap.forEach(doc => {
+    const o = doc.data();
+    html += `
+      <div class="card">
+        <strong>${o.productName}</strong>
+        <p>${o.phone}</p>
+        <p>${o.status}</p>
+        <button onclick="approve('${doc.id}')">Approve</button>
+      </div>
+    `;
+  });
+
+  document.getElementById("orders").innerHTML = html;
+}
+
+function approve(id) {
+  db.collection("orders").doc(id).update({
+    status: "Approved"
+  });
+  loadOrders();
+}
+</script>
+
+</body>
+</html>
