@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
 <title>DATAPLUS GH</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
 
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
@@ -11,34 +14,30 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-
 :root {
-  --bg: radial-gradient(circle at top, #0f172a, #020617);
-  --glass: rgba(255,255,255,0.08);
-  --border: rgba(255,255,255,0.15);
-  --text: #e5e7eb;
+  --bg: #020617;
+  --card: rgba(15,23,42,0.8);
+  --border: rgba(255,255,255,0.08);
+  --text: #f8fafc;
   --muted: #94a3b8;
   --accent: #38bdf8;
 }
 
 .light {
-  --bg: linear-gradient(180deg, #f8fafc, #e2e8f0);
-  --glass: rgba(255,255,255,0.8);
+  --bg: #f8fafc;
+  --card: rgba(255,255,255,0.9);
   --border: rgba(0,0,0,0.08);
   --text: #020617;
   --muted: #475569;
   --accent: #2563eb;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
-  font-family: Inter, system-ui, sans-serif;
-  background: var(--bg);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  background: radial-gradient(circle at top, #0f172a, var(--bg));
   color: var(--text);
   min-height: 100vh;
 }
@@ -46,11 +45,12 @@ body {
 /* ANNOUNCEMENT */
 #announcement {
   display: none;
-  padding: 10px;
+  padding: 12px;
   text-align: center;
   background: linear-gradient(90deg, #38bdf8, #6366f1);
   color: #020617;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 13px;
 }
 
 /* HEADER */
@@ -61,35 +61,41 @@ header {
   align-items: center;
 }
 
-header strong {
-  font-size: 20px;
-  letter-spacing: 0.5px;
+.brand {
+  font-weight: 800;
+  letter-spacing: -0.5px;
 }
 
 .toggle {
-  background: var(--glass);
+  background: var(--card);
   border: 1px solid var(--border);
   color: var(--text);
-  padding: 8px 12px;
+  padding: 8px 14px;
   border-radius: 999px;
   cursor: pointer;
 }
 
 /* LAYOUT */
 .container {
-  max-width: 960px;
+  max-width: 1000px;
   margin: auto;
   padding: 20px;
 }
 
 /* GLASS CARD */
 .card {
-  background: var(--glass);
+  background: var(--card);
+  backdrop-filter: blur(16px);
   border: 1px solid var(--border);
-  backdrop-filter: blur(12px);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 16px;
+  border-radius: 20px;
+  padding: 22px;
+  margin-bottom: 18px;
+  transition: transform .3s, box-shadow .3s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0,0,0,.25);
 }
 
 /* PRODUCT */
@@ -98,8 +104,9 @@ header strong {
 }
 
 .price {
+  font-size: 20px;
+  font-weight: 700;
   color: var(--accent);
-  font-weight: 600;
 }
 
 /* BUTTON */
@@ -107,18 +114,18 @@ button {
   background: linear-gradient(135deg, var(--accent), #6366f1);
   color: #020617;
   border: none;
-  padding: 10px 16px;
-  border-radius: 10px;
+  padding: 12px 18px;
+  border-radius: 14px;
   cursor: pointer;
-  font-weight: 600;
-  margin-top: 10px;
+  font-weight: 700;
+  margin-top: 12px;
 }
 
-/* ADMIN INPUTS */
+/* INPUTS */
 input, select {
   width: 100%;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 12px;
+  border-radius: 12px;
   border: 1px solid var(--border);
   background: transparent;
   color: var(--text);
@@ -127,19 +134,15 @@ input, select {
 
 /* AD BANNER */
 .ad {
-  text-align: center;
   border: 1px dashed var(--accent);
+  text-align: center;
 }
 
 /* FOOTER */
 footer {
-  margin-top: 40px;
-  padding: 30px 20px;
-  background: rgba(0,0,0,0.25);
-}
-
-footer p {
-  color: var(--muted);
+  margin-top: 60px;
+  padding: 40px 20px;
+  background: rgba(0,0,0,0.3);
 }
 
 /* WHATSAPP */
@@ -148,11 +151,11 @@ footer p {
   right: 20px;
   bottom: 20px;
   background: #25d366;
-  color: white;
-  padding: 14px 18px;
+  color: #fff;
+  padding: 14px 20px;
   border-radius: 999px;
+  font-weight: 800;
   text-decoration: none;
-  font-weight: 700;
 }
 </style>
 </head>
@@ -162,7 +165,7 @@ footer p {
 <div id="announcement"></div>
 
 <header>
-  <strong>DATAPLUS GH</strong>
+  <div class="brand">DATAPLUS GH</div>
   <button class="toggle" onclick="toggleTheme()">🌓</button>
 </header>
 
@@ -170,7 +173,7 @@ footer p {
 
 <div class="container">
   <div class="card ad">
-    <h3>🚀 Custom Website Development</h3>
+    <h3>🚀 Website Development</h3>
     <p><strong>WANT CUSTOM WEBSITES JUST LIKE THIS FOR YOUR BUSINESS?</strong></p>
     <p class="price">GET ONE FOR AS LOW AS GHC 180 ONLY</p>
     <a href="https://wa.me/233554222103" target="_blank">
@@ -192,12 +195,11 @@ footer p {
 <a class="whatsapp"
    href="https://whatsapp.com/channel/0029VbBxGK6KrWR2RGMUlm1Z"
    target="_blank">
-  WhatsApp
+  Join WhatsApp
 </a>
 
 <script>
-document.getElementById("year").textContent =
-  new Date().getFullYear();
+document.getElementById("year").textContent = new Date().getFullYear();
 
 /* FIREBASE */
 firebase.initializeApp({
@@ -215,9 +217,7 @@ const ADMIN_UID = "ANwgaBBGe2fLyom7yzujdzQAY1k1";
 let isAdmin = false;
 
 /* THEME */
-if (localStorage.theme === "light") {
-  document.body.classList.add("light");
-}
+if (localStorage.theme === "light") document.body.classList.add("light");
 function toggleTheme() {
   document.body.classList.toggle("light");
   localStorage.theme =
@@ -232,7 +232,7 @@ auth.onAuthStateChanged(user => {
   loadProducts();
 });
 
-/* ANNOUNCEMENTS */
+/* ANNOUNCEMENT */
 db.collection("config").doc("app").onSnapshot(doc => {
   if (!doc.exists) return;
   const d = doc.data();
@@ -252,7 +252,7 @@ async function loadProducts() {
     html += `
       <div class="card">
         <h3>${p.name}</h3>
-        <p class="price">GHS ${p.price}</p>
+        <div class="price">GHS ${p.price}</div>
         ${
           p.category === "physical"
           ? `<a href="${p.buyLink}" target="_blank"><button>Buy Item</button></a>`
@@ -281,7 +281,7 @@ function order(id, name, price) {
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
 
-  alert("Order submitted");
+  alert("Order submitted. Awaiting approval.");
 }
 
 /* ADMIN */
@@ -338,4 +338,4 @@ function approve(id) {
 </script>
 
 </body>
-                                      </html>
+  </html>
