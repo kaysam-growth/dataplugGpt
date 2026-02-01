@@ -2,12 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KAYSAM GROWTH | Futuristic Marketplace</title>
+<title>DATAPLUS GH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!-- Fonts & Icons -->
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Plus+Jakarta+Sans:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/lucide@latest"></script>
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
 
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
@@ -16,258 +15,327 @@
 
 <style>
 :root {
-  --bg: #0a0a12;
-  --card: rgba(20, 20, 40, 0.8);
-  --text: #f0f0f5;
-  --accent: #00f0ff;
-  --accent2: #ff00ff;
-  --glow: rgba(0, 240, 255, 0.3);
+  --bg: #020617;
+  --card: rgba(15,23,42,0.8);
+  --border: rgba(255,255,255,0.08);
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
 }
+
+.light {
+  --bg: #f8fafc;
+  --card: rgba(255,255,255,0.9);
+  --border: rgba(0,0,0,0.08);
+  --text: #020617;
+  --muted: #475569;
+  --accent: #2563eb;
+}
+
+* { box-sizing: border-box; }
 
 body {
-  margin:0; font-family:'Plus Jakarta Sans', sans-serif;
-  background: var(--bg); color: var(--text);
-  overflow-x:hidden;
+  margin: 0;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  background: radial-gradient(circle at top, #0f172a, var(--bg));
+  color: var(--text);
+  min-height: 100vh;
 }
 
+/* ANNOUNCEMENT */
+#announcement {
+  display: none;
+  padding: 12px;
+  text-align: center;
+  background: linear-gradient(90deg, #38bdf8, #6366f1);
+  color: #020617;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* HEADER */
 header {
-  display:flex; justify-content:space-between; align-items:center;
-  padding:16px 32px; backdrop-filter:blur(20px);
-  background: rgba(0,0,0,0.6); border-bottom:1px solid rgba(255,255,255,0.05);
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-header h1 { font-family:'Orbitron', sans-serif; letter-spacing:2px; font-weight:700; color:var(--accent); }
-
-button { cursor:pointer; border:none; font-weight:700; transition:0.3s; }
-
-button:hover { transform:scale(1.05); }
-
-.whatsapp-float {
-  position: fixed; right: 20px; bottom: 20px;
-  background: #25d366; color: #fff;
-  padding:16px; border-radius:50px; font-weight:bold;
-  text-decoration:none; box-shadow:0 0 20px #25d366aa;
+.brand {
+  font-weight: 800;
+  letter-spacing: -0.5px;
 }
 
-.hero {
-  position:relative; text-align:center; padding:120px 20px;
-  background: radial-gradient(circle at center, rgba(0,240,255,0.05), transparent 70%);
-  overflow:hidden;
+.toggle {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
 }
 
-.hero h2 {
-  font-family:'Orbitron', sans-serif; font-size:4rem;
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text; color:transparent;
+/* LAYOUT */
+.container {
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
 }
 
-.hero p {
-  font-size:1.2rem; color: #aaa; letter-spacing:2px; margin-top:8px;
-}
-
-.announcement-bar {
-  background: var(--accent); color:#000; text-align:center;
-  padding:8px; font-weight:bold; font-size:0.8rem; letter-spacing:1px;
-  display:none;
-}
-
-.grid { display:grid; gap:24px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); padding:32px; }
-
+/* GLASS CARD */
 .card {
-  background: var(--card); padding:24px; border-radius:20px;
-  backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.05);
-  transition:0.3s; position:relative;
+  background: var(--card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 22px;
+  margin-bottom: 18px;
+  transition: transform .3s, box-shadow .3s;
 }
 
 .card:hover {
-  box-shadow:0 0 30px var(--glow);
-  transform: translateY(-5px);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0,0,0,.25);
 }
 
-.card h3 { font-family:'Orbitron', sans-serif; font-size:1.5rem; margin-bottom:8px; color:var(--accent); }
-
-.card p { color:#aaa; margin-bottom:12px; }
-
-.card button {
-  padding:12px 20px; background: var(--accent);
-  color:#000; border-radius:12px; font-weight:bold; transition:0.3s;
+/* PRODUCT */
+.card h3 {
+  margin: 0 0 6px;
 }
 
-.card button:hover { box-shadow:0 0 20px var(--glow); transform:scale(1.05); }
+.price {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent);
+}
 
+/* BUTTON */
+button {
+  background: linear-gradient(135deg, var(--accent), #6366f1);
+  color: #020617;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: 700;
+  margin-top: 12px;
+}
+
+/* INPUTS */
+input, select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+/* AD BANNER */
+.ad {
+  border: 1px dashed var(--accent);
+  text-align: center;
+}
+
+/* FOOTER */
 footer {
-  background:rgba(20,20,40,0.9); padding:32px; text-align:center; margin-top:40px;
+  margin-top: 60px;
+  padding: 40px 20px;
+  background: rgba(0,0,0,0.3);
 }
 
-footer h4 { color:var(--accent); font-family:'Orbitron', sans-serif; margin-bottom:8px; }
-footer p, footer li { color:#aaa; margin:4px 0; font-size:0.9rem; }
-
-.ad-banner {
-  margin:40px auto; padding:32px; border:2px dashed var(--accent);
-  text-align:center; border-radius:24px; backdrop-filter:blur(20px);
-  animation: glowBanner 3s infinite alternate;
+/* WHATSAPP */
+.whatsapp {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  background: #25d366;
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 999px;
+  font-weight: 800;
+  text-decoration: none;
 }
-
-@keyframes glowBanner {
-  0%{ box-shadow:0 0 10px var(--accent); }
-  100%{ box-shadow:0 0 25px var(--accent2); }
-}
-
 </style>
 </head>
+
 <body>
 
-<div class="announcement-bar" id="announcement"></div>
+<div id="announcement"></div>
 
 <header>
-  <h1>KAYSAM GROWTH</h1>
-  <button onclick="toggleTheme()">🌓</button>
+  <div class="brand">DATAPLUS GH</div>
+  <button class="toggle" onclick="toggleTheme()">🌓</button>
 </header>
 
-<section class="hero">
-  <h2>Turbo Data & Gadgets</h2>
-  <p>Direct delivery & premium tech at your fingertips</p>
-</section>
+<div class="container" id="app">Loading…</div>
 
-<div class="ad-banner">
-  <h3>🚀 WANT CUSTOM WEBSITES JUST LIKE THIS?</h3>
-  <p>GET ONE FOR AS LOW AS GHC 180 ONLY</p>
-  <a href="https://wa.me/233554222103" target="_blank"><button>Chat on WhatsApp</button></a>
+<div class="container">
+  <div class="card ad">
+    <h3>🚀 Website Development</h3>
+    <p><strong>WANT CUSTOM WEBSITES JUST LIKE THIS FOR YOUR BUSINESS?</strong></p>
+    <p class="price">GET ONE FOR AS LOW AS GHC 180 ONLY</p>
+    <a href="https://wa.me/233554222103" target="_blank">
+      <button>Chat on WhatsApp</button>
+    </a>
+  </div>
 </div>
-
-<div class="grid" id="app">
-  Loading products…
-</div>
-
-<a href="https://whatsapp.com/channel/0029VbBxGK6KrWR2RGMUlm1Z" class="whatsapp-float" target="_blank">Join WhatsApp</a>
 
 <footer>
-  <h4>KAYSAM GROWTH</h4>
-  <p>Customer Support: 0554222103 / 0532942413</p>
-  <p>Email: kaysamgrowth@gmail.com</p>
-  <p>Location: Near the All Nations University, Koforidua</p>
-  <hr style="margin:16px auto; opacity:0.2;">
-  <p>Quick Links: Buy Data | Shop Gadgets | Track Orders | Join WhatsApp</p>
-  <p>© <span id="year"></span> KAYSAM GROWTH</p>
+  <div class="container">
+    <h3>KAYSAM GROWTH</h3>
+    <p>📞 0554222103 / 0532942413</p>
+    <p>📧 kaysamgrowth@gmail.com</p>
+    <p>📍 Near the All Nations University, Koforidua</p>
+    <p style="font-size:12px;">© <span id="year"></span></p>
+  </div>
 </footer>
+
+<a class="whatsapp"
+   href="https://whatsapp.com/channel/0029VbBxGK6KrWR2RGMUlm1Z"
+   target="_blank">
+  Join WhatsApp
+</a>
 
 <script>
 document.getElementById("year").textContent = new Date().getFullYear();
 
-/* ================= THEME ================= */
-function toggleTheme(){
-  document.body.classList.toggle("dark");
-}
-
-/* ================= FIREBASE ================= */
-const firebaseConfig = {
+/* FIREBASE */
+firebase.initializeApp({
   apiKey: "AIzaSyCs7lN4itvWZPichtFLdEE4swNQHSX_j1M",
   authDomain: "dataplus-a93c7.firebaseapp.com",
   projectId: "dataplus-a93c7",
-  storageBucket: "dataplus-a93c7.firebasestorage.app",
+  storageBucket: "dataplus-a93c7.appspot.com",
   messagingSenderId: "1040979049946",
-  appId: "1:1040979049946:web:d5d7957a6c209f56dd94e3",
-  measurementId: "G-GW9DNT0DQ0"
-};
-firebase.initializeApp(firebaseConfig);
+  appId: "1:1040979049946:web:d5d7957a6c209f56dd94e3"
+});
+
 const auth = firebase.auth();
 const db = firebase.firestore();
-
-/* ================= ADMIN ================= */
 const ADMIN_UID = "ANwgaBBGe2fLyom7yzujdzQAY1k1";
 let isAdmin = false;
+
+/* THEME */
+if (localStorage.theme === "light") document.body.classList.add("light");
+function toggleTheme() {
+  document.body.classList.toggle("light");
+  localStorage.theme =
+    document.body.classList.contains("light") ? "light" : "dark";
+}
+
+/* AUTH */
 auth.signInAnonymously();
 auth.onAuthStateChanged(user => {
-  if(!user) return;
+  if (!user) return;
   isAdmin = user.uid === ADMIN_UID;
   loadProducts();
 });
 
-/* ================= LOAD PRODUCTS ================= */
-async function loadProducts(){
-  const snap = await db.collection("products").where("active","==",true).get();
-  let html="";
-  snap.forEach(doc=>{
+/* ANNOUNCEMENT */
+db.collection("config").doc("app").onSnapshot(doc => {
+  if (!doc.exists) return;
+  const d = doc.data();
+  const bar = document.getElementById("announcement");
+  bar.style.display = d.announcementActive ? "block" : "none";
+  bar.textContent = d.announcementText || "";
+});
+
+/* PRODUCTS */
+async function loadProducts() {
+  const snap = await db.collection("products")
+    .where("active", "==", true).get();
+
+  let html = "";
+  snap.forEach(doc => {
     const p = doc.data();
-    html+=`
+    html += `
       <div class="card">
         <h3>${p.name}</h3>
-        <p>GHS ${p.price}</p>
-        ${p.category==="physical"
+        <div class="price">GHS ${p.price}</div>
+        ${
+          p.category === "physical"
           ? `<a href="${p.buyLink}" target="_blank"><button>Buy Item</button></a>`
-          : `<button onclick="order('${doc.id}','${p.name}',${p.price})">Buy Data</button>`}
-      </div>
-    `;
+          : `<button onclick="order('${doc.id}','${p.name}',${p.price})">Buy Data</button>`
+        }
+      </div>`;
   });
-  if(isAdmin) html+=adminPanel();
-  document.getElementById("app").innerHTML=html;
+
+  if (isAdmin) html += adminPanel();
+  document.getElementById("app").innerHTML = html;
 }
 
-/* ================= ORDER ================= */
-function order(id,name,price){
-  const phone=prompt("Enter phone number:");
-  const ref=prompt("Enter MoMo/Paystack reference:");
-  if(!phone||!ref){alert("All fields required");return;}
+/* ORDER */
+function order(id, name, price) {
+  const phone = prompt("Enter phone number");
+  const ref = prompt("Enter MoMo reference");
+  if (!phone || !ref) return;
+
   db.collection("orders").add({
-    productId:id, productName:name, price, phone, momoRef:ref,
-    status:"Pending Approval",
-    createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    productId: id,
+    productName: name,
+    price,
+    phone,
+    momoRef: ref,
+    status: "Pending Approval",
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
+
   alert("Order submitted. Awaiting approval.");
 }
 
-/* ================= ADMIN PANEL ================= */
-function adminPanel(){ return `
-  <div class="card">
-    <h3>Admin Panel</h3>
-    <input id="pname" placeholder="Product Name">
-    <input id="pprice" placeholder="Price">
-    <select id="pcat">
-      <option value="data">Data</option>
-      <option value="physical">Physical</option>
-    </select>
-    <input id="plink" placeholder="Buy Link (physical)">
-    <button onclick="addProduct()">Add Product</button>
-    <hr>
-    <h4>Orders</h4>
-    <button onclick="loadOrders()">View Orders</button>
-    <div id="orders"></div>
-  </div>
-`; }
+/* ADMIN */
+function adminPanel() {
+  return `
+    <div class="card">
+      <h3>Admin Panel</h3>
+      <input id="pname" placeholder="Product name">
+      <input id="pprice" placeholder="Price">
+      <select id="pcat">
+        <option value="data">Data</option>
+        <option value="physical">Physical</option>
+      </select>
+      <input id="plink" placeholder="Buy link (physical only)">
+      <button onclick="addProduct()">Add Product</button>
+      <hr>
+      <button onclick="loadOrders()">View Orders</button>
+      <div id="orders"></div>
+    </div>`;
+}
 
-function addProduct(){
+function addProduct() {
   db.collection("products").add({
-    name:document.getElementById("pname").value,
-    price:Number(document.getElementById("pprice").value),
-    category:document.getElementById("pcat").value,
-    buyLink:document.getElementById("plink").value||"",
-    active:true,
-    createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    name: pname.value,
+    price: Number(pprice.value),
+    category: pcat.value,
+    buyLink: plink.value || "",
+    active: true,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
   loadProducts();
 }
 
-async function loadOrders(){
+async function loadOrders() {
   const snap = await db.collection("orders").get();
-  let html="";
-  snap.forEach(doc=>{
+  let html = "";
+  snap.forEach(doc => {
     const o = doc.data();
-    html+=`
+    html += `
       <div class="card">
         <strong>${o.productName}</strong>
         <p>${o.phone}</p>
         <p>${o.status}</p>
         <button onclick="approve('${doc.id}')">Approve</button>
-      </div>
-    `;
+      </div>`;
   });
-  document.getElementById("orders").innerHTML=html;
+  document.getElementById("orders").innerHTML = html;
 }
 
-function approve(id){
-  db.collection("orders").doc(id).update({status:"Approved"});
+function approve(id) {
+  db.collection("orders").doc(id).update({ status: "Approved" });
   loadOrders();
 }
 </script>
+
 </body>
-                     </html>
+  </html>
