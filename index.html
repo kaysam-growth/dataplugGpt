@@ -42,7 +42,6 @@ body {
   min-height: 100vh;
 }
 
-/* ANNOUNCEMENT */
 #announcement {
   display: none;
   padding: 12px;
@@ -53,7 +52,6 @@ body {
   font-size: 13px;
 }
 
-/* HEADER */
 header {
   padding: 20px;
   display: flex;
@@ -61,10 +59,7 @@ header {
   align-items: center;
 }
 
-.brand {
-  font-weight: 800;
-  letter-spacing: -0.5px;
-}
+.brand { font-weight: 800; }
 
 .toggle {
   background: var(--card);
@@ -75,14 +70,12 @@ header {
   cursor: pointer;
 }
 
-/* LAYOUT */
 .container {
   max-width: 1000px;
   margin: auto;
   padding: 20px;
 }
 
-/* GLASS CARD */
 .card {
   background: var(--card);
   backdrop-filter: blur(16px);
@@ -90,17 +83,6 @@ header {
   border-radius: 20px;
   padding: 22px;
   margin-bottom: 18px;
-  transition: transform .3s, box-shadow .3s;
-}
-
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0,0,0,.25);
-}
-
-/* PRODUCT */
-.card h3 {
-  margin: 0 0 6px;
 }
 
 .price {
@@ -109,7 +91,6 @@ header {
   color: var(--accent);
 }
 
-/* BUTTON */
 button {
   background: linear-gradient(135deg, var(--accent), #6366f1);
   color: #020617;
@@ -121,7 +102,6 @@ button {
   margin-top: 12px;
 }
 
-/* INPUTS */
 input, select {
   width: 100%;
   padding: 12px;
@@ -132,20 +112,17 @@ input, select {
   margin-bottom: 10px;
 }
 
-/* AD BANNER */
 .ad {
   border: 1px dashed var(--accent);
   text-align: center;
 }
 
-/* FOOTER */
 footer {
   margin-top: 60px;
   padding: 40px 20px;
   background: rgba(0,0,0,0.3);
 }
 
-/* WHATSAPP */
 .whatsapp {
   position: fixed;
   right: 20px;
@@ -213,6 +190,7 @@ firebase.initializeApp({
 
 const auth = firebase.auth();
 const db = firebase.firestore();
+
 const ADMIN_UID = "ANwgaBBGe2fLyom7yzujdzQAY1k1";
 let isAdmin = false;
 
@@ -225,9 +203,11 @@ function toggleTheme() {
 }
 
 /* AUTH */
-auth.signInAnonymously();
+auth.signInAnonymously().catch(console.error);
+
 auth.onAuthStateChanged(user => {
   if (!user) return;
+  console.log("UID:", user.uid);
   isAdmin = user.uid === ADMIN_UID;
   loadProducts();
 });
@@ -247,6 +227,7 @@ async function loadProducts() {
     .where("active", "==", true).get();
 
   let html = "";
+
   snap.forEach(doc => {
     const p = doc.data();
     html += `
@@ -258,7 +239,8 @@ async function loadProducts() {
           ? `<a href="${p.buyLink}" target="_blank"><button>Buy Item</button></a>`
           : `<button onclick="order('${doc.id}','${p.name}',${p.price})">Buy Data</button>`
         }
-      </div>`;
+      </div>
+    `;
   });
 
   if (isAdmin) html += adminPanel();
@@ -284,39 +266,60 @@ function order(id, name, price) {
   alert("Order submitted. Awaiting approval.");
 }
 
-/* ADMIN */
+/* ADMIN PANEL */
 function adminPanel() {
   return `
     <div class="card">
-      <h3>Admin Panel</h3>
+      <h3>🛠 Admin Panel</h3>
+      <p style="color:lime;">Admin mode active</p>
+
       <input id="pname" placeholder="Product name">
-      <input id="pprice" placeholder="Price">
+      <input id="pprice" type="number" placeholder="Price">
+
       <select id="pcat">
         <option value="data">Data</option>
         <option value="physical">Physical</option>
       </select>
+
       <input id="plink" placeholder="Buy link (physical only)">
       <button onclick="addProduct()">Add Product</button>
+
       <hr>
       <button onclick="loadOrders()">View Orders</button>
       <div id="orders"></div>
-    </div>`;
+    </div>
+  `;
 }
 
 function addProduct() {
+  const name = document.getElementById("pname").value;
+  const price = Number(document.getElementById("pprice").value);
+  const category = document.getElementById("pcat").value;
+  const link = document.getElementById("plink").value;
+
+  if (!name || !price) {
+    alert("Product name & price required");
+    return;
+  }
+
   db.collection("products").add({
-    name: pname.value,
-    price: Number(pprice.value),
-    category: pcat.value,
-    buyLink: plink.value || "",
+    name,
+    price,
+    category,
+    buyLink: category === "physical" ? link : "",
     active: true,
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
+
+  alert("Product added");
   loadProducts();
 }
 
 async function loadOrders() {
-  const snap = await db.collection("orders").get();
+  const snap = await db.collection("orders")
+    .orderBy("createdAt", "desc")
+    .get();
+
   let html = "";
   snap.forEach(doc => {
     const o = doc.data();
@@ -324,10 +327,16 @@ async function loadOrders() {
       <div class="card">
         <strong>${o.productName}</strong>
         <p>${o.phone}</p>
-        <p>${o.status}</p>
-        <button onclick="approve('${doc.id}')">Approve</button>
-      </div>`;
+        <p>Status: ${o.status}</p>
+        ${
+          o.status !== "Approved"
+          ? `<button onclick="approve('${doc.id}')">Approve</button>`
+          : `<span style="color:lime;">Approved</span>`
+        }
+      </div>
+    `;
   });
+
   document.getElementById("orders").innerHTML = html;
 }
 
