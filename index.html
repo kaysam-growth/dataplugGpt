@@ -2,27 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>DATAPLUS GH </title>
+<title>DATAPLUS GH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
-<script db.collection("config").doc("app")
-  .onSnapshot(doc => {
-    if (!doc.exists) return;
 
-    const data = doc.data();
-    const bar = document.getElementById("announcement");
-
-    if (data.announcementActive) {
-      bar.style.display = "block";
-      bar.textContent = data.announcementText;
-    } else {
-      bar.style.display = "none";
-    }
-  });
 <style>
 :root {
   --bg: #ffffff;
@@ -36,42 +23,8 @@
   --card: #0f172a;
   --text: #f8fafc;
 }
-<footer style="background:var(--card);
-               padding:24px;
-               margin-top:40px;">
-  <div class="container">
 
-    <h3>KAYSAM GROWTH</h3>
-    <p>Your trusted hub for data bundles & digital services.</p>
-
-    <hr>
-
-    <p><strong>Customer Support</strong></p>
-    <p>📞 0554222103 / 0532942413</p>
-    <p>📧 kaysamgrowth@gmail.com</p>
-    <p>📍 Near the All Nations University, Koforidua</p>
-
-    <hr>
-
-    <p><strong>Quick Links</strong></p>
-    <ul>
-      <li>Buy Data</li>
-      <li>Shop Gadgets</li>
-      <li>Track Orders</li>
-      <li>Join WhatsApp Channel</li>
-    </ul>
-
-    <p style="margin-top:16px;font-size:12px;">
-      © <span id="year"></span> Kaysam Growth
-    </p>
-
-  </div>
-</footer>
-  <script>
-  document.getElementById("year").textContent =
-    new Date().getFullYear();
-</script>
-</body>
+body {
   margin: 0;
   font-family: system-ui, sans-serif;
   background: var(--bg);
@@ -80,14 +33,6 @@
 }
 
 header {
-  <div id="announcement"
-     style="display:none;
-            padding:10px;
-            text-align:center;
-            background:#2563eb;
-            color:white;
-            font-size:14px;">
-</div>
   padding: 16px;
   display: flex;
   justify-content: space-between;
@@ -130,6 +75,16 @@ button {
 
 <body>
 
+<!-- ANNOUNCEMENT BAR -->
+<div id="announcement"
+     style="display:none;
+            padding:10px;
+            text-align:center;
+            background:#2563eb;
+            color:white;
+            font-size:14px;">
+</div>
+
 <header>
   <strong>DATAPLUS GH</strong>
   <button onclick="toggleTheme()">🌓</button>
@@ -137,6 +92,37 @@ button {
 
 <div class="container" id="app">Loading…</div>
 
+<!-- WEBSITE DEVELOPMENT AD -->
+<div class="container">
+  <div class="card" style="border:2px dashed var(--accent); text-align:center;">
+    <h3>🚀 Website Development</h3>
+    <p><strong>WANT CUSTOM WEBSITES JUST LIKE THIS FOR YOUR BUSINESS?</strong></p>
+    <p style="color:var(--accent); font-size:18px;">
+      GET ONE FOR AS LOW AS GHC 180 ONLY
+    </p>
+    <a href="https://wa.me/233554222103" target="_blank">
+      <button>Chat on WhatsApp</button>
+    </a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer style="background:var(--card); padding:24px; margin-top:40px;">
+  <div class="container">
+    <h3>KAYSAM GROWTH</h3>
+    <p>Your trusted hub for data bundles & digital services.</p>
+    <hr>
+    <p><strong>Customer Support</strong></p>
+    <p>📞 0554222103 / 0532942413</p>
+    <p>📧 kaysamgrowth@gmail.com</p>
+    <p>📍 Near the All Nations University, Koforidua</p>
+    <p style="font-size:12px;">
+      © <span id="year"></span> Kaysam Growth
+    </p>
+  </div>
+</footer>
+
+<!-- WHATSAPP FLOAT -->
 <a class="whatsapp-float"
    href="https://whatsapp.com/channel/0029VbBxGK6KrWR2RGMUlm1Z"
    target="_blank">
@@ -144,29 +130,27 @@ button {
 </a>
 
 <script>
-/* ================= FIREBASE ================= */
+document.getElementById("year").textContent =
+  new Date().getFullYear();
 
+/* ================= FIREBASE ================= */
 firebase.initializeApp({
- apiKey: "AIzaSyCs7lN4itvWZPichtFLdEE4swNQHSX_j1M",
+  apiKey: "AIzaSyCs7lN4itvWZPichtFLdEE4swNQHSX_j1M",
   authDomain: "dataplus-a93c7.firebaseapp.com",
   projectId: "dataplus-a93c7",
-  storageBucket: "dataplus-a93c7.firebasestorage.app",
+  storageBucket: "dataplus-a93c7.appspot.com",
   messagingSenderId: "1040979049946",
-  appId: "1:1040979049946:web:d5d7957a6c209f56dd94e3",
-  measurementId: "G-GW9DNT0DQ0"
+  appId: "1:1040979049946:web:d5d7957a6c209f56dd94e3"
 });
 
 const auth = firebase.auth();
 const db = firebase.firestore();
 
 /* ================= ADMIN ================= */
-
-// 🔐 AFTER FIRST LOGIN, PUT YOUR UID HERE
 const ADMIN_UID = "ANwgaBBGe2fLyom7yzujdzQAY1k1";
 let isAdmin = false;
 
 /* ================= THEME ================= */
-
 if (localStorage.theme === "dark") {
   document.body.classList.add("dark");
 }
@@ -178,60 +162,55 @@ function toggleTheme() {
 }
 
 /* ================= AUTH ================= */
-
 auth.signInAnonymously();
-
 auth.onAuthStateChanged(user => {
   if (!user) return;
   isAdmin = user.uid === ADMIN_UID;
   loadProducts();
 });
 
-/* ================= PRODUCTS ================= */
+/* ================= ANNOUNCEMENTS ================= */
+db.collection("config").doc("app").onSnapshot(doc => {
+  if (!doc.exists) return;
+  const d = doc.data();
+  const bar = document.getElementById("announcement");
+  if (d.announcementActive) {
+    bar.style.display = "block";
+    bar.textContent = d.announcementText;
+  } else {
+    bar.style.display = "none";
+  }
+});
 
+/* ================= PRODUCTS ================= */
 async function loadProducts() {
   const snap = await db.collection("products")
-    .where("active", "==", true)
-    .get();
+    .where("active", "==", true).get();
 
   let html = "";
-
   snap.forEach(doc => {
     const p = doc.data();
-
     html += `
       <div class="card">
         <h3>${p.name}</h3>
         <p>GHS ${p.price}</p>
-
         ${
           p.category === "physical"
-          ? `<a href="${p.buyLink}" target="_blank">
-               <button>Buy Item</button>
-             </a>`
-          : `<button onclick="order('${doc.id}','${p.name}',${p.price})">
-               Buy Data
-             </button>`
+          ? `<a href="${p.buyLink}" target="_blank"><button>Buy Item</button></a>`
+          : `<button onclick="order('${doc.id}','${p.name}',${p.price})">Buy Data</button>`
         }
-      </div>
-    `;
+      </div>`;
   });
 
   if (isAdmin) html += adminPanel();
-
   document.getElementById("app").innerHTML = html;
 }
 
 /* ================= ORDER ================= */
-
 function order(id, name, price) {
   const phone = prompt("Enter phone number:");
   const ref = prompt("Enter MoMo reference:");
-
-  if (!phone || !ref) {
-    alert("All fields required");
-    return;
-  }
+  if (!phone || !ref) return alert("All fields required");
 
   db.collection("orders").add({
     productId: id,
@@ -245,50 +224,24 @@ function order(id, name, price) {
 
   alert("Order submitted. Awaiting approval.");
 }
-<div class="card"
-     style="border:2px dashed var(--accent);
-            margin:20px 0;
-            text-align:center;">
-  <h3>🚀 Website Development</h3>
 
-  <p style="font-weight:bold;">
-    WANT CUSTOM WEBSITES JUST LIKE THIS FOR YOUR BUSINESS?
-  </p>
-
-  <p style="color:var(--accent);
-            font-size:18px;">
-    GET ONE FOR AS LOW AS GHC 180 ONLY
-  </p>
-
-  <a href="https://wa.me/233554222103"
-     target="_blank">
-    <button style="margin-top:10px;">
-      Chat on WhatsApp
-    </button>
-  </a>
-</div>
-  
 /* ================= ADMIN PANEL ================= */
-
 function adminPanel() {
   return `
-    <div class="card">
-      <h3>Admin Panel</h3>
-
-      <input id="pname" placeholder="Product name">
-      <input id="pprice" placeholder="Price">
-      <select id="pcat">
-        <option value="data">Data</option>
-        <option value="physical">Physical</option>
-      </select>
-      <input id="plink" placeholder="Buy link (physical only)">
-      <button onclick="addProduct()">Add Product</button>
-
-      <hr><h4>Orders</h4>
-      <button onclick="loadOrders()">View Orders</button>
-      <div id="orders"></div>
-    </div>
-  `;
+  <div class="card">
+    <h3>Admin Panel</h3>
+    <input id="pname" placeholder="Product name"><br>
+    <input id="pprice" placeholder="Price"><br>
+    <select id="pcat">
+      <option value="data">Data</option>
+      <option value="physical">Physical</option>
+    </select><br>
+    <input id="plink" placeholder="Buy link (physical only)"><br>
+    <button onclick="addProduct()">Add Product</button>
+    <hr>
+    <button onclick="loadOrders()">View Orders</button>
+    <div id="orders"></div>
+  </div>`;
 }
 
 function addProduct() {
@@ -300,14 +253,12 @@ function addProduct() {
     active: true,
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
-
   loadProducts();
 }
 
 async function loadOrders() {
   const snap = await db.collection("orders").get();
   let html = "";
-
   snap.forEach(doc => {
     const o = doc.data();
     html += `
@@ -316,20 +267,16 @@ async function loadOrders() {
         <p>${o.phone}</p>
         <p>${o.status}</p>
         <button onclick="approve('${doc.id}')">Approve</button>
-      </div>
-    `;
+      </div>`;
   });
-
   document.getElementById("orders").innerHTML = html;
 }
 
 function approve(id) {
-  db.collection("orders").doc(id).update({
-    status: "Approved"
-  });
+  db.collection("orders").doc(id).update({ status: "Approved" });
   loadOrders();
 }
 </script>
 
 </body>
-</html>
+  </html>
