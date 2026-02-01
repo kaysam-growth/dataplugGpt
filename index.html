@@ -9,7 +9,20 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+<script db.collection("config").doc("app")
+  .onSnapshot(doc => {
+    if (!doc.exists) return;
 
+    const data = doc.data();
+    const bar = document.getElementById("announcement");
+
+    if (data.announcementActive) {
+      bar.style.display = "block";
+      bar.textContent = data.announcementText;
+    } else {
+      bar.style.display = "none";
+    }
+  });
 <style>
 :root {
   --bg: #ffffff;
@@ -23,8 +36,42 @@
   --card: #0f172a;
   --text: #f8fafc;
 }
+<footer style="background:var(--card);
+               padding:24px;
+               margin-top:40px;">
+  <div class="container">
 
-body {
+    <h3>KAYSAM GROWTH</h3>
+    <p>Your trusted hub for data bundles & digital services.</p>
+
+    <hr>
+
+    <p><strong>Customer Support</strong></p>
+    <p>📞 0554222103 / 0532942413</p>
+    <p>📧 kaysamgrowth@gmail.com</p>
+    <p>📍 Near the All Nations University, Koforidua</p>
+
+    <hr>
+
+    <p><strong>Quick Links</strong></p>
+    <ul>
+      <li>Buy Data</li>
+      <li>Shop Gadgets</li>
+      <li>Track Orders</li>
+      <li>Join WhatsApp Channel</li>
+    </ul>
+
+    <p style="margin-top:16px;font-size:12px;">
+      © <span id="year"></span> Kaysam Growth
+    </p>
+
+  </div>
+</footer>
+  <script>
+  document.getElementById("year").textContent =
+    new Date().getFullYear();
+</script>
+</body>
   margin: 0;
   font-family: system-ui, sans-serif;
   background: var(--bg);
@@ -33,6 +80,14 @@ body {
 }
 
 header {
+  <div id="announcement"
+     style="display:none;
+            padding:10px;
+            text-align:center;
+            background:#2563eb;
+            color:white;
+            font-size:14px;">
+</div>
   padding: 16px;
   display: flex;
   justify-content: space-between;
@@ -190,7 +245,29 @@ function order(id, name, price) {
 
   alert("Order submitted. Awaiting approval.");
 }
+<div class="card"
+     style="border:2px dashed var(--accent);
+            margin:20px 0;
+            text-align:center;">
+  <h3>🚀 Website Development</h3>
 
+  <p style="font-weight:bold;">
+    WANT CUSTOM WEBSITES JUST LIKE THIS FOR YOUR BUSINESS?
+  </p>
+
+  <p style="color:var(--accent);
+            font-size:18px;">
+    GET ONE FOR AS LOW AS GHC 180 ONLY
+  </p>
+
+  <a href="https://wa.me/233554222103"
+     target="_blank">
+    <button style="margin-top:10px;">
+      Chat on WhatsApp
+    </button>
+  </a>
+</div>
+  
 /* ================= ADMIN PANEL ================= */
 
 function adminPanel() {
