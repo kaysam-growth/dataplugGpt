@@ -56,7 +56,7 @@
                     <span class="font-extrabold text-xl tracking-tight">SwiftData <span class="text-blue-600">Admin</span></span>
                 </div>
                 <div class="flex items-center gap-4">
-                    <button onclick="toggleTheme()" class="p-3 rounded-xl bg-slate-100 dark:bg-slate-800"><i data-lucide="moon" id="theme-icon" class="w-5 h-5"></i></button>
+                    <button onclick="toggleTheme()" id="theme-btn" class="p-3 rounded-xl bg-slate-100 dark:bg-slate-800"><i data-lucide="moon" class="w-5 h-5"></i></button>
                     <button onclick="handleLogout()" class="text-red-500 font-bold text-sm">Logout</button>
                 </div>
             </div>
@@ -171,10 +171,14 @@
   appId: "1:1040979049946:web:d5d7957a6c209f56dd94e3",
   measurementId: "G-GW9DNT0DQ0"
 };
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const appId = 'swiftdata-main-app';
+        
+        // This is the path in the database. 
+        // We will simplify it to make sure it works easily for you.
+        const appId = 'swiftdata-main-app'; 
 
         let state = { orders: [], products: [], settings: {}, announcement: {} };
 
@@ -202,7 +206,7 @@
         // Data Sync
         function initData() {
             // Orders
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'orders'), (snap) => {
+            onSnapshot(collection(db, 'orders'), (snap) => {
                 state.orders = snap.docs.map(d => ({ id: d.id, ...d.data() }))
                                     .sort((a,b) => (b.createdAt?.toDate() || 0) - (a.createdAt?.toDate() || 0));
                 renderOrders();
@@ -210,14 +214,14 @@
             });
 
             // Products
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'products'), (snap) => {
+            onSnapshot(collection(db, 'products'), (snap) => {
                 state.products = snap.docs.map(d => ({ id: d.id, ...d.data() }))
                                      .sort((a,b) => a.rank - b.rank);
                 renderProducts();
             });
 
             // Settings
-            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'settings_doc'), (d) => {
+            onSnapshot(doc(db, 'config', 'settings_doc'), (d) => {
                 if(d.exists()) {
                     state.settings = d.data();
                     renderSettings();
@@ -225,7 +229,7 @@
             });
 
             // Announcement
-            onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'announcement'), (d) => {
+            onSnapshot(doc(db, 'config', 'announcement'), (d) => {
                 if(d.exists()) state.announcement = d.data();
             });
         }
@@ -255,6 +259,10 @@
 
         function renderOrders() {
             const container = document.getElementById('orders-container');
+            if(state.orders.length === 0) {
+                container.innerHTML = '<p class="text-slate-400">No orders yet.</p>';
+                return;
+            }
             container.innerHTML = state.orders.map(o => `
                 <div class="card flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
@@ -279,15 +287,19 @@
         }
 
         window.updateStatus = async (id, status) => {
-            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', id), { status });
+            await updateDoc(doc(db, 'orders', id), { status });
         };
 
         window.deleteOrder = async (id) => {
-            if(confirm("Delete this order record?")) await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', id));
+            if(confirm("Delete this order record?")) await deleteDoc(doc(db, 'orders', id));
         };
 
         function renderProducts() {
             const container = document.getElementById('products-list');
+            if(state.products.length === 0) {
+                container.innerHTML = '<p class="text-slate-400">No bundles created.</p>';
+                return;
+            }
             container.innerHTML = state.products.map(p => `
                 <div class="card flex justify-between items-center border-l-4 ${p.network === 'MTN' ? 'border-yellow-400' : 'border-blue-600'}">
                     <div>
@@ -312,12 +324,12 @@
                 price: parseFloat(document.getElementById('p-price').value),
                 rank: parseInt(document.getElementById('p-rank').value) || 0
             };
-            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'products'), data);
+            await addDoc(collection(db, 'products'), data);
             toggleProductModal();
         };
 
         window.deleteProduct = async (id) => {
-            if(confirm("Delete this bundle?")) await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', id));
+            if(confirm("Delete this bundle?")) await deleteDoc(doc(db, 'products', id));
         };
 
         function renderSettings() {
@@ -339,24 +351,37 @@
         }
 
         window.toggleStore = async () => {
-            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'settings_doc'), {
-                storeOpen: !state.settings.storeOpen
-            });
+            const docRef = doc(db, 'config', 'settings_doc');
+            // Helper to create if missing
+            try {
+                await updateDoc(docRef, { storeOpen: !state.settings.storeOpen });
+            } catch (e) {
+                // If it doesn't exist, set it
+                const { setDoc } = await import("https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js");
+                await setDoc(docRef, { storeOpen: true }, { merge: true });
+            }
         };
 
         window.updateAnnouncement = async () => {
             const text = document.getElementById('ann-text').value;
-            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'announcement'), {
-                text: text,
-                active: text.length > 0
-            });
+            const docRef = doc(db, 'config', 'announcement');
+            try {
+                await updateDoc(docRef, { text: text, active: text.length > 0 });
+            } catch(e) {
+                const { setDoc } = await import("https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js");
+                await setDoc(docRef, { text: text, active: true });
+            }
             alert("Marquee updated!");
         };
 
         window.saveKeys = async () => {
-            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'settings_doc'), {
-                paystackPublicKey: document.getElementById('conf-pk').value
-            });
+            const docRef = doc(db, 'config', 'settings_doc');
+             try {
+                await updateDoc(docRef, { paystackPublicKey: document.getElementById('conf-pk').value });
+            } catch(e) {
+                const { setDoc } = await import("https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js");
+                await setDoc(docRef, { paystackPublicKey: document.getElementById('conf-pk').value }, { merge: true });
+            }
             alert("API Keys updated!");
         };
 
@@ -364,7 +389,9 @@
             const html = document.documentElement;
             html.classList.toggle('dark');
             const isDark = html.classList.contains('dark');
-            document.getElementById('theme-icon').setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+            // Fix: Re-inject the icon HTML so lucide can re-render it
+            const btn = document.getElementById('theme-btn');
+            btn.innerHTML = `<i data-lucide="${isDark ? 'sun' : 'moon'}" class="w-5 h-5"></i>`;
             lucide.createIcons();
         };
 
