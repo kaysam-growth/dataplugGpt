@@ -1,35 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DATAPLUS GH | Premium Data Services</title>
-    
-    <!-- Tailwind CSS for Modern UI -->
+    <meta name="viewport" content="width=device-width, initial-scale=0.85">
+    <title>SwiftData GH - Premium Data Solutions In Ghana. Buy your data bundles at agent prices and resell for profits.🥳</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Firebase SDKs (Compat) -->
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
-    
-    <!-- Paystack -->
-    <script src="https://js.paystack.co/v1/inline.js"></script>
-
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Paystack SDK v2 -->
+    <script src="https://js.paystack.co/v2/inline.js"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
                     colors: {
-                        brand: { 500: '#3b82f6', 600: '#2563eb', 900: '#1e3a8a' },
-                        dark: { 800: '#0f172a', 900: '#020617' }
+                        darkBg: '#0f172a',
+                        darkCard: '#1e293b',
+                        darkBorder: '#334155'
                     }
                 }
             }
@@ -37,675 +24,1494 @@
     </script>
 
     <style>
-        body { background-color: #020617; color: #f8fafc; }
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.3s ease; }
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* NAV — frosted glass with a light blue tint in light mode, deeper tint in dark mode.
+           Always visually distinct from the white/gray main content area. */
+        .glass {
+            background: rgba(248, 250, 255, 0.75);
+            backdrop-filter: blur(20px) saturate(1.8);
+            -webkit-backdrop-filter: blur(20px) saturate(1.8);
+            border-bottom: 1.5px solid rgba(59, 130, 246, 0.18);
+            box-shadow: 0 4px 32px rgba(59, 130, 246, 0.08), 0 1px 0 rgba(255,255,255,0.6) inset;
+        }
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(20px) saturate(1.6);
+            -webkit-backdrop-filter: blur(20px) saturate(1.6);
+            border-bottom: 1.5px solid rgba(59, 130, 246, 0.22);
+            box-shadow: 0 4px 32px rgba(0, 0, 0, 0.35);
+        }
+
+        .card-shadow { box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05); }
+        .btn-glow:hover { box-shadow: 0 0 20px rgba(37, 99, 235, 0.4); }
+
+        /* WhatsApp float label */
+        .whatsapp-wrapper {
+            position: fixed; bottom: 30px; right: 30px;
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+            z-index: 100;
+        }
+        .whatsapp-label {
+            background: #1a1a2e;
+            color: #fff;
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 99px;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .dark .whatsapp-label { background: #0f172a; }
+        .whatsapp-float {
+            background: #25d366; color: white; border-radius: 20px;
+            width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+        .whatsapp-float:hover { transform: scale(1.1) rotate(8deg); }
+        .wa-unread-dot {
+            position: absolute; top: 8px; right: 8px;
+            width: 13px; height: 13px;
+            background: #ef4444; border-radius: 50%;
+            border: 2px solid white;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .notification-bell {
+            position: fixed; top: 90px; right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border-radius: 20px;
+            width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4); z-index: 100;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        .notification-bell:hover {
+            transform: scale(1.1) rotate(-15deg);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.6);
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4); }
+            50% { box-shadow: 0 10px 35px rgba(102, 126, 234, 0.7); }
+        }
+
+        .notification-badge {
+            position: absolute; top: 8px; right: 8px;
+            width: 12px; height: 12px;
+            background: #ef4444; border-radius: 50%;
+            border: 2px solid white;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        input::placeholder { color: #94a3b8; font-weight: 500; }
+        * { transition: background-color 0.2s ease, border-color 0.2s ease, color 0.1s ease; }
+        .network-logo { object-fit: contain; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .animate-spin { animation: spin 1s linear infinite; }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-down { animation: slideDown 0.3s ease-out; }
+
+        /* Fee badge */
+        .fee-badge {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            font-size: 10px;
+            font-weight: 900;
+            padding: 2px 8px;
+            border-radius: 99px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col font-sans">
+<body class="bg-slate-50 dark:bg-darkBg text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
 
-    <!-- Navbar -->
-    <nav class="glass-panel sticky top-0 z-50 px-6 py-4 flex justify-between items-center shadow-lg border-b border-slate-800">
-        <div class="flex items-center gap-3 cursor-pointer" onclick="app.router('home')">
-            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-blue-500/20 shadow-lg">
-                <i class="fa-solid fa-wifi text-white text-lg"></i>
-            </div>
-            <h1 class="text-2xl font-bold tracking-tight text-white">DATAPLUS <span class="text-blue-500">GH</span></h1>
+    <!-- Notification Popup — content controlled via Admin Settings -->
+    <div id="notificationPopup" class="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 hidden">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-md w-full text-center shadow-2xl">
+            <h3 id="popup-title" class="text-2xl font-extrabold mb-4 dark:text-white">Welcome to SwiftData GH 👋</h3>
+            <p id="popup-body" class="text-slate-500 dark:text-slate-400 font-medium mb-6">
+                🛎 Don't forget to Tap on the WhatsApp icon below to follow our channel and stay connected for updates on products, network issues, delivery speed, etc!📢
+            </p>
+            <button onclick="closeNotification()" class="mt-4 w-full py-4 rounded-2xl bg-blue-600 text-white font-extrabold hover:bg-blue-700 transition">
+                Close
+            </button>
         </div>
-        
-        <div class="hidden md:flex items-center gap-6">
-            <button onclick="app.router('home')" class="hover:text-blue-400 transition">Shop</button>
-            <button onclick="app.router('agent-landing')" class="hover:text-blue-400 transition">Become an Agent</button>
-            <div id="auth-buttons" class="flex gap-3">
-                <!-- Injected via JS -->
-            </div>
-        </div>
-
-        <!-- Mobile Menu Button -->
-        <button class="md:hidden text-2xl" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars"></i></button>
-    </nav>
-
-    <!-- Mobile Menu Overlay -->
-    <div id="mobile-menu" class="fixed inset-0 bg-dark-900/95 z-40 hidden flex-col justify-center items-center gap-8 text-xl">
-        <button onclick="app.router('home'); toggleMobileMenu()">Shop</button>
-        <button onclick="app.router('agent-landing'); toggleMobileMenu()">Agents</button>
-        <button onclick="toggleMobileMenu()" class="text-red-400"><i class="fa-solid fa-xmark"></i> Close</button>
     </div>
 
-    <!-- Main Content Area -->
-    <main id="app-root" class="flex-grow p-4 md:p-8 max-w-7xl mx-auto w-full relative">
-        <!-- Views will be injected here -->
-        <div class="flex justify-center mt-20"><i class="fa-solid fa-circle-notch fa-spin text-4xl text-blue-500"></i></div>
+    <!-- Notification Bell -->
+    <button id="notificationBell" onclick="openNotification()" class="notification-bell hidden">
+        <div class="notification-badge"></div>
+        <i data-lucide="bell" class="w-7 h-7"></i>
+    </button>
+
+    <!-- WhatsApp Float with NEED HELP label + unread dot -->
+    <div class="whatsapp-wrapper">
+        <span class="whatsapp-label">Need Help?</span>
+        <a href="https://whatsapp.com/channel/0029VbBxGK6KrWR2RGMUlm1Z" target="_blank" class="whatsapp-float" title="Join our WhatsApp Channel">
+            <div class="wa-unread-dot"></div>
+            <i data-lucide="message-circle" class="w-8 h-8"></i>
+        </a>
+    </div>
+
+    <nav class="glass sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div onclick="router.navigate('home')" class="cursor-pointer flex items-center gap-3">
+                <div id="nav-logo-box" class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200 dark:shadow-blue-900/50 overflow-hidden flex-shrink-0">
+                    <i id="nav-logo-icon" data-lucide="zap" class="text-white w-6 h-6 fill-current"></i>
+                </div>
+                <span class="font-extrabold text-2xl tracking-tight text-slate-900 dark:text-white">SwiftData<span class="text-blue-600 dark:text-blue-400">GH</span></span>
+            </div>
+            <div class="flex items-center gap-3 md:gap-6">
+                <button onclick="toggleTheme()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-yellow-300 hover:scale-110 transition-all">
+                    <i id="theme-icon" data-lucide="moon" class="w-5 h-5"></i>
+                </button>
+                <button onclick="router.navigate('track')" class="bg-slate-900 dark:bg-blue-600 text-white px-5 py-2.5 rounded-full text-sm font-bold btn-glow transition-all flex items-center gap-2 shadow-lg dark:shadow-blue-900/40">
+                    <i data-lucide="package" class="w-4 h-4"></i>
+                    Track Order
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Live Announcement Banner -->
+    <div id="announcement-banner" class="hidden bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 text-center font-bold">
+        <div class="max-w-6xl mx-auto flex items-center justify-center gap-3">
+            <i data-lucide="megaphone" class="w-5 h-5"></i>
+            <span id="announcement-text"></span>
+        </div>
+    </div>
+
+    <main id="main-content" class="flex-grow">
+        <!-- Loader -->
+        <div class="flex flex-col items-center justify-center h-96 gap-6">
+            <div class="relative">
+                <div class="w-16 h-16 border-4 border-blue-100 dark:border-slate-800 rounded-full"></div>
+                <div class="w-16 h-16 border-4 border-blue-600 rounded-full border-t-transparent animate-spin absolute top-0"></div>
+            </div>
+            <div class="text-center">
+                <p class="text-xl font-extrabold text-slate-800 dark:text-slate-200">Loading Data Packages</p>
+                <p class="text-slate-400 text-sm font-medium">Authenticating with SwiftData Cloud...</p>
+            </div>
+        </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="mt-auto border-t border-slate-800 bg-dark-900 py-8 text-center text-slate-400 text-sm">
-        <p>&copy; 2024 DATAPLUS GH. All rights reserved.</p>
-        <p class="mt-2 text-xs">Reliable Data. Fast Delivery.</p>
+    <footer class="bg-slate-100/80 dark:bg-slate-900/90 backdrop-blur border-t border-blue-200/60 dark:border-blue-800/30 py-16" style="box-shadow: 0 -4px 32px rgba(59,130,246,0.06)">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
+                <!-- Brand + Contact -->
+                <div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <div id="footer-logo-box" class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+                            <i id="footer-logo-icon" data-lucide="zap" class="text-white w-4 h-4"></i>
+                        </div>
+                        <span class="font-extrabold text-xl text-slate-900 dark:text-white">SwiftData GH</span>
+                    </div>
+                    <p class="text-slate-500 dark:text-slate-400 leading-relaxed max-w-sm mb-6 font-medium">
+                        Providing Ghana with the most reliable, automated data bundle delivery system. High speeds, low prices, zero stress.
+                    </p>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 text-sm font-bold text-slate-700 dark:text-slate-300">
+                            <i data-lucide="mail" class="w-4 h-4 text-blue-600 dark:text-blue-400"></i>
+                            kaysamgrowth@gmail.com
+                        </div>
+                        <div class="flex items-center gap-3 text-sm font-bold text-slate-700 dark:text-slate-300">
+                            <i data-lucide="phone" class="w-4 h-4 text-blue-600 dark:text-blue-400"></i>
+                            0532942413 / 0501757855
+                        </div>
+                        <div class="flex items-center gap-3 text-sm font-bold text-slate-700 dark:text-slate-300">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-blue-600 dark:text-blue-400"></i>
+                            Koforidua, Near the SIC Building.
+                        </div>
+                    </div>
+                    <!-- POWERED BY KAYSAM GROWTH -->
+                    <div class="mt-6 inline-block">
+                        <span class="text-blue-600 dark:text-blue-400 font-extrabold text-sm tracking-widest uppercase">⚡ Powered by Kaysam Growth</span>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="font-extrabold text-sm uppercase tracking-widest text-slate-900 dark:text-white mb-6">Quick Links</h4>
+                    <ul class="space-y-3">
+                        <li>
+                            <button onclick="router.navigate('home'); window.scrollTo(0,0);" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-sm hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-700 transition-all shadow-sm w-full">
+                                <i data-lucide="home" class="w-4 h-4 flex-shrink-0"></i> Home
+                            </button>
+                        </li>
+                        <li>
+                            <button onclick="router.navigate('track')" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-sm hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-700 transition-all shadow-sm w-full">
+                                <i data-lucide="package-search" class="w-4 h-4 flex-shrink-0"></i> Track Order
+                            </button>
+                        </li>
+                        <li>
+                            <a href="https://whatsapp.com/channel/0029VbBxGK6KrWR2RGMUlm1Z" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-sm hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-600 dark:hover:text-green-400 hover:border-green-300 dark:hover:border-green-700 transition-all shadow-sm w-full">
+                                <i data-lucide="message-circle" class="w-4 h-4 flex-shrink-0"></i> Join WhatsApp Channel
+                            </a>
+                        </li>
+                        <li>
+                            <button onclick="router.navigate('home'); setTimeout(()=>window.scrollTo({top: document.body.scrollHeight, behavior:'smooth'}),100)" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-sm hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-700 transition-all shadow-sm w-full">
+                                <i data-lucide="help-circle" class="w-4 h-4 flex-shrink-0"></i> FAQ
+                            </button>
+                        </li>
+                        <li>
+                            <a href="https://wa.me/233532942413" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-sm hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-600 dark:hover:text-green-400 hover:border-green-300 dark:hover:border-green-700 transition-all shadow-sm w-full">
+                                <i data-lucide="headphones" class="w-4 h-4 flex-shrink-0"></i> Contact Support
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="pt-8 border-t border-slate-200 dark:border-slate-700 flex flex-col md:flex-row justify-between items-center gap-6">
+                <p class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">©<span id="year"></span> SwiftData GH. All rights reserved.</p>
+                <div class="flex items-center gap-8">
+                    <button onclick="router.navigate('login')" class="text-xs font-black text-slate-300 dark:text-slate-700 hover:text-red-500 transition-colors uppercase tracking-widest">@2026 - KAYSAM GROWTH</button>
+                </div>
+            </div>
+        </div>
     </footer>
 
-    <!-- Toast Notification Container -->
-    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-3"></div>
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-6">
+        <div class="bg-white dark:bg-slate-900 rounded-[3rem] max-w-md w-full p-10 text-center fade-in shadow-2xl">
+            <div id="success-icon-box" class="w-24 h-24 bg-green-50 dark:bg-green-900/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-8">
+                <i data-lucide="check" class="w-12 h-12"></i>
+            </div>
+            <h3 id="success-title" class="text-3xl font-extrabold text-slate-900 dark:text-white mb-3">Payment Successful!</h3>
+            <p class="text-slate-500 dark:text-slate-400 font-medium mb-8">Sending bundle to <span id="success-num" class="text-blue-600 font-bold"></span></p>
+            <div id="success-instruction" class="mb-10 p-6 bg-slate-50 dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-slate-700"></div>
+            <button onclick="closeSuccessModal()" class="w-full py-5 bg-slate-900 dark:bg-blue-600 text-white rounded-2xl font-extrabold hover:bg-slate-800 transition-all">Continue Shopping</button>
+        </div>
+    </div>
 
-    <!-- ==========================================
-         APPLICATION LOGIC
-    =========================================== -->
-    <script>
-        // --- CONFIGURATION ---
-        const CONFIG = {
-            firebase: {
-                apiKey: "AIzaSyCs7lN4itvWZPichtFLdEE4swNQHSX_j1M", // Replace if needed
-                authDomain: "dataplus-a93c7.firebaseapp.com",
-                projectId: "dataplus-a93c7",
-                storageBucket: "dataplus-a93c7.firebasestorage.app",
-                messagingSenderId: "1040979049946",
-                appId: "1:1040979049946:web:d5d7957a6c209f56dd94e3"
-            },
-            paystackKey: "pk_live_6d3e8e97e00804864eb1cb0607fe40d32b5af8a9", // Replace with "pk_live_..." for production
-            agentFee: 10,
-            currency: "GHS"
-        };
+    <!-- Admin Product Modal -->
+    <div id="product-modal" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-6">
+        <div class="bg-white dark:bg-slate-900 rounded-[2rem] max-w-lg w-full p-8 shadow-2xl">
+            <h3 id="modal-title" class="text-2xl font-extrabold mb-6 dark:text-white">Manage Product</h3>
+            <form onsubmit="handleProductSave(event)" class="space-y-4">
+                <input type="hidden" id="prod-id">
+                <div class="grid grid-cols-2 gap-4">
+                    <select id="prod-net" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl font-bold border border-slate-200 dark:border-slate-700 dark:text-white">
+                        <option value="MTN">MTN</option>
+                        <option value="Telecel">Telecel</option>
+                        <option value="AT">AT</option>
+                    </select>
+                    <input id="prod-type" placeholder="Type (SME/CG)" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl font-bold border border-slate-200 dark:border-slate-700 dark:text-white">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <input id="prod-size" placeholder="Size (e.g 1GB)" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl font-bold border border-slate-200 dark:border-slate-700 dark:text-white">
+                    <input id="prod-price" type="number" step="0.01" placeholder="Price" required class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl font-bold border border-slate-200 dark:border-slate-700 dark:text-white">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <input id="prod-rank" type="number" placeholder="Sort Rank (1=Top)" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl font-bold border border-slate-200 dark:border-slate-700 dark:text-white">
+                </div>
+                <div class="flex gap-3 mt-6">
+                    <button type="button" onclick="closeProductModal()" class="flex-1 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl font-bold">Cancel</button>
+                    <button type="submit" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        // --- FIREBASE INIT ---
-        if (!firebase.apps.length) {
-            firebase.initializeApp(CONFIG.firebase);
-        }
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+    <!-- Admin Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-6">
+        <div class="bg-white dark:bg-slate-900 rounded-[2rem] max-w-2xl w-full p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <h3 class="text-2xl font-extrabold mb-6 dark:text-white">Store Settings</h3>
+            <form onsubmit="handleSettingsSave(event)" class="space-y-6">
 
-        // --- STATE MANAGEMENT ---
-        const state = {
-            user: null,
-            userData: null, // Stores Firestore user profile
-            products: [],
-            currentView: 'home'
-        };
-
-        // --- APP CONTROLLER ---
-        const app = {
-            init: async () => {
-                // Check URL for Agent Referral
-                const params = new URLSearchParams(window.location.search);
-                const agentRef = params.get("ref");
-                if (agentRef) localStorage.setItem("dataplus_agent_ref", agentRef);
-
-                // Auth Listener
-                auth.onAuthStateChanged(async (user) => {
-                    state.user = user;
-                    if (user) {
-                        // Fetch extended profile
-                        const doc = await db.collection("users").doc(user.uid).get();
-                        state.userData = doc.exists ? doc.data() : null;
-                    } else {
-                        state.userData = null;
-                    }
-                    app.renderNav();
-                    // If on a protected route and logged out, go home
-                    if (!user && (state.currentView === 'dashboard' || state.currentView === 'admin')) {
-                        app.router('home');
-                    } else if (state.currentView === 'loading') {
-                        app.router('home');
-                    }
-                });
-                
-                // Load Products
-                await app.fetchProducts();
-                app.router('home'); // Initial Load
-            },
-
-            fetchProducts: async () => {
-                const snap = await db.collection("products").where("active", "==", true).get();
-                state.products = snap.docs.map(d => ({id: d.id, ...d.data()}));
-            },
-
-            // --- ROUTER ---
-            router: (viewName) => {
-                state.currentView = viewName;
-                const root = document.getElementById('app-root');
-                window.scrollTo(0,0);
-                
-                switch(viewName) {
-                    case 'home':
-                        root.innerHTML = views.home();
-                        break;
-                    case 'agent-landing':
-                        root.innerHTML = views.agentLanding();
-                        break;
-                    case 'login':
-                        root.innerHTML = views.login();
-                        break;
-                    case 'register':
-                        root.innerHTML = views.register();
-                        break;
-                    case 'dashboard':
-                        if(!state.user) { app.router('login'); return; }
-                        root.innerHTML = `<div class="text-center mt-10"><i class="fa-solid fa-spinner fa-spin text-2xl"></i> Loading Dashboard...</div>`;
-                        views.renderDashboard(root);
-                        break;
-                    case 'admin':
-                        if(!state.userData?.isAdmin) { 
-                            showToast("Access Denied", "error"); 
-                            app.router('home'); 
-                            return; 
-                        }
-                        views.renderAdmin(root);
-                        break;
-                    default:
-                        root.innerHTML = views.home();
-                }
-            },
-
-            renderNav: () => {
-                const container = document.getElementById('auth-buttons');
-                if (state.user) {
-                    let dashboardLink = "app.router('dashboard')";
-                    let dashboardText = "Dashboard";
-                    
-                    if (state.userData?.isAdmin) {
-                        dashboardLink = "app.router('admin')";
-                        dashboardText = "Admin Panel";
-                    }
-
-                    container.innerHTML = `
-                        <button onclick="${dashboardLink}" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full font-semibold transition text-sm shadow-lg shadow-blue-500/30">
-                            ${dashboardText}
+                <!-- Brand Logo -->
+                <div class="space-y-4">
+                    <h4 class="font-bold text-lg dark:text-white flex items-center gap-2">
+                        <i data-lucide="image" class="w-5 h-5 text-blue-600"></i>
+                        Brand Logo
+                    </h4>
+                    <p class="text-xs text-slate-400">Paste a direct image URL (e.g. from Imgur, Cloudinary, or Google Drive). Leave blank to use the default ⚡ icon.</p>
+                    <div class="flex gap-3 items-start">
+                        <div class="flex-1">
+                            <input id="settings-logo-url" type="url" placeholder="https://i.imgur.com/yourlogo.png" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl font-mono text-sm border border-slate-200 dark:border-slate-700 dark:text-white">
+                        </div>
+                        <button type="button" onclick="clearLogoUrl()" class="px-4 py-3 bg-red-50 dark:bg-red-900/20 text-red-500 rounded-xl font-bold text-xs hover:bg-red-100 transition whitespace-nowrap border border-red-200 dark:border-red-800">
+                            Clear Logo
                         </button>
-                        <button onclick="auth.signOut()" class="text-slate-400 hover:text-white transition"><i class="fa-solid fa-right-from-bracket"></i></button>
-                    `;
-                } else {
-                    container.innerHTML = `
-                        <button onclick="app.router('login')" class="text-slate-300 hover:text-white font-medium">Login</button>
-                        <button onclick="app.router('agent-landing')" class="bg-white text-blue-900 px-5 py-2 rounded-full font-bold hover:bg-slate-200 transition text-sm">Join</button>
-                    `;
-                }
-            }
-        };
-
-        // --- VIEWS ---
-        const views = {
-            home: () => `
-                <div class="animate-fade-in space-y-12">
-                    <!-- Hero -->
-                    <div class="text-center space-y-4 py-10">
-                        <span class="bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-blue-500/20">Fastest Delivery in Ghana</span>
-                        <h1 class="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">
-                            Buy Data Bundles <br class="hidden md:block" /> Instantly.
-                        </h1>
-                        <p class="text-slate-400 max-w-2xl mx-auto text-lg">
-                            Secure payments, instant top-up, and the best rates for MTN, Vodafone, and AT.
-                        </p>
                     </div>
-
-                    <!-- Products Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        ${state.products.length > 0 ? state.products.map(p => `
-                            <div class="glass-panel p-6 rounded-2xl hover:border-blue-500/50 transition duration-300 group relative overflow-hidden">
-                                <div class="absolute top-0 right-0 w-20 h-20 bg-blue-500/10 rounded-bl-full -mr-4 -mt-4 transition group-hover:bg-blue-500/20"></div>
-                                <h3 class="text-xl font-bold mb-1">${p.name}</h3>
-                                <div class="text-3xl font-bold text-blue-400 mb-4">GHS ${p.price}</div>
-                                <ul class="text-sm text-slate-400 mb-6 space-y-2">
-                                    <li><i class="fa-solid fa-check text-green-500 mr-2"></i> No Expiry</li>
-                                    <li><i class="fa-solid fa-bolt text-yellow-500 mr-2"></i> Instant Delivery</li>
-                                </ul>
-                                <button onclick="actions.initiatePurchase('${p.id}', '${p.name}', ${p.price})" class="w-full bg-slate-800 hover:bg-blue-600 text-white font-bold py-3 rounded-xl transition border border-slate-700 hover:border-blue-500">
-                                    Buy Now
-                                </button>
-                            </div>
-                        `).join('') : '<div class="col-span-3 text-center text-slate-500 py-10">Loading packages...</div>'}
-                    </div>
-
-                    <!-- Trust Indicators -->
-                    <div class="flex justify-center gap-8 opacity-50 grayscale hover:grayscale-0 transition duration-500 py-8">
-                        <i class="fa-brands fa-cc-visa text-4xl"></i>
-                        <i class="fa-brands fa-cc-mastercard text-4xl"></i>
-                        <i class="fa-solid fa-mobile-screen-button text-4xl"></i>
+                    <!-- Preview -->
+                    <div id="logo-preview-wrap" class="hidden items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                        <div class="w-10 h-10 rounded-xl overflow-hidden bg-blue-600 flex items-center justify-center flex-shrink-0">
+                            <img id="logo-preview-img" src="" alt="Logo preview" class="w-full h-full object-contain">
+                        </div>
+                        <span class="text-xs text-slate-400 font-medium">Logo preview — this will appear in the header & footer</span>
                     </div>
                 </div>
-            `,
 
-            agentLanding: () => `
-                <div class="max-w-4xl mx-auto text-center animate-fade-in py-10">
-                    <h2 class="text-4xl font-bold mb-6">Partner with DATAPLUS</h2>
-                    <p class="text-xl text-slate-400 mb-10">Earn up to <span class="text-green-400 font-bold">40% profit</span> on every data bundle you sell.</p>
-                    
-                    <div class="grid md:grid-cols-3 gap-6 mb-12 text-left">
-                        <div class="glass-panel p-6 rounded-xl">
-                            <i class="fa-solid fa-wallet text-3xl text-blue-400 mb-4"></i>
-                            <h4 class="font-bold text-lg">High Margins</h4>
-                            <p class="text-slate-400 text-sm">Set your own prices or earn standard commissions.</p>
+                <div class="space-y-4">
+                    <h4 class="font-bold text-lg dark:text-white flex items-center gap-2">
+                        <i data-lucide="credit-card" class="w-5 h-5 text-blue-600"></i>
+                        Paystack Configuration
+                    </h4>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Public Key</label>
+                            <input id="settings-paystack-public" type="text" placeholder="pk_test_xxxxxxxxxxxxx" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl font-mono text-sm border border-slate-200 dark:border-slate-700 dark:text-white">
+                            <p class="text-xs text-slate-400 mt-1 ml-1">Get from Paystack Dashboard → Settings → API Keys</p>
                         </div>
-                        <div class="glass-panel p-6 rounded-xl">
-                            <i class="fa-solid fa-bolt text-3xl text-yellow-400 mb-4"></i>
-                            <h4 class="font-bold text-lg">Instant Payouts</h4>
-                            <p class="text-slate-400 text-sm">Withdraw your earnings to Mobile Money anytime.</p>
+                        <div>
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Secret Key</label>
+                            <input id="settings-paystack-secret" type="password" placeholder="sk_test_xxxxxxxxxxxxx" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl font-mono text-sm border border-slate-200 dark:border-slate-700 dark:text-white">
+                            <p class="text-xs text-slate-400 mt-1 ml-1">Keep this secure! Never share publicly.</p>
                         </div>
-                        <div class="glass-panel p-6 rounded-xl">
-                            <i class="fa-solid fa-chart-line text-3xl text-green-400 mb-4"></i>
-                            <h4 class="font-bold text-lg">Track Sales</h4>
-                            <p class="text-slate-400 text-sm">Real-time dashboard to monitor your performance.</p>
-                        </div>
-                    </div>
-
-                    <div class="glass-panel p-8 rounded-2xl max-w-md mx-auto border-blue-500/30 shadow-[0_0_40px_rgba(59,130,246,0.1)]">
-                        <h3 class="text-2xl font-bold mb-2">Join the Team</h3>
-                        <p class="text-slate-400 mb-6">One-time registration fee: <b>GHS ${CONFIG.agentFee}</b></p>
-                        
-                        <div class="space-y-4">
-                            <input type="email" id="signup-email" placeholder="Email Address" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:border-blue-500 outline-none transition">
-                            <input type="password" id="signup-pass" placeholder="Create Password" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:border-blue-500 outline-none transition">
-                            <input type="text" id="signup-name" placeholder="Full Name" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:border-blue-500 outline-none transition">
-                            
-                            <button onclick="actions.signupAgent()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3 rounded-lg shadow-lg transition transform hover:scale-[1.02]">
-                                Pay GHS ${CONFIG.agentFee} & Join
-                            </button>
-                        </div>
-                        <p class="mt-4 text-sm text-slate-500">Already an agent? <a href="#" onclick="app.router('login')" class="text-blue-400 hover:underline">Login here</a></p>
                     </div>
                 </div>
-            `,
 
-            login: () => `
-                <div class="max-w-md mx-auto mt-10 animate-fade-in">
-                    <div class="glass-panel p-8 rounded-2xl">
-                        <h2 class="text-2xl font-bold mb-6 text-center">Welcome Back</h2>
-                        <div class="space-y-4">
-                            <input type="email" id="login-email" placeholder="Email" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:border-blue-500 outline-none">
-                            <input type="password" id="login-pass" placeholder="Password" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:border-blue-500 outline-none">
-                            <button onclick="actions.login()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition">Login</button>
-                        </div>
-                        <p class="mt-6 text-center text-sm text-slate-500">
-                            Don't have an account? <button onclick="app.router('agent-landing')" class="text-blue-400 hover:underline">Register</button>
-                        </p>
+                <div class="space-y-4">
+                    <h4 class="font-bold text-lg dark:text-white flex items-center gap-2">
+                        <i data-lucide="store" class="w-5 h-5 text-blue-600"></i>
+                        Store Status
+                    </h4>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input id="settings-store-open" type="checkbox" class="w-5 h-5 rounded text-blue-600">
+                        <span class="font-bold dark:text-white">Store is Open</span>
+                    </label>
+                    <p class="text-xs text-slate-400 ml-8">When disabled, customers cannot place orders</p>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="font-bold text-lg dark:text-white flex items-center gap-2">
+                        <i data-lucide="megaphone" class="w-5 h-5 text-blue-600"></i>
+                        Live Announcement
+                    </h4>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input id="settings-announcement-active" type="checkbox" class="w-5 h-5 rounded text-blue-600">
+                        <span class="font-bold dark:text-white">Show Announcement Banner</span>
+                    </label>
+                    <textarea id="settings-announcement-text" rows="3" placeholder="Enter announcement message (e.g., 'Flash Sale: 20% off all MTN bundles!')" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl font-medium border border-slate-200 dark:border-slate-700 dark:text-white resize-none"></textarea>
+                </div>
+
+                <!-- Popup Notification Editor -->
+                <div class="space-y-4">
+                    <h4 class="font-bold text-lg dark:text-white flex items-center gap-2">
+                        <i data-lucide="bell" class="w-5 h-5 text-blue-600"></i>
+                        Welcome Popup Notification
+                    </h4>
+                    <p class="text-xs text-slate-400">This is the popup shown to every visitor when they first open the site.</p>
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Popup Title</label>
+                        <input id="settings-popup-title" type="text" placeholder="Welcome to SwiftData GH 👋" class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl font-bold border border-slate-200 dark:border-slate-700 dark:text-white mt-1">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Popup Message</label>
+                        <textarea id="settings-popup-body" rows="4" placeholder="🛎 Don't forget to Tap on the WhatsApp icon below to follow our channel..." class="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl font-medium border border-slate-200 dark:border-slate-700 dark:text-white resize-none mt-1"></textarea>
                     </div>
                 </div>
-            `,
 
-            renderDashboard: async (container) => {
-                if(!state.userData) return;
-                
-                // Get fresh data
-                const userDoc = await db.collection("users").doc(state.user.uid).get();
-                const userData = userDoc.data();
-                
-                // Get orders referred by this agent
-                const salesSnap = await db.collection("orders").where("agentId", "==", state.user.uid).get();
-                const salesCount = salesSnap.size;
+                <div class="flex gap-3 mt-8 pt-6 border-t border-slate-200 dark:border-slate-700">
+                    <button type="button" onclick="closeSettingsModal()" class="flex-1 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl font-bold">Cancel</button>
+                    <button type="submit" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold">Save Settings</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-                container.innerHTML = `
-                    <div class="animate-fade-in space-y-6">
-                        <!-- Header -->
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                            <div>
-                                <h2 class="text-3xl font-bold">Dashboard</h2>
-                                <p class="text-slate-400">Welcome back, ${userData.name}</p>
-                            </div>
-                            <div class="bg-blue-900/30 border border-blue-500/30 px-4 py-2 rounded-lg flex items-center gap-3">
-                                <span class="text-sm text-blue-200">Referral ID:</span>
-                                <code class="font-mono font-bold text-white bg-black/20 px-2 py-1 rounded">${userData.agentCode}</code>
-                                <button onclick="actions.copyLink('${userData.agentCode}')" class="text-blue-400 hover:text-white"><i class="fa-regular fa-copy"></i></button>
-                            </div>
-                        </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp, getDoc, setDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-                        <!-- Stats -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div class="glass-panel p-6 rounded-xl border-l-4 border-green-500">
-                                <p class="text-slate-400 text-sm">Wallet Balance</p>
-                                <h3 class="text-3xl font-bold text-white">GHS ${userData.balance?.toFixed(2) || '0.00'}</h3>
-                                <button onclick="actions.requestWithdrawal(${userData.balance})" class="mt-4 text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded text-white border border-slate-600 transition">Withdraw Funds</button>
-                            </div>
-                            <div class="glass-panel p-6 rounded-xl border-l-4 border-blue-500">
-                                <p class="text-slate-400 text-sm">Total Sales</p>
-                                <h3 class="text-3xl font-bold text-white">${salesCount}</h3>
-                            </div>
-                            <div class="glass-panel p-6 rounded-xl border-l-4 border-purple-500">
-                                <p class="text-slate-400 text-sm">Commission Rate</p>
-                                <h3 class="text-3xl font-bold text-white">${userData.commission || 10}%</h3>
-                            </div>
-                        </div>
+        const ADMIN_PIN = "0202148015@Gh";
 
-                        <!-- Tools -->
-                        <div class="grid md:grid-cols-2 gap-6">
-                            <div class="glass-panel p-6 rounded-xl">
-                                <h4 class="font-bold text-lg mb-4">Generate Link</h4>
-                                <p class="text-sm text-slate-400 mb-4">Send this link to customers. You earn commission automatically when they buy.</p>
-                                <div class="flex gap-2">
-                                    <input type="text" readonly value="${window.location.origin}?ref=${userData.agentCode}" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-300 text-sm">
-                                    <button onclick="actions.copyLink('${userData.agentCode}')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 rounded transition">Copy</button>
-                                </div>
-                            </div>
+        // ── CHANGE 1: Use a GLOBAL (top-level) collection for orders ──
+        // Orders are stored at root level so ALL instances see ALL orders in admin
+        const GLOBAL_ORDERS_COLLECTION = 'swiftdata_global_orders';
 
-                            <div class="glass-panel p-6 rounded-xl">
-                                <h4 class="font-bold text-lg mb-4">Recent Transactions</h4>
-                                <div class="text-sm text-slate-400">
-                                    ${salesCount === 0 ? 'No sales yet. Start sharing your link!' : 'Check "My Orders" tab (Coming Soon)'}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            },
+        // Products & config still use the per-app namespace
+        const appId = 'swiftdata-main-app';
 
-            renderAdmin: async (container) => {
-                // Fetch Data needed for admin
-                const products = state.products;
-                const usersSnap = await db.collection("users").where("role", "==", "agent").get();
-                const agentsCount = usersSnap.size;
-                const ordersSnap = await db.collection("orders").orderBy("createdAt", "desc").limit(20).get();
-                const withdrawalSnap = await db.collection("withdrawals").where("status", "==", "pending").get();
+        // ── CHANGE 2: Fee rate (2.5%) ──
+        const FEE_RATE = 0.025;
 
-                container.innerHTML = `
-                    <div class="animate-fade-in space-y-8">
-                        <div class="flex justify-between items-center">
-                            <h2 class="text-3xl font-bold text-white"><i class="fa-solid fa-shield-halved text-blue-500 mr-2"></i> Admin Panel</h2>
-                            <button onclick="app.router('home')" class="text-slate-400 hover:text-white">Exit Admin</button>
-                        </div>
-
-                        <!-- KPI -->
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div class="bg-slate-800 p-4 rounded-lg">
-                                <div class="text-slate-400 text-xs uppercase">Agents</div>
-                                <div class="text-2xl font-bold">${agentsCount}</div>
-                            </div>
-                             <div class="bg-slate-800 p-4 rounded-lg">
-                                <div class="text-slate-400 text-xs uppercase">Products</div>
-                                <div class="text-2xl font-bold">${products.length}</div>
-                            </div>
-                            <div class="bg-slate-800 p-4 rounded-lg">
-                                <div class="text-slate-400 text-xs uppercase">Pending Withdrawals</div>
-                                <div class="text-2xl font-bold text-yellow-400">${withdrawalSnap.size}</div>
-                            </div>
-                        </div>
-
-                        <div class="grid lg:grid-cols-2 gap-8">
-                            <!-- Product Management -->
-                            <div class="glass-panel p-6 rounded-xl">
-                                <h3 class="font-bold text-xl mb-4 border-b border-slate-700 pb-2">Manage Products</h3>
-                                <form onsubmit="event.preventDefault(); actions.adminAddProduct()" class="flex gap-2 mb-6">
-                                    <input id="new-prod-name" placeholder="Name (e.g. 5GB MTN)" class="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm w-full">
-                                    <input id="new-prod-price" type="number" step="0.01" placeholder="Price" class="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm w-24">
-                                    <button class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded"><i class="fa-solid fa-plus"></i></button>
-                                </form>
-                                <div class="space-y-2 max-h-60 overflow-y-auto pr-2">
-                                    ${products.map(p => `
-                                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded">
-                                            <span>${p.name}</span>
-                                            <div class="flex items-center gap-3">
-                                                <span class="font-mono text-blue-400">GHS ${p.price}</span>
-                                                <button onclick="actions.adminDeleteProduct('${p.id}')" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>
-                                            </div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-
-                            <!-- Withdrawal Requests -->
-                            <div class="glass-panel p-6 rounded-xl">
-                                <h3 class="font-bold text-xl mb-4 border-b border-slate-700 pb-2">Withdrawal Requests</h3>
-                                ${withdrawalSnap.size === 0 ? '<p class="text-slate-500 italic">No pending requests.</p>' : 
-                                    `<div class="space-y-3">
-                                        ${withdrawalSnap.docs.map(doc => {
-                                            const w = doc.data();
-                                            return `
-                                            <div class="bg-slate-800 p-3 rounded flex justify-between items-center">
-                                                <div>
-                                                    <div class="font-bold">GHS ${w.amount}</div>
-                                                    <div class="text-xs text-slate-400">Agent: ${w.agentId.substring(0,5)}...</div>
-                                                </div>
-                                                <button onclick="actions.adminApproveWithdrawal('${doc.id}', '${w.agentId}', ${w.amount})" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-1 rounded">Mark Paid</button>
-                                            </div>
-                                            `
-                                        }).join('')}
-                                    </div>`
-                                }
-                            </div>
-                        </div>
-
-                        <!-- Recent Orders -->
-                        <div class="glass-panel p-6 rounded-xl">
-                            <h3 class="font-bold text-xl mb-4">Recent Orders</h3>
-                            <table class="w-full text-left text-sm text-slate-400">
-                                <thead class="border-b border-slate-700 text-slate-200">
-                                    <tr>
-                                        <th class="pb-2">Product</th>
-                                        <th class="pb-2">Price</th>
-                                        <th class="pb-2">Status</th>
-                                        <th class="pb-2">Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${ordersSnap.docs.map(doc => {
-                                        const o = doc.data();
-                                        return `
-                                            <tr class="border-b border-slate-800/50">
-                                                <td class="py-2 text-white">${o.product}</td>
-                                                <td class="py-2">GHS ${o.price}</td>
-                                                <td class="py-2"><span class="bg-green-500/10 text-green-500 px-2 rounded text-xs">PAID</span></td>
-                                                <td class="py-2">${o.createdAt ? new Date(o.createdAt.seconds * 1000).toLocaleDateString() : '-'}</td>
-                                            </tr>
-                                        `
-                                    }).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                `;
-            }
+        const firebaseConfig = {
+            apiKey: "AIzaSyBVTQqx3fpkpUeCRO5B4N9Hb8dDxJGDIsg",
+            authDomain: "swiftdata-32d80.firebaseapp.com",
+            projectId: "swiftdata-32d80",
+            storageBucket: "swiftdata-32d80.firebasestorage.app",
+            messagingSenderId: "112123396026",
+            appId: "1:112123396026:web:8673fe7a2e5b77e2156783",
+            measurementId: "G-GPS00TXFLD"
         };
 
-        // --- ACTIONS & LOGIC ---
-        const actions = {
-            login: async () => {
-                const email = document.getElementById('login-email').value;
-                const pass = document.getElementById('login-pass').value;
-                try {
-                    await auth.signInWithEmailAndPassword(email, pass);
-                    showToast("Login successful!", "success");
-                    // Router handled by auth listener
-                } catch (e) {
-                    showToast(e.message, "error");
-                }
-            },
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-            signupAgent: () => {
-                const email = document.getElementById('signup-email').value;
-                const pass = document.getElementById('signup-pass').value;
-                const name = document.getElementById('signup-name').value;
-
-                if(!email || !pass || !name) return showToast("Please fill all fields", "error");
-
-                // Trigger Paystack
-                const handler = PaystackPop.setup({
-                    key: CONFIG.paystackKey,
-                    email: email,
-                    amount: CONFIG.agentFee * 100, // In pesewas
-                    currency: CONFIG.currency,
-                    callback: async (response) => {
-                        showToast("Payment successful. Creating account...", "success");
-                        try {
-                            const cred = await auth.createUserWithEmailAndPassword(email, pass);
-                            // Create Agent Profile
-                            await db.collection("users").doc(cred.user.uid).set({
-                                name: name,
-                                email: email,
-                                role: 'agent',
-                                agentCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
-                                balance: 0,
-                                commission: 10, // Default 10% or fixed amount logic
-                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                            });
-                            app.router('dashboard');
-                        } catch (e) {
-                            showToast("Account creation failed: " + e.message, "error");
-                        }
-                    },
-                    onClose: () => showToast("Payment cancelled", "error")
-                });
-                handler.openIframe();
-            },
-
-            initiatePurchase: (prodId, prodName, price) => {
-                const email = prompt("Enter email for receipt:"); // In a real app, use a nice modal
-                if(!email) return;
-
-                const refCode = localStorage.getItem("dataplus_agent_ref");
-
-                const handler = PaystackPop.setup({
-                    key: CONFIG.paystackKey,
-                    email: email,
-                    amount: price * 100,
-                    currency: CONFIG.currency,
-                    metadata: {
-                        custom_fields: [
-                            { display_name: "Product", variable_name: "product", value: prodName }
-                        ]
-                    },
-                    callback: async (response) => {
-                        showToast("Payment Successful! Processing...", "success");
-                        
-                        // Record Order
-                        const orderData = {
-                            product: prodName,
-                            price: price,
-                            status: "PAID",
-                            customerEmail: email,
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                        };
-
-                        // If Referred, add agent info
-                        if (refCode) {
-                            // Find agent by code
-                            const agentSnap = await db.collection("users").where("agentCode", "==", refCode).limit(1).get();
-                            if (!agentSnap.empty) {
-                                const agentDoc = agentSnap.docs[0];
-                                orderData.agentId = agentDoc.id;
-                                
-                                // Calculate Commission (Simple 10% logic for demo)
-                                const commission = price * 0.10; 
-                                
-                                // Update Agent Balance (Client side is insecure for real apps, use Cloud Functions for production)
-                                db.collection("users").doc(agentDoc.id).update({
-                                    balance: firebase.firestore.FieldValue.increment(commission)
-                                });
-                            }
-                        }
-
-                        await db.collection("orders").add(orderData);
-                        showToast("Order placed successfully!", "success");
-                    }
-                });
-                handler.openIframe();
-            },
-
-            copyLink: (code) => {
-                const url = `${window.location.origin}?ref=${code}`;
-                navigator.clipboard.writeText(url).then(() => {
-                    showToast("Link copied to clipboard!", "success");
-                });
-            },
-
-            requestWithdrawal: async (currentBalance) => {
-                if(currentBalance < 10) return showToast("Minimum withdrawal is GHS 10", "error");
-                
-                const amount = parseFloat(prompt("Enter amount to withdraw:"));
-                if(!amount || amount > currentBalance) return showToast("Invalid amount", "error");
-
-                try {
-                    // Deduct balance immediately (Optimistic UI)
-                    await db.collection("users").doc(state.user.uid).update({
-                        balance: firebase.firestore.FieldValue.increment(-amount)
-                    });
-
-                    await db.collection("withdrawals").add({
-                        agentId: state.user.uid,
-                        amount: amount,
-                        status: "pending",
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    
-                    showToast("Withdrawal requested.", "success");
-                    app.router('dashboard'); // Refresh UI
-                } catch(e) {
-                    showToast("Error: " + e.message, "error");
-                }
-            },
-
-            // --- ADMIN ACTIONS ---
-            adminAddProduct: async () => {
-                const name = document.getElementById("new-prod-name").value;
-                const price = parseFloat(document.getElementById("new-prod-price").value);
-                if(!name || !price) return;
-
-                await db.collection("products").add({
-                    name, price, active: true
-                });
-                showToast("Product added", "success");
-                app.fetchProducts().then(() => views.renderAdmin(document.getElementById('app-root')));
-            },
-
-            adminDeleteProduct: async (id) => {
-                if(confirm("Delete this product?")) {
-                    await db.collection("products").doc(id).delete();
-                    showToast("Product deleted", "success");
-                    app.fetchProducts().then(() => views.renderAdmin(document.getElementById('app-root')));
-                }
-            },
-
-            adminApproveWithdrawal: async (docId, agentId, amount) => {
-                if(confirm(`Mark GHS ${amount} as PAID to agent?`)) {
-                    await db.collection("withdrawals").doc(docId).update({
-                        status: "paid",
-                        processedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    showToast("Withdrawal marked as paid", "success");
-                    views.renderAdmin(document.getElementById('app-root'));
-                }
-            }
+        // Logos
+        const NET_LOGOS = {
+            'MTN': 'https://upload.wikimedia.org/wikipedia/commons/9/93/New-mtn-logo.jpg',
+            'Telecel': 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Telecel_Group_Logo.svg/512px-Telecel_Group_Logo.svg.png',
+            'AT': 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/AirtelTigo_logo.png/640px-AirtelTigo_logo.png'
         };
 
-        // --- UTILS ---
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
-            menu.classList.toggle('flex');
+        // ── Helper — generate synthetic email from phone ──
+        // Format: customer_0501234567@swiftdata.com
+        function generateEmail(phone) {
+            const cleaned = phone.replace(/\D/g, '');
+            return `customer_${cleaned}@swiftdata.com`;
         }
 
-        function showToast(message, type = "info") {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            
-            const colors = {
-                success: 'bg-green-600',
-                error: 'bg-red-600',
-                info: 'bg-blue-600'
+        // ── Helper — generate memorable short order reference ──
+        // Format: SdG-001 through SdG-999, then SdG-A01 etc. for overflow
+        function generateOrderRef() {
+            // Use timestamp to create a memorable 3-digit-like code
+            const now = Date.now();
+            // Take last 4 digits of timestamp, mod 900 + 100 → 100–999
+            const num = ((now % 900) + 100);
+            // Add a random single letter prefix for extra uniqueness when needed
+            const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+            const letter = letters.charAt(Math.floor(Math.random() * letters.length));
+            // 70% chance plain number format, 30% chance letter+number (avoids all being same)
+            const useLetterPrefix = (now % 10) >= 7;
+            const code = useLetterPrefix ? `${letter}${String(num).slice(1)}` : String(num).padStart(3, '0');
+            return `SdG-${code}`;
+        }
+
+        // ── CHANGE 2: Compute totals with fee ──
+        function computeTotal(basePrice) {
+            const price = parseFloat(basePrice);
+            const fee = price * FEE_RATE;
+            const total = price + fee;
+            return { price, fee, total };
+        }
+
+        let state = {
+            user: null,
+            view: 'home',
+            isAdmin: false,
+            adminTab: 'orders',
+            notificationClosed: false,
+            selectedNetwork: 'MTN',
+            selectedBundle: null,
+            paymentMethod: 'paystack',
+            recipientPhone: '',
+            recipientPhoneConfirm: '',
+            orders: [],
+            products: [],
+            settings: {
+                paystackPublicKey: '',
+                paystackSecretKey: '',
+                storeOpen: true,
+                logoUrl: ''
+            },
+            announcement: { text: '', active: false },
+            popup: {
+                title: 'Welcome to SwiftData GH 👋',
+                body: '🛎 Don\'t forget to Tap on the WhatsApp icon below to follow our channel and stay connected for updates on products, network issues, delivery speed, etc!📢'
+            },
+            isLoaded: false,
+            trackingPhone: '',
+            trackedOrders: [],
+            isProcessingPayment: false
+        };
+
+        // Theme Toggle
+        window.toggleTheme = () => {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                if (icon) icon.setAttribute('data-lucide', 'moon');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                if (icon) icon.setAttribute('data-lucide', 'sun');
+            }
+            if (window.lucide) window.lucide.createIcons();
+        };
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+
+        const router = {
+            navigate: (view) => {
+                state.view = view;
+                render();
+                window.scrollTo(0, 0);
+            }
+        };
+        window.router = router;
+
+        window.selectNetwork = (net) => {
+            state.selectedNetwork = net;
+            state.selectedBundle = null;
+            render();
+        };
+
+        window.selectBundle = (id) => {
+            if (state.selectedBundle?.id === id) {
+                state.selectedBundle = null;
+            } else {
+                state.selectedBundle = state.products.find(p => p.id === id);
+            }
+            render();
+            if (window.innerWidth < 768 && state.selectedBundle) {
+                setTimeout(() => window.scrollBy({ top: 200, behavior: 'smooth' }), 100);
+            }
+        };
+
+        window.updatePhone = (val, key) => {
+            let cleaned = val.replace(/\D/g, '').substring(0, 10);
+            state[key] = cleaned;
+
+            const isValidFormat = cleaned.length === 10 && cleaned.startsWith('0');
+            const phonesMatch = state.recipientPhone === state.recipientPhoneConfirm;
+
+            const btn = document.getElementById('chk-btn');
+            if (btn) {
+                // ── CHANGE 3: No email field — only validate phones ──
+                const valid = isValidFormat &&
+                              state.recipientPhone.length === 10 &&
+                              phonesMatch;
+                btn.disabled = !valid;
+                btn.classList.toggle('opacity-20', !valid);
+                btn.classList.toggle('opacity-100', valid);
+            }
+        };
+
+        window.showNotification = () => {
+            // Inject current popup content from state
+            const titleEl = document.getElementById('popup-title');
+            const bodyEl  = document.getElementById('popup-body');
+            if (titleEl) titleEl.innerText = state.popup.title  || 'Welcome to SwiftData GH 👋';
+            if (bodyEl)  bodyEl.innerText  = state.popup.body   || '🛎 Don\'t forget to Tap on the WhatsApp icon below to follow our channel!';
+            document.getElementById('notificationPopup').classList.remove('hidden');
+            document.getElementById('notificationBell').classList.add('hidden');
+        };
+
+        window.closeNotification = () => {
+            document.getElementById('notificationPopup').classList.add('hidden');
+            document.getElementById('notificationBell').classList.remove('hidden');
+        };
+
+        window.openNotification = () => {
+            const titleEl = document.getElementById('popup-title');
+            const bodyEl  = document.getElementById('popup-body');
+            if (titleEl) titleEl.innerText = state.popup.title || 'Welcome to SwiftData GH 👋';
+            if (bodyEl)  bodyEl.innerText  = state.popup.body  || '🛎 Don\'t forget to Tap on the WhatsApp icon below to follow our channel!';
+            document.getElementById('notificationPopup').classList.remove('hidden');
+            document.getElementById('notificationBell').classList.add('hidden');
+        };
+
+        window.closeSuccessModal = () => {
+            document.getElementById('success-modal').style.display = 'none';
+            state.recipientPhone = '';
+            state.recipientPhoneConfirm = '';
+            state.selectedBundle = null;
+            router.navigate('home');
+        };
+
+        window.initPayment = async () => {
+            if (!state.selectedBundle || !state.recipientPhone) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            if (!state.recipientPhone.startsWith('0') || state.recipientPhone.length !== 10) {
+                alert('Please enter a valid Ghana phone number (starts with 0, 10 digits)');
+                return;
+            }
+
+            // ── CHANGE 2: Use fee-inclusive total ──
+            const { total } = computeTotal(state.selectedBundle.price);
+
+            // ── CHANGE 3: Generate synthetic email ──
+            const syntheticEmail = generateEmail(state.recipientPhone);
+
+            if (!state.settings.paystackPublicKey) {
+                console.warn('No Paystack key configured - creating demo order');
+                await createDemoOrder();
+                return;
+            }
+
+            try {
+                state.isProcessingPayment = true;
+                render();
+
+                const paystack = new PaystackPop();
+                const amountInPesewas = Math.round(total * 100);
+                const reference = 'SD_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+
+                paystack.newTransaction({
+                    key: state.settings.paystackPublicKey,
+                    email: syntheticEmail,      // ← synthetic email, invisible to customer
+                    amount: amountInPesewas,     // ← fee-inclusive
+                    currency: 'GHS',
+                    ref: reference,
+                    metadata: {
+                        network: state.selectedBundle.network,
+                        bundle_size: state.selectedBundle.size,
+                        recipient_phone: state.recipientPhone
+                    },
+                    onSuccess: async (transaction) => {
+                        console.log('Payment successful:', transaction);
+                        await createOrder(transaction.reference);
+                    },
+                    onCancel: () => {
+                        state.isProcessingPayment = false;
+                        render();
+                        alert('Payment cancelled. You can try again when ready.');
+                    }
+                });
+            } catch (err) {
+                console.error("Payment initialization error:", err);
+                state.isProcessingPayment = false;
+                alert("Failed to initialize payment. Please try again or contact support.");
+                render();
+            }
+        };
+
+        async function createOrder(paymentRef) {
+            try {
+                const { price, fee, total } = computeTotal(state.selectedBundle.price);
+                const orderRef = generateOrderRef();
+
+                await addDoc(collection(db, GLOBAL_ORDERS_COLLECTION), {
+                    orderRef: orderRef,
+                    network: state.selectedBundle.network,
+                    size: state.selectedBundle.size,
+                    basePrice: price,
+                    fee: parseFloat(fee.toFixed(4)),
+                    price: parseFloat(total.toFixed(2)),
+                    recipient: state.recipientPhone,
+                    email: generateEmail(state.recipientPhone),
+                    status: 'Pending',
+                    createdAt: serverTimestamp(),
+                    type: state.selectedBundle.type || 'Standard',
+                    paymentRef: paymentRef
+                });
+
+                state.isProcessingPayment = false;
+                document.getElementById('success-modal').style.display = 'flex';
+                document.getElementById('success-num').innerText = state.recipientPhone;
+                document.getElementById('success-instruction').innerHTML =
+                    `<div class="space-y-3">
+                        <p class="text-slate-600 dark:text-slate-300 font-medium">Payment confirmed! Your <strong>${state.selectedBundle.size} ${state.selectedBundle.network}</strong> bundle will be delivered within 5–30 minutes.</p>
+                        <div class="mt-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-4">
+                            <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Your Order Reference</p>
+                            <p class="text-2xl font-extrabold text-blue-600 tracking-widest font-mono">${orderRef}</p>
+                            <p class="text-xs text-slate-400 mt-1">Use this to track your order</p>
+                        </div>
+                    </div>`;
+
+                if (window.lucide) window.lucide.createIcons();
+            } catch (err) {
+                console.error("Order creation error:", err);
+                state.isProcessingPayment = false;
+                alert("Payment successful but order creation failed. Please contact support with reference: " + paymentRef);
+            }
+        }
+
+        async function createDemoOrder() {
+            try {
+                const { price, fee, total } = computeTotal(state.selectedBundle.price);
+                const orderRef = generateOrderRef();
+
+                await addDoc(collection(db, GLOBAL_ORDERS_COLLECTION), {
+                    orderRef: orderRef,
+                    network: state.selectedBundle.network,
+                    size: state.selectedBundle.size,
+                    basePrice: price,
+                    fee: parseFloat(fee.toFixed(4)),
+                    price: parseFloat(total.toFixed(2)),
+                    recipient: state.recipientPhone,
+                    email: generateEmail(state.recipientPhone),
+                    status: 'Pending',
+                    createdAt: serverTimestamp(),
+                    type: state.selectedBundle.type || 'Standard',
+                    paymentRef: 'DEMO_' + Date.now()
+                });
+
+                document.getElementById('success-modal').style.display = 'flex';
+                document.getElementById('success-num').innerText = state.recipientPhone;
+                document.getElementById('success-instruction').innerHTML =
+                    `<div class="space-y-3">
+                        <p class="text-slate-600 dark:text-slate-300 font-medium">Demo order created! In production, payment would be processed via Paystack.</p>
+                        <div class="mt-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-4">
+                            <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Your Order Reference</p>
+                            <p class="text-2xl font-extrabold text-blue-600 tracking-widest font-mono">${orderRef}</p>
+                            <p class="text-xs text-slate-400 mt-1">Use this to track your order</p>
+                        </div>
+                    </div>`;
+
+                if (window.lucide) window.lucide.createIcons();
+            } catch (err) {
+                console.error("Demo order error:", err);
+                alert("Failed to create demo order. Please try again.");
+            }
+        }
+
+        // Admin functions
+        window.attemptLogin = (e) => {
+            e.preventDefault();
+            const pin = document.getElementById('admin-pin').value;
+            if (pin === ADMIN_PIN) {
+                state.isAdmin = true;
+                router.navigate('admin');
+                render();
+            } else {
+                alert('Invalid PIN. Please try again.');
+            }
+        };
+
+        window.switchAdminTab = (tab) => {
+            state.adminTab = tab;
+            render();
+        };
+
+        window.updateOrderStatus = async (orderId, newStatus) => {
+            try {
+                // ── CHANGE 1: Update in global collection ──
+                await updateDoc(doc(db, GLOBAL_ORDERS_COLLECTION, orderId), {
+                    status: newStatus,
+                    updatedAt: serverTimestamp()
+                });
+            } catch (e) {
+                console.error('Failed to update order:', e);
+                alert("Failed to update order status. Please check your connection and try again.");
+            }
+        };
+
+        window.handleProductSave = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('prod-id').value;
+            const data = {
+                network: document.getElementById('prod-net').value,
+                type: document.getElementById('prod-type').value,
+                size: document.getElementById('prod-size').value,
+                price: parseFloat(document.getElementById('prod-price').value),
+                rank: parseInt(document.getElementById('prod-rank').value) || 999
             };
 
-            toast.className = `${colors[type]} text-white px-6 py-3 rounded-lg shadow-xl animate-fade-in flex items-center gap-3 min-w-[300px]`;
-            toast.innerHTML = `
-                <i class="fa-solid ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-triangle-exclamation' : 'fa-info-circle'}"></i>
-                <span>${message}</span>
-            `;
+            try {
+                if (id) {
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', id), data);
+                } else {
+                    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'products'), data);
+                }
+                closeProductModal();
+                alert('Product saved successfully!');
+            } catch (err) {
+                console.error('Failed to save product:', err);
+                alert("Error saving product. Please check your connection and try again.");
+            }
+        };
 
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 500);
-            }, 3000);
+        window.deleteProduct = async (id) => {
+            if (!confirm('Are you sure you want to delete this product? This action cannot be undone.')) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'products', id));
+                alert('Product deleted successfully!');
+            } catch (err) {
+                console.error('Failed to delete product:', err);
+                alert("Error deleting product. Please check your connection and try again.");
+            }
+        };
+
+        window.openProductModal = (id = null) => {
+            const modal = document.getElementById('product-modal');
+            modal.style.display = 'flex';
+            document.getElementById('prod-id').value = id || '';
+
+            if (id) {
+                const p = state.products.find(x => x.id === id);
+                document.getElementById('modal-title').innerText = "Edit Product";
+                document.getElementById('prod-net').value = p.network;
+                document.getElementById('prod-type').value = p.type;
+                document.getElementById('prod-size').value = p.size;
+                document.getElementById('prod-price').value = p.price;
+                document.getElementById('prod-rank').value = p.rank || '';
+            } else {
+                document.getElementById('modal-title').innerText = "New Product";
+                document.getElementById('prod-net').value = 'MTN';
+                document.getElementById('prod-type').value = '';
+                document.getElementById('prod-size').value = '';
+                document.getElementById('prod-price').value = '';
+                document.getElementById('prod-rank').value = '';
+            }
+
+            if (window.lucide) window.lucide.createIcons();
+        };
+
+        window.closeProductModal = () => { document.getElementById('product-modal').style.display = 'none'; };
+
+        window.openSettingsModal = () => {
+            const modal = document.getElementById('settings-modal');
+            modal.style.display = 'flex';
+            document.getElementById('settings-paystack-public').value = state.settings.paystackPublicKey || '';
+            document.getElementById('settings-paystack-secret').value = state.settings.paystackSecretKey || '';
+            document.getElementById('settings-store-open').checked = state.settings.storeOpen !== false;
+            document.getElementById('settings-announcement-active').checked = state.announcement.active || false;
+            document.getElementById('settings-announcement-text').value = state.announcement.text || '';
+            document.getElementById('settings-popup-title').value = state.popup.title || '';
+            document.getElementById('settings-popup-body').value  = state.popup.body  || '';
+
+            // Logo URL + preview
+            const logoUrl = state.settings.logoUrl || '';
+            document.getElementById('settings-logo-url').value = logoUrl;
+            const previewWrap = document.getElementById('logo-preview-wrap');
+            const previewImg  = document.getElementById('logo-preview-img');
+            if (logoUrl) {
+                previewImg.src = logoUrl;
+                previewWrap.classList.remove('hidden');
+                previewWrap.classList.add('flex');
+            } else {
+                previewWrap.classList.add('hidden');
+                previewWrap.classList.remove('flex');
+            }
+
+            // Live preview update as user types
+            const logoInput = document.getElementById('settings-logo-url');
+            logoInput.oninput = () => {
+                const val = logoInput.value.trim();
+                if (val) {
+                    previewImg.src = val;
+                    previewWrap.classList.remove('hidden');
+                    previewWrap.classList.add('flex');
+                } else {
+                    previewWrap.classList.add('hidden');
+                    previewWrap.classList.remove('flex');
+                }
+            };
+
+            if (window.lucide) window.lucide.createIcons();
+        };
+
+        window.closeSettingsModal = () => { document.getElementById('settings-modal').style.display = 'none'; };
+
+        window.handleSettingsSave = async (e) => {
+            e.preventDefault();
+            try {
+                const settingsData = {
+                    paystackPublicKey: document.getElementById('settings-paystack-public').value,
+                    paystackSecretKey: document.getElementById('settings-paystack-secret').value,
+                    storeOpen: document.getElementById('settings-store-open').checked,
+                    logoUrl: document.getElementById('settings-logo-url').value.trim()
+                };
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'settings_doc'), settingsData);
+
+                const announcementData = {
+                    active: document.getElementById('settings-announcement-active').checked,
+                    text: document.getElementById('settings-announcement-text').value
+                };
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'announcement_doc'), announcementData);
+
+                const popupData = {
+                    title: document.getElementById('settings-popup-title').value || 'Welcome to SwiftData GH 👋',
+                    body:  document.getElementById('settings-popup-body').value  || '🛎 Don\'t forget to Tap on the WhatsApp icon below to follow our channel!'
+                };
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'popup_doc'), popupData);
+
+                closeSettingsModal();
+                // Update logos immediately after save
+                updateNavLogo();
+                alert('Settings saved successfully!');
+            } catch (err) {
+                console.error('Failed to save settings:', err);
+                alert("Error saving settings. Please try again.");
+            }
+        };
+
+        // Tracking — supports phone number OR order reference (SDG-XXXXXXXX)
+        window.checkStatus = async () => {
+            const raw = document.getElementById('track-input').value.trim();
+
+            if (!raw) {
+                alert('Please enter your phone number or order reference');
+                return;
+            }
+
+            let myOrders = [];
+            const isRef = raw.toUpperCase().startsWith('SDG-') || raw.toLowerCase().startsWith('sdg-');
+
+            if (isRef) {
+                myOrders = state.orders.filter(o => o.orderRef && o.orderRef.toLowerCase() === raw.toLowerCase());
+            } else {
+                const phone = raw.replace(/\D/g, '');
+                if (phone.length !== 10) {
+                    alert('Please enter a valid 10-digit phone number or order reference (e.g. SdG-001)');
+                    return;
+                }
+                myOrders = state.orders.filter(o => o.recipient === phone);
+            }
+
+            const resultsDiv = document.getElementById('track-results');
+
+            if (myOrders.length === 0) {
+                resultsDiv.innerHTML = '<p class="text-red-500 font-bold mt-6 text-center">No orders found. Please check and try again.</p>';
+            } else {
+                resultsDiv.innerHTML = `
+                    <div class="mt-6 space-y-3 text-left">
+                        ${myOrders.slice(0, 5).map(o => `
+                            <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold text-sm dark:text-white">${o.size} (${o.network})</span>
+                                    <span class="${getStatusColor(o.status)} text-xs px-3 py-1 rounded-full text-white font-bold">${o.status}</span>
+                                </div>
+                                ${o.orderRef ? `<div class="text-xs font-black text-blue-600 font-mono mb-1">${o.orderRef}</div>` : ''}
+                                <div class="text-xs text-slate-400 font-medium">
+                                    ${o.createdAt ? new Date(o.createdAt.seconds * 1000).toLocaleString() : 'Just now'}
+                                </div>
+                            </div>
+                        `).join('')}
+                        ${myOrders.length > 5 ? `<p class="text-xs text-slate-400 text-center mt-2">Showing 5 most recent orders</p>` : ''}
+                    </div>
+                `;
+            }
+        };
+
+        function updateAnnouncementBanner() {
+            const banner = document.getElementById('announcement-banner');
+            const textEl = document.getElementById('announcement-text');
+            if (state.announcement.active && state.announcement.text) {
+                textEl.innerText = state.announcement.text;
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+            }
+            if (window.lucide) window.lucide.createIcons();
         }
 
-        // --- START APP ---
-        window.addEventListener('DOMContentLoaded', app.init);
+        // Update nav + footer logos whenever logoUrl changes
+        function updateNavLogo() {
+            const url = state.settings.logoUrl || '';
 
+            // Nav logo
+            const navBox  = document.getElementById('nav-logo-box');
+            const navIcon = document.getElementById('nav-logo-icon');
+            if (navBox && navIcon) {
+                if (url) {
+                    navIcon.style.display = 'none';
+                    // Remove old img if present
+                    const existing = navBox.querySelector('img.custom-logo');
+                    if (existing) existing.remove();
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.alt = 'Logo';
+                    img.className = 'custom-logo w-full h-full object-contain';
+                    navBox.appendChild(img);
+                } else {
+                    navIcon.style.display = '';
+                    const existing = navBox.querySelector('img.custom-logo');
+                    if (existing) existing.remove();
+                }
+            }
+
+            // Footer logo
+            const ftBox  = document.getElementById('footer-logo-box');
+            const ftIcon = document.getElementById('footer-logo-icon');
+            if (ftBox && ftIcon) {
+                if (url) {
+                    ftIcon.style.display = 'none';
+                    const existing = ftBox.querySelector('img.custom-logo');
+                    if (existing) existing.remove();
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.alt = 'Logo';
+                    img.className = 'custom-logo w-full h-full object-contain';
+                    ftBox.appendChild(img);
+                } else {
+                    ftIcon.style.display = '';
+                    const existing = ftBox.querySelector('img.custom-logo');
+                    if (existing) existing.remove();
+                }
+            }
+        }
+
+        // Clear logo from the settings modal preview + input
+        window.clearLogoUrl = () => {
+            const input = document.getElementById('settings-logo-url');
+            if (input) input.value = '';
+            const wrap = document.getElementById('logo-preview-wrap');
+            if (wrap) wrap.classList.add('hidden');
+        };
+
+        async function init() {
+            document.getElementById('year').innerText = new Date().getFullYear();
+
+            onAuthStateChanged(auth, async (user) => {
+                state.user = user;
+                if (user) {
+                    showNotification();
+
+                    // Settings
+                    const settingsRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'settings_doc');
+                    onSnapshot(settingsRef, (d) => {
+                        if (d.exists()) state.settings = { ...state.settings, ...d.data() };
+                        updateNavLogo();
+                        render();
+                    }, (err) => console.error('Settings listener error:', err));
+
+                    // Announcement
+                    const announcementRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'announcement_doc');
+                    onSnapshot(announcementRef, (d) => {
+                        if (d.exists()) {
+                            state.announcement = d.data();
+                            updateAnnouncementBanner();
+                        }
+                    }, (err) => console.error('Announcement listener error:', err));
+
+                    // Popup notification content
+                    const popupRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'popup_doc');
+                    onSnapshot(popupRef, (d) => {
+                        if (d.exists()) state.popup = { ...state.popup, ...d.data() };
+                    }, (err) => console.error('Popup listener error:', err));
+
+                    // Products
+                    const productsRef = collection(db, 'artifacts', appId, 'public', 'data', 'products');
+                    onSnapshot(productsRef, (snap) => {
+                        state.products = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+                                          .sort((a, b) => (a.rank || 999) - (b.rank || 999));
+                        state.isLoaded = true;
+                        render();
+                    }, (err) => {
+                        console.error('Products listener error:', err);
+                        state.isLoaded = true;
+                        render();
+                    });
+
+                    // ── CHANGE 1: Listen to GLOBAL orders collection ──
+                    const ordersRef = collection(db, GLOBAL_ORDERS_COLLECTION);
+                    onSnapshot(ordersRef, (snap) => {
+                        state.orders = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+                            .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                        render();
+                    }, (err) => console.error('Orders listener error:', err));
+                }
+            });
+
+            try {
+                await signInAnonymously(auth);
+            } catch (error) {
+                console.error('Auth error:', error);
+                alert('Failed to connect to the service. Please refresh the page.');
+            }
+
+            setTimeout(() => {
+                const icon = document.getElementById('theme-icon');
+                const isDark = document.documentElement.classList.contains('dark');
+                if (icon) {
+                    icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+                    if (window.lucide) window.lucide.createIcons();
+                }
+            }, 100);
+        }
+
+        function render() {
+            const container = document.getElementById('main-content');
+            if (!container) return;
+            if (!state.isLoaded && state.view !== 'login') return;
+
+            if (!state.settings.storeOpen && !state.isAdmin && state.view !== 'login') {
+                container.innerHTML = renderStoreClosed();
+                if (window.lucide) window.lucide.createIcons();
+                return;
+            }
+
+            switch (state.view) {
+                case 'home':     container.innerHTML = renderHome();     break;
+                case 'checkout': container.innerHTML = renderCheckout(); break;
+                case 'track':    container.innerHTML = renderTracking(); break;
+                case 'login':    container.innerHTML = renderLogin();    break;
+                case 'admin':    container.innerHTML = renderAdmin();    break;
+            }
+
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+        // ─── Render Helpers ────────────────────────────────────────────
+
+        function renderStoreClosed() {
+            return `
+                <div class="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center">
+                    <div class="w-20 h-20 bg-amber-100 dark:bg-amber-900/20 rounded-full flex items-center justify-center mb-6">
+                        <i data-lucide="lock" class="w-10 h-10 text-amber-600"></i>
+                    </div>
+                    <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white mb-4">Store Currently Closed</h1>
+                    <p class="text-slate-500 dark:text-slate-400 max-w-md">We are currently undergoing maintenance or restocking. Please check back later.</p>
+                    <button onclick="router.navigate('login')" class="mt-8 text-xs font-bold text-slate-300 dark:text-slate-700 uppercase hover:text-blue-600">Admin Login</button>
+                </div>`;
+        }
+
+        function getNetworkStyle(net, active) {
+            if (net === 'MTN') return active ? 'bg-yellow-500 border-yellow-500 text-white' : 'border-yellow-200 text-yellow-600';
+            if (net === 'Telecel') return active ? 'bg-red-600 border-red-600 text-white' : 'border-red-200 text-red-600';
+            return active ? 'bg-blue-600 border-blue-600 text-white' : 'border-blue-200 text-blue-600';
+        }
+
+        function getStatusColor(status) {
+            switch (status) {
+                case 'Pending':    return 'bg-yellow-500';
+                case 'Processing': return 'bg-blue-500';
+                case 'Delivered':  return 'bg-green-500';
+                case 'Failed':     return 'bg-red-500';
+                default:           return 'bg-slate-500';
+            }
+        }
+
+        function renderHome() {
+            const bundles = state.products.filter(p => p.network === state.selectedNetwork);
+
+            let bundlesHtml = bundles.map(b => {
+                const isSelected = state.selectedBundle?.id === b.id;
+                const cardClasses = isSelected
+                    ? 'border-blue-600 ring-4 ring-blue-50 dark:ring-blue-900/20 shadow-xl bg-blue-50/50 dark:bg-blue-900/10'
+                    : 'border-slate-100 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-800 bg-white dark:bg-slate-900';
+
+                const logoUrl = NET_LOGOS[b.network] || '';
+
+                // Card shows BASE price only — fee is revealed after user selects the bundle
+                const card = `
+                <div onclick="selectBundle('${b.id}')" class="group cursor-pointer p-6 rounded-[2rem] border-2 transition-all flex flex-col justify-between h-full ${cardClasses}">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center p-1 border border-slate-100 overflow-hidden">
+                            ${logoUrl ? `<img src="${logoUrl}" alt="${b.network}" class="w-full h-full object-contain">` : `<i data-lucide="database" class="text-slate-400"></i>`}
+                        </div>
+                        <div class="text-xs font-black text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-full uppercase tracking-widest">${b.type || 'Standard'}</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">${b.size}</div>
+                        <div class="text-xl font-extrabold text-blue-600 dark:text-blue-400 mt-1">GHS ${parseFloat(b.price).toFixed(2)}</div>
+                    </div>
+                    ${isSelected ? '<div class="mt-4 text-xs text-blue-600 dark:text-blue-400 font-bold flex items-center gap-1"><i data-lucide="check-circle" class="w-4 h-4"></i> Selected - Click to deselect</div>' : ''}
+                </div>`;
+
+                if (isSelected) {
+                    const { fee, total } = computeTotal(b.price);
+                    return `
+                    <div class="space-y-4">
+                        ${card}
+                        <div class="bg-white dark:bg-slate-900 p-8 rounded-[2rem] border border-blue-100 dark:border-blue-900/20 shadow-2xl slide-down">
+                            <h2 class="text-xl font-extrabold mb-6 flex items-center gap-3 dark:text-white">
+                                <i data-lucide="smartphone" class="text-blue-600"></i> Recipient Details
+                            </h2>
+                            <div class="space-y-4 mb-8">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="space-y-2">
+                                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
+                                        <input type="tel" oninput="updatePhone(this.value, 'recipientPhone')" value="${state.recipientPhone}" placeholder="05XXXXXXXX" class="w-full p-4 bg-slate-50 dark:bg-slate-800 dark:text-white rounded-2xl outline-none focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/20 focus:bg-white dark:focus:bg-slate-800 font-extrabold text-xl transition-all">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Confirm Number</label>
+                                        <input type="tel" oninput="updatePhone(this.value, 'recipientPhoneConfirm')" value="${state.recipientPhoneConfirm}" placeholder="05XXXXXXXX" class="w-full p-4 bg-slate-50 dark:bg-slate-800 dark:text-white rounded-2xl outline-none focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/20 focus:bg-white dark:focus:bg-slate-800 font-extrabold text-xl transition-all">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ── CHANGE 2: Fee breakdown in checkout bar ── -->
+                            <div class="bg-slate-900 dark:bg-slate-800 p-6 rounded-[2rem] flex flex-col md:flex-row justify-between items-center gap-6 shadow-xl">
+                                <div>
+                                    <div class="text-slate-500 font-black text-[10px] uppercase tracking-widest mb-2">Order Summary</div>
+                                    <div class="text-slate-400 text-xs font-bold">Bundle price: <span class="text-white">GHS ${parseFloat(b.price).toFixed(2)}</span></div>
+                                    <div class="text-slate-400 text-xs font-bold">Platform fee (2.5%): <span class="text-yellow-400">GHS ${fee.toFixed(2)}</span></div>
+                                    <div class="text-3xl font-extrabold text-white mt-1">GHS ${total.toFixed(2)}</div>
+                                </div>
+                                <button id="chk-btn" onclick="router.navigate('checkout')"
+                                    ${state.recipientPhone.length < 10 || state.recipientPhone !== state.recipientPhoneConfirm ? 'disabled' : ''}
+                                    class="w-full md:w-auto px-10 py-4 rounded-xl font-extrabold text-lg bg-blue-600 text-white hover:bg-blue-500 btn-glow transition-all disabled:opacity-20 flex items-center justify-center gap-2">
+                                    Secure Checkout <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>`;
+                }
+                return card;
+            }).join('');
+
+            return `
+                <div class="max-w-4xl mx-auto px-6 py-12 fade-in">
+                    <div class="text-center mb-16">
+                        <h1 class="text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-4 leading-tight">Fast. Affordable. <span class="text-blue-600">Automated.</span></h1>
+                        <p class="text-slate-500 dark:text-slate-400 font-medium text-lg">Top-up your data in seconds with Ghana's premier automated portal.</p>
+                    </div>
+
+                    <div class="flex flex-wrap justify-center gap-4 mb-12">
+                        ${['MTN', 'Telecel', 'AT'].map(net => `
+                            <button onclick="selectNetwork('${net}')" class="px-10 py-5 rounded-2xl border-2 font-extrabold transition-all ${getNetworkStyle(net, state.selectedNetwork === net)}">
+                                ${net}
+                            </button>
+                        `).join('')}
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16 items-start">
+                        ${bundlesHtml || '<p class="col-span-full text-center py-12 text-slate-400 font-bold uppercase tracking-widest">No bundles available</p>'}
+                    </div>
+
+                    <!-- Scale Your Business — moved here from footer -->
+                    <div class="mb-16 bg-gradient-to-r from-blue-600 to-blue-700 rounded-[2rem] p-8 flex flex-col md:flex-row justify-between items-center gap-6 shadow-xl shadow-blue-200 dark:shadow-blue-900/30">
+                        <div>
+                            <h4 class="text-white font-extrabold text-xl mb-1">Scale Your Business 🚀</h4>
+                            <p class="text-blue-100 text-sm font-medium">Want an automated website like this? We build web platforms for businesses.</p>
+                        </div>
+                        <a href="https://wa.me/233554222103" target="_blank" class="flex-shrink-0 bg-white text-blue-700 px-7 py-3.5 rounded-2xl font-extrabold shadow-lg hover:bg-blue-50 transition-all flex items-center gap-2 whitespace-nowrap">
+                            Get yours — 50% OFF! <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 text-center">
+                        <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow">
+                            <h3 class="text-4xl font-extrabold text-blue-600">1,200+</h3>
+                            <p class="font-bold text-slate-500">Customers Served</p>
+                        </div>
+                        <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow">
+                            <h3 class="text-4xl font-extrabold text-green-600">98.7%</h3>
+                            <p class="font-bold text-slate-500">Delivery Success Rate</p>
+                        </div>
+                        <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow">
+                            <h3 class="text-4xl font-extrabold text-purple-600">24k+</h3>
+                            <p class="font-bold text-slate-500">Orders Completed</p>
+                        </div>
+                    </div>
+
+                    <div class="max-w-3xl mx-auto mt-20">
+                        <h2 class="text-3xl font-extrabold text-center mb-10 dark:text-white">Frequently Asked Questions</h2>
+                        <div class="space-y-6">
+                            <details class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800">
+                                <summary class="font-black cursor-pointer dark:text-white">How fast is delivery?</summary>
+                                <p class="mt-3 text-slate-500">Most bundles are delivered within 5–30 minutes after successful payment confirmation.</p>
+                            </details>
+                            <details class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800">
+                                <summary class="font-black cursor-pointer dark:text-white">What if my bundle delays?</summary>
+                                <p class="mt-3 text-slate-500">Network issues may cause delays. Our admins monitor all orders and resolve issues quickly. Contact us if your bundle doesn't arrive within 30 minutes.</p>
+                            </details>
+                            <details class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800">
+                                <summary class="font-black cursor-pointer dark:text-white">Is payment secure?</summary>
+                                <p class="mt-3 text-slate-500">Yes! All payments are processed through Paystack, Ghana's most trusted payment platform with bank-level security.</p>
+                            </details>
+                            <details class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800">
+                                <summary class="font-black cursor-pointer dark:text-white">Why is there a 2.5% fee?</summary>
+                                <p class="mt-3 text-slate-500">A small 2.5% platform fee is added to cover payment processing costs (Paystack) and platform maintenance, so you always get uninterrupted service.</p>
+                            </details>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        function renderCheckout() {
+            if (!state.selectedBundle) { router.navigate('home'); return ''; }
+
+            // ── CHANGE 2: Fee-inclusive total on checkout page ──
+            const { price, fee, total } = computeTotal(state.selectedBundle.price);
+
+            return `
+                <div class="max-w-xl mx-auto px-6 py-12 fade-in">
+                    <button onclick="router.navigate('home')" class="mb-8 font-black text-[10px] uppercase tracking-widest text-slate-400 hover:text-blue-600 transition-colors flex items-center gap-2">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i> Back
+                    </button>
+
+                    <div class="bg-white dark:bg-slate-900 rounded-[3rem] shadow-2xl p-10 border border-slate-100 dark:border-slate-800">
+                        <h2 class="text-3xl font-extrabold mb-10 tracking-tight text-center dark:text-white">Complete Order</h2>
+
+                        <div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-3xl mb-10 space-y-4">
+                            <div class="flex justify-between items-center"><span class="text-slate-400 font-bold text-xs uppercase tracking-widest">Network</span><span class="font-extrabold dark:text-white">${state.selectedBundle.network}</span></div>
+                            <div class="flex justify-between items-center"><span class="text-slate-400 font-bold text-xs uppercase tracking-widest">Package</span><span class="font-extrabold dark:text-white">${state.selectedBundle.size}</span></div>
+                            <div class="flex justify-between items-center"><span class="text-slate-400 font-bold text-xs uppercase tracking-widest">Recipient</span><span class="font-extrabold dark:text-white text-blue-600">${state.recipientPhone}</span></div>
+                            <div class="h-px bg-slate-200 dark:bg-slate-700 my-2"></div>
+                            <div class="flex justify-between items-center"><span class="text-slate-400 font-bold text-xs uppercase tracking-widest">Bundle Price</span><span class="font-bold dark:text-white">GHS ${price.toFixed(2)}</span></div>
+                            <div class="flex justify-between items-center"><span class="text-slate-400 font-bold text-xs uppercase tracking-widest">Platform Fee (2.5%)</span><span class="font-bold text-amber-500">GHS ${fee.toFixed(2)}</span></div>
+                            <div class="h-px bg-slate-200 dark:bg-slate-700 my-2"></div>
+                            <div class="flex justify-between items-center"><span class="text-slate-900 dark:text-white font-bold">Total To Pay</span><span class="font-black text-2xl text-blue-600">GHS ${total.toFixed(2)}</span></div>
+                        </div>
+
+                        ${state.isProcessingPayment ? `
+                            <div class="w-full py-5 rounded-2xl bg-blue-400 text-white font-extrabold text-lg flex items-center justify-center gap-3">
+                                <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                Processing Payment...
+                            </div>
+                        ` : `
+                            <button onclick="initPayment()" class="w-full py-5 rounded-2xl bg-blue-600 text-white font-extrabold text-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-3 shadow-xl shadow-blue-200 dark:shadow-none">
+                                <i data-lucide="credit-card" class="w-5 h-5"></i> Pay GHS ${total.toFixed(2)} with Paystack
+                            </button>
+                        `}
+
+                        <p class="text-center text-xs font-bold text-slate-400 mt-6 flex items-center justify-center gap-2">
+                            <i data-lucide="shield-check" class="w-4 h-4"></i> Secured by Paystack - Ghana's Trusted Payment Gateway
+                        </p>
+                    </div>
+                </div>`;
+        }
+
+        function renderLogin() {
+            return `
+             <div class="max-w-md mx-auto px-6 py-20 fade-in">
+                 <div class="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] shadow-xl border border-slate-100 dark:border-slate-800 text-center">
+                    <div class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <i data-lucide="lock" class="w-8 h-8 text-slate-400"></i>
+                    </div>
+                    <h2 class="text-2xl font-extrabold mb-8 dark:text-white">Admin Access</h2>
+                    <form onsubmit="attemptLogin(event)" class="space-y-4">
+                        <input type="password" id="admin-pin" placeholder="Enter PIN" class="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-xl font-bold text-center outline-none focus:ring-2 focus:ring-blue-600 dark:text-white">
+                        <button type="submit" class="w-full py-4 bg-slate-900 dark:bg-blue-600 text-white rounded-xl font-bold hover:bg-slate-800 dark:hover:bg-blue-700 transition">Login</button>
+                    </form>
+                    <button onclick="router.navigate('home')" class="mt-6 text-xs font-bold text-slate-400 uppercase tracking-widest hover:text-slate-600">Return Home</button>
+                 </div>
+             </div>`;
+        }
+
+        function renderTracking() {
+            return `
+             <div class="max-w-md mx-auto px-6 py-20 fade-in">
+                 <div class="bg-white dark:bg-slate-900 p-10 rounded-[2.5rem] shadow-xl border border-slate-100 dark:border-slate-800 text-center">
+                    <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <i data-lucide="package-search" class="w-8 h-8 text-blue-600"></i>
+                    </div>
+                    <h2 class="text-2xl font-extrabold mb-2 dark:text-white">Track Order</h2>
+                    <p class="text-slate-400 text-sm font-medium mb-8">Enter your phone number <strong>or</strong> order reference (e.g. SdG-001)</p>
+                    <div class="space-y-4">
+                        <input type="text" id="track-input" placeholder="05XXXXXXXX  or  SdG-001" class="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-xl font-bold text-center outline-none focus:ring-2 focus:ring-blue-600 dark:text-white">
+                        <button onclick="checkStatus()" class="w-full py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">Check Status</button>
+                    </div>
+                    <div id="track-results"></div>
+                    <button onclick="router.navigate('home')" class="mt-8 text-xs font-bold text-slate-400 uppercase tracking-widest hover:text-slate-600">Return Home</button>
+                 </div>
+             </div>`;
+        }
+
+        function renderAdmin() {
+            if (!state.isAdmin) { router.navigate('login'); return ''; }
+
+            const tabClasses = (isActive) => isActive
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 dark:shadow-none'
+                : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700';
+
+            // ── CHANGE 2: Show fee breakdown in admin orders ──
+            const ordersHtml = state.orders.length === 0
+                ? `<div class="p-12 text-center text-slate-400 font-bold uppercase tracking-widest">No orders received yet</div>`
+                : `<div class="space-y-4">
+                    ${state.orders.map(o => {
+                        // Support both old orders (single price) and new orders (basePrice + fee)
+                        const displayPrice = o.price ? o.price.toFixed(2) : '—';
+                        const displayBase  = o.basePrice ? `GHS ${o.basePrice.toFixed(2)}` : '';
+                        const displayFee   = o.fee ? `+ GHS ${o.fee.toFixed(2)} fee` : '';
+                        return `
+                        <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                            <div class="flex-grow">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="font-black text-blue-600">${o.size}</span>
+                                    <span class="text-slate-400 text-xs font-bold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">${o.network}</span>
+                                    <span class="text-xs font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded">${o.type || 'Standard'}</span>
+                                </div>
+                                <div class="font-extrabold text-xl dark:text-white mb-1">${o.recipient}</div>
+                                ${o.orderRef ? `<div class="text-xs font-black text-blue-500 font-mono tracking-widest mb-1">${o.orderRef}</div>` : ''}
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="text-sm font-extrabold text-green-600">GHS ${displayPrice}</span>
+                                    ${displayBase ? `<span class="text-xs text-slate-400">(${displayBase} ${displayFee})</span>` : ''}
+                                </div>
+                                <div class="text-xs text-slate-400 font-bold mt-1">${o.createdAt ? new Date(o.createdAt.seconds * 1000).toLocaleString() : 'Just now'}</div>
+                                ${o.paymentRef ? `<div class="text-xs text-slate-400 font-mono mt-1">Ref: ${o.paymentRef}</div>` : ''}
+                            </div>
+                            <div class="flex items-center gap-4 w-full md:w-auto">
+                                <select onchange="updateOrderStatus('${o.id}', this.value)" class="p-2 bg-slate-50 dark:bg-slate-800 rounded-lg font-bold text-sm outline-none border border-slate-200 dark:border-slate-700 dark:text-white cursor-pointer">
+                                    <option value="Pending"    ${o.status === 'Pending'    ? 'selected' : ''}>Pending</option>
+                                    <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                                    <option value="Delivered"  ${o.status === 'Delivered'  ? 'selected' : ''}>Delivered</option>
+                                    <option value="Failed"     ${o.status === 'Failed'     ? 'selected' : ''}>Failed</option>
+                                </select>
+                                <div class="w-3 h-3 rounded-full ${getStatusColor(o.status)}"></div>
+                            </div>
+                        </div>`;
+                    }).join('')}
+                  </div>`;
+
+            const productsHtml = `
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    ${state.products.map(p => `
+                        <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-700 transition-colors relative group">
+                            <div onclick="openProductModal('${p.id}')" class="cursor-pointer">
+                                <div class="flex justify-between mb-2">
+                                    <span class="font-bold text-sm bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-slate-600 dark:text-slate-300">${p.network}</span>
+                                    <span class="font-black text-blue-600">GHS ${p.price}</span>
+                                </div>
+                                <div class="font-extrabold text-lg dark:text-white">${p.size}</div>
+                                <div class="text-xs text-slate-400 font-bold uppercase mt-1">${p.type}</div>
+                                <div class="text-xs text-slate-400 mt-2">Rank: ${p.rank || 999}</div>
+                            </div>
+                            <button onclick="event.stopPropagation(); deleteProduct('${p.id}')" class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>`;
+
+            // Stats bar
+            const totalRevenue = state.orders.filter(o => o.status !== 'Failed').reduce((s, o) => s + (o.price || 0), 0);
+            const pendingCount = state.orders.filter(o => o.status === 'Pending').length;
+            const deliveredCount = state.orders.filter(o => o.status === 'Delivered').length;
+
+            return `
+            <div class="max-w-6xl mx-auto px-6 py-12 fade-in">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
+                    <h1 class="text-3xl font-extrabold dark:text-white">Admin Dashboard</h1>
+                    <div class="flex items-center gap-3">
+                        <button onclick="openSettingsModal()" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-5 py-2 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                            <i data-lucide="settings" class="w-4 h-4"></i> Settings
+                        </button>
+                        <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+                            <button onclick="switchAdminTab('orders')"   class="px-6 py-2 rounded-lg font-bold text-sm transition-all ${tabClasses(state.adminTab === 'orders')}">Orders</button>
+                            <button onclick="switchAdminTab('products')" class="px-6 py-2 rounded-lg font-bold text-sm transition-all ${tabClasses(state.adminTab === 'products')}">Products</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats row -->
+                <div class="grid grid-cols-3 gap-4 mb-8">
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 text-center">
+                        <div class="text-2xl font-extrabold text-yellow-500">${pendingCount}</div>
+                        <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Pending</div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 text-center">
+                        <div class="text-2xl font-extrabold text-green-500">${deliveredCount}</div>
+                        <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Delivered</div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 text-center">
+                        <div class="text-2xl font-extrabold text-blue-600">GHS ${totalRevenue.toFixed(2)}</div>
+                        <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Total Revenue</div>
+                    </div>
+                </div>
+
+                ${state.adminTab === 'products' ? `
+                    <div class="mb-6 flex justify-end">
+                        <button onclick="openProductModal()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-blue-700 transition">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Add Product
+                        </button>
+                    </div>
+                ` : ''}
+
+                ${state.adminTab === 'orders' ? ordersHtml : productsHtml}
+
+                <button onclick="router.navigate('home')" class="mt-12 text-xs font-bold text-slate-400 uppercase tracking-widest hover:text-slate-600">Back to Store</button>
+            </div>`;
+        }
+
+        // Start app
+        init();
     </script>
 </body>
-    </html>
+            </html>
