@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SwiftData — Secure Access</title><!-- No "Admin" in title for discretion -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root{
+    --ink:#0a0f1e;--blue:#0051ff;--sky:#38bdf8;--mint:#00e5b0;
+    --red:#ef4444;--green:#22c55e;--muted:#6b7a99;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:#060b18;color:#fff;min-height:100vh;}
+
+  /* ── GATE SCREEN ── */
+  #gate{
+    min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(ellipse 70% 60% at 50% 40%,rgba(0,81,255,.08) 0%,transparent 70%);
+    padding:2rem;
+  }
+  .gate-box{
+    background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+    border-radius:24px;padding:3rem;width:100%;max-width:400px;
+    backdrop-filter:blur(20px);
+  }
+  .gate-top{text-align:center;margin-bottom:2.5rem;}
+  .shield{
+    width:64px;height:64px;background:rgba(0,81,255,.12);border:1px solid rgba(0,81,255,.2);
+    border-radius:18px;margin:0 auto 1.25rem;
+    display:flex;align-items:center;justify-content:center;font-size:1.8rem;
+  }
+  .gate-top h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:#fff;letter-spacing:-.5px;margin-bottom:.35rem;}
+  .gate-top p{font-size:.88rem;color:rgba(255,255,255,.35);}
+
+  .gate-input-wrap{position:relative;margin-bottom:1.25rem;}
+  .gate-input-wrap input{
+    width:100%;padding:.85rem 1rem .85rem 2.8rem;
+    border:2px solid rgba(255,255,255,.08);border-radius:12px;
+    background:rgba(255,255,255,.05);color:#fff;
+    font-family:'DM Sans',sans-serif;font-size:.95rem;outline:none;
+    transition:border-color .2s;
+  }
+  .gate-input-wrap input::placeholder{color:rgba(255,255,255,.2);}
+  .gate-input-wrap input:focus{border-color:rgba(0,81,255,.5);background:rgba(0,81,255,.05);}
+  .gate-input-wrap .icon{
+    position:absolute;left:.85rem;top:50%;transform:translateY(-50%);
+    color:rgba(255,255,255,.3);pointer-events:none;
+  }
+  .pw-eye{
+    position:absolute;right:.85rem;top:50%;transform:translateY(-50%);
+    background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;transition:color .2s;
+  }
+  .pw-eye:hover{color:#fff;}
+
+  .gate-btn{
+    width:100%;padding:.9rem;background:var(--blue);color:#fff;border:none;
+    border-radius:12px;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;
+    cursor:pointer;transition:transform .2s,box-shadow .2s;
+    display:flex;align-items:center;justify-content:center;gap:.5rem;
+    letter-spacing:.3px;
+  }
+  .gate-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,81,255,.35);}
+  .gate-err{
+    background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);
+    color:#fca5a5;border-radius:10px;padding:.7rem 1rem;
+    font-size:.85rem;text-align:center;margin-bottom:1rem;display:none;
+  }
+  .gate-err.show{display:block;}
+  .gate-footer{margin-top:1.5rem;text-align:center;font-size:.78rem;color:rgba(255,255,255,.15);}
+
+  /* ── DASHBOARD ── */
+  #dashboard{display:none;}
+  .sidebar{
+    width:240px;position:fixed;top:0;left:0;bottom:0;
+    background:#0a0f1e;border-right:1px solid rgba(255,255,255,.06);
+    display:flex;flex-direction:column;padding:1.5rem 0;z-index:10;
+  }
+  .sb-brand{padding:0 1.5rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.06);}
+  .sb-brand .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:#fff;}
+  .sb-brand .logo span{color:var(--mint);}
+  .sb-brand .badge{
+    display:inline-block;margin-top:.4rem;
+    background:rgba(239,68,68,.15);color:#fca5a5;
+    font-size:.68rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;
+    padding:.2rem .6rem;border-radius:50px;
+  }
+  .sb-nav{flex:1;padding:1.25rem 0;overflow-y:auto;}
+  .sb-section{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;
+    color:rgba(255,255,255,.2);padding:.5rem 1.5rem;margin-top:.5rem;}
+  .sb-link{
+    display:flex;align-items:center;gap:.75rem;padding:.7rem 1.5rem;
+    color:rgba(255,255,255,.4);text-decoration:none;font-size:.9rem;font-weight:400;
+    transition:all .2s;border-left:3px solid transparent;
+  }
+  .sb-link:hover{color:#fff;background:rgba(255,255,255,.04);}
+  .sb-link.active{color:#fff;background:rgba(0,81,255,.1);border-left-color:var(--blue);}
+  .sb-link .sb-icon{font-size:1rem;width:20px;text-align:center;}
+
+  .sb-footer{padding:1.25rem 1.5rem;border-top:1px solid rgba(255,255,255,.06);}
+  .sb-user{display:flex;align-items:center;gap:.75rem;}
+  .sb-avatar{
+    width:34px;height:34px;border-radius:10px;
+    background:linear-gradient(135deg,var(--blue),var(--sky));
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;color:#fff;
+  }
+  .sb-user-info{flex:1;}
+  .sb-user-info .name{font-size:.85rem;color:#fff;font-weight:500;}
+  .sb-user-info .role{font-size:.72rem;color:rgba(255,255,255,.3);}
+  .logout-btn{
+    background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;
+    font-size:.8rem;padding:.2rem .5rem;border-radius:6px;transition:all .2s;
+  }
+  .logout-btn:hover{color:var(--red);background:rgba(239,68,68,.08);}
+
+  .main{margin-left:240px;padding:2.5rem;min-height:100vh;}
+  .top-bar{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:2.5rem;
+  }
+  .top-bar h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:-.5px;}
+  .top-bar .date{font-size:.85rem;color:rgba(255,255,255,.3);}
+  .top-actions{display:flex;gap:.75rem;}
+  .action-btn{
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+    color:rgba(255,255,255,.6);padding:.5rem 1rem;border-radius:10px;
+    font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:pointer;transition:all .2s;
+  }
+  .action-btn:hover{background:rgba(255,255,255,.09);color:#fff;}
+  .action-btn.primary{background:var(--blue);border-color:var(--blue);color:#fff;}
+  .action-btn.primary:hover{box-shadow:0 6px 20px rgba(0,81,255,.35);}
+
+  /* stat cards */
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem;margin-bottom:2.5rem;}
+  .stat-card{
+    background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+    border-radius:16px;padding:1.5rem;position:relative;overflow:hidden;
+  }
+  .stat-card::after{
+    content:'';position:absolute;bottom:-20px;right:-20px;
+    width:80px;height:80px;border-radius:50%;
+  }
+  .stat-card.blue::after{background:radial-gradient(circle,rgba(0,81,255,.12) 0%,transparent 70%);}
+  .stat-card.mint::after{background:radial-gradient(circle,rgba(0,229,176,.1) 0%,transparent 70%);}
+  .stat-card.sky::after{background:radial-gradient(circle,rgba(56,189,248,.1) 0%,transparent 70%);}
+  .stat-card.red::after{background:radial-gradient(circle,rgba(239,68,68,.1) 0%,transparent 70%);}
+  .stat-card .label{font-size:.78rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.3);margin-bottom:.75rem;}
+  .stat-card .value{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;color:#fff;}
+  .stat-card .change{font-size:.8rem;margin-top:.4rem;}
+  .change.up{color:var(--green);}
+  .change.down{color:var(--red);}
+
+  /* table */
+  .panel{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;overflow:hidden;margin-bottom:2rem;}
+  .panel-head{
+    padding:1.25rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.06);
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .panel-head h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;}
+  .panel-head .see-all{font-size:.82rem;color:var(--blue);text-decoration:none;cursor:pointer;}
+  table{width:100%;border-collapse:collapse;}
+  th{
+    padding:.75rem 1.5rem;text-align:left;font-size:.75rem;
+    text-transform:uppercase;letter-spacing:1px;
+    color:rgba(255,255,255,.3);font-weight:500;
+    border-bottom:1px solid rgba(255,255,255,.06);
+  }
+  td{
+    padding:.9rem 1.5rem;font-size:.88rem;color:rgba(255,255,255,.7);
+    border-bottom:1px solid rgba(255,255,255,.04);
+  }
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:rgba(255,255,255,.02);}
+  .status{
+    display:inline-flex;align-items:center;gap:.4rem;
+    padding:.25rem .75rem;border-radius:50px;font-size:.75rem;font-weight:500;
+  }
+  .status.active{background:rgba(34,197,94,.1);color:#86efac;}
+  .status.pending{background:rgba(251,191,36,.1);color:#fde68a;}
+  .status.suspended{background:rgba(239,68,68,.1);color:#fca5a5;}
+  .status::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;}
+
+  @media(max-width:900px){
+    .sidebar{width:64px;}
+    .sb-brand .logo,.sb-brand .badge,.sb-link span,.sb-section,.sb-user-info,.sb-user-info,.sb-footer .name{display:none;}
+    .sb-link{justify-content:center;padding:.8rem;}
+    .main{margin-left:64px;}
+  }
+  @media(max-width:600px){
+    .main{padding:1.25rem;}
+    .stats-grid{grid-template-columns:1fr 1fr;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════ GATE ════════════════════ -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-top">
+      <div class="shield">🔐</div>
+      <h1>Restricted Access</h1>
+      <p>Authorised personnel only</p>
+    </div>
+
+    <div class="gate-err" id="gateErr">Incorrect password. Access denied.</div>
+
+    <form onsubmit="checkAccess(event)">
+      <div class="gate-input-wrap">
+        <span class="icon">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        </span>
+        <input type="password" id="gatePass" placeholder="Enter access code" required autocomplete="off"/>
+        <button type="button" class="pw-eye" onclick="toggleGatePw()">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" id="gateEye">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+          </svg>
+        </button>
+      </div>
+      <button type="submit" class="gate-btn">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+        Authenticate
+      </button>
+    </form>
+    <p class="gate-footer">Unauthorised access attempts are logged.</p>
+  </div>
+</div>
+
+<!-- ════════════════════ DASHBOARD ════════════════════ -->
+<div id="dashboard">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <div class="logo">Swift<span>Data</span></div>
+      <div class="badge">Admin</div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-section">Main</div>
+      <a href="#" class="sb-link active"><span class="sb-icon">📊</span><span>Dashboard</span></a>
+      <a href="#" class="sb-link"><span class="sb-icon">👥</span><span>Agents</span></a>
+      <a href="#" class="sb-link"><span class="sb-icon">🔄</span><span>Transactions</span></a>
+      <a href="#" class="sb-link"><span class="sb-icon">📦</span><span>Bundles</span></a>
+      <div class="sb-section">Reports</div>
+      <a href="#" class="sb-link"><span class="sb-icon">📈</span><span>Analytics</span></a>
+      <a href="#" class="sb-link"><span class="sb-icon">📋</span><span>Reports</span></a>
+      <div class="sb-section">System</div>
+      <a href="#" class="sb-link"><span class="sb-icon">⚙️</span><span>Settings</span></a>
+      <a href="#" class="sb-link"><span class="sb-icon">📢</span><span>Announcements</span></a>
+    </nav>
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-avatar">SA</div>
+        <div class="sb-user-info">
+          <div class="name">Super Admin</div>
+          <div class="role">Full Access</div>
+        </div>
+        <button class="logout-btn" onclick="logout()" title="Logout">✕</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+    <div class="top-bar">
+      <div>
+        <h1>Dashboard</h1>
+        <div class="date" id="dateDisplay"></div>
+      </div>
+      <div class="top-actions">
+        <button class="action-btn">Export ↓</button>
+        <button class="action-btn primary">+ Add Agent</button>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card blue">
+        <div class="label">Total Revenue</div>
+        <div class="value">GHS 84,320</div>
+        <div class="change up">↑ 12.4% this month</div>
+      </div>
+      <div class="stat-card mint">
+        <div class="label">Active Agents</div>
+        <div class="value">1,247</div>
+        <div class="change up">↑ 38 new this week</div>
+      </div>
+      <div class="stat-card sky">
+        <div class="label">Transactions Today</div>
+        <div class="value">3,891</div>
+        <div class="change up">↑ 7.2% vs yesterday</div>
+      </div>
+      <div class="stat-card red">
+        <div class="label">Pending Orders</div>
+        <div class="value">14</div>
+        <div class="change down">↑ 3 in last hour</div>
+      </div>
+    </div>
+
+    <!-- AGENTS TABLE -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Recent Agents</h3>
+        <a class="see-all">View All Agents →</a>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Agent Name</th><th>Region</th><th>Sales (MTD)</th><th>Commission</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Kofi Mensah</td><td>Greater Accra</td><td>GHS 4,820</td><td>GHS 241</td><td><span class="status active">Active</span></td></tr>
+          <tr><td>Ama Asante</td><td>Ashanti</td><td>GHS 3,100</td><td>GHS 155</td><td><span class="status active">Active</span></td></tr>
+          <tr><td>Kwame Boateng</td><td>Western</td><td>GHS 980</td><td>GHS 49</td><td><span class="status pending">Pending</span></td></tr>
+          <tr><td>Abena Darko</td><td>Eastern</td><td>GHS 2,450</td><td>GHS 122</td><td><span class="status active">Active</span></td></tr>
+          <tr><td>Yaw Owusu</td><td>Volta</td><td>GHS 0</td><td>GHS 0</td><td><span class="status suspended">Suspended</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TRANSACTIONS TABLE -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Latest Transactions</h3>
+        <a class="see-all">View All →</a>
+      </div>
+      <table>
+        <thead>
+          <tr><th>TXN ID</th><th>Agent</th><th>Bundle</th><th>Amount</th><th>Time</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>#TXN-8821</td><td>Kofi Mensah</td><td>5GB Monthly</td><td>GHS 25</td><td>2 min ago</td><td><span class="status active">Success</span></td></tr>
+          <tr><td>#TXN-8820</td><td>Ama Asante</td><td>1GB Weekly</td><td>GHS 8</td><td>5 min ago</td><td><span class="status active">Success</span></td></tr>
+          <tr><td>#TXN-8819</td><td>Abena Darko</td><td>100MB Daily</td><td>GHS 2</td><td>8 min ago</td><td><span class="status pending">Processing</span></td></tr>
+          <tr><td>#TXN-8818</td><td>Kofi Mensah</td><td>Airtime GHS 20</td><td>GHS 20</td><td>11 min ago</td><td><span class="status active">Success</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script>
+  // ── Set password here (change "admin2025" to your own secure password) ──
+  const ADMIN_PASSWORD = "admin2025";
+
+  function checkAccess(e){
+    e.preventDefault();
+    const val = document.getElementById('gatePass').value;
+    const err = document.getElementById('gateErr');
+    if(val === ADMIN_PASSWORD){
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      document.getElementById('dateDisplay').textContent = new Date().toLocaleDateString('en-GH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    } else {
+      err.classList.add('show');
+      document.getElementById('gatePass').value = '';
+      document.getElementById('gatePass').focus();
+      setTimeout(()=>err.classList.remove('show'), 3500);
+    }
+  }
+
+  function logout(){
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('gate').style.display = 'flex';
+    document.getElementById('gatePass').value = '';
+  }
+
+  function toggleGatePw(){
+    const inp = document.getElementById('gatePass');
+    const eye = document.getElementById('gateEye');
+    if(inp.type === 'password'){
+      inp.type = 'text';
+      eye.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>';
+    } else {
+      inp.type = 'password';
+      eye.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>';
+    }
+  }
+</script>
+</body>
+</html>
