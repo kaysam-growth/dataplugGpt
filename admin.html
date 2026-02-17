@@ -1,385 +1,674 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>SwiftData — Secure Access</title><!-- No "Admin" in title for discretion -->
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SwiftData — Secure Access</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <style>
-  :root{
-    --ink:#0a0f1e;--blue:#0051ff;--sky:#38bdf8;--mint:#00e5b0;
-    --red:#ef4444;--green:#22c55e;--muted:#6b7a99;
-  }
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'DM Sans',sans-serif;background:#060b18;color:#fff;min-height:100vh;}
-
-  /* ── GATE SCREEN ── */
-  #gate{
-    min-height:100vh;display:flex;align-items:center;justify-content:center;
-    background:radial-gradient(ellipse 70% 60% at 50% 40%,rgba(0,81,255,.08) 0%,transparent 70%);
-    padding:2rem;
-  }
-  .gate-box{
-    background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
-    border-radius:24px;padding:3rem;width:100%;max-width:400px;
-    backdrop-filter:blur(20px);
-  }
-  .gate-top{text-align:center;margin-bottom:2.5rem;}
-  .shield{
-    width:64px;height:64px;background:rgba(0,81,255,.12);border:1px solid rgba(0,81,255,.2);
-    border-radius:18px;margin:0 auto 1.25rem;
-    display:flex;align-items:center;justify-content:center;font-size:1.8rem;
-  }
-  .gate-top h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:#fff;letter-spacing:-.5px;margin-bottom:.35rem;}
-  .gate-top p{font-size:.88rem;color:rgba(255,255,255,.35);}
-
-  .gate-input-wrap{position:relative;margin-bottom:1.25rem;}
-  .gate-input-wrap input{
-    width:100%;padding:.85rem 1rem .85rem 2.8rem;
-    border:2px solid rgba(255,255,255,.08);border-radius:12px;
-    background:rgba(255,255,255,.05);color:#fff;
-    font-family:'DM Sans',sans-serif;font-size:.95rem;outline:none;
-    transition:border-color .2s;
-  }
-  .gate-input-wrap input::placeholder{color:rgba(255,255,255,.2);}
-  .gate-input-wrap input:focus{border-color:rgba(0,81,255,.5);background:rgba(0,81,255,.05);}
-  .gate-input-wrap .icon{
-    position:absolute;left:.85rem;top:50%;transform:translateY(-50%);
-    color:rgba(255,255,255,.3);pointer-events:none;
-  }
-  .pw-eye{
-    position:absolute;right:.85rem;top:50%;transform:translateY(-50%);
-    background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;transition:color .2s;
-  }
-  .pw-eye:hover{color:#fff;}
-
-  .gate-btn{
-    width:100%;padding:.9rem;background:var(--blue);color:#fff;border:none;
-    border-radius:12px;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;
-    cursor:pointer;transition:transform .2s,box-shadow .2s;
-    display:flex;align-items:center;justify-content:center;gap:.5rem;
-    letter-spacing:.3px;
-  }
-  .gate-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,81,255,.35);}
-  .gate-err{
-    background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);
-    color:#fca5a5;border-radius:10px;padding:.7rem 1rem;
-    font-size:.85rem;text-align:center;margin-bottom:1rem;display:none;
-  }
-  .gate-err.show{display:block;}
-  .gate-footer{margin-top:1.5rem;text-align:center;font-size:.78rem;color:rgba(255,255,255,.15);}
-
-  /* ── DASHBOARD ── */
-  #dashboard{display:none;}
-  .sidebar{
-    width:240px;position:fixed;top:0;left:0;bottom:0;
-    background:#0a0f1e;border-right:1px solid rgba(255,255,255,.06);
-    display:flex;flex-direction:column;padding:1.5rem 0;z-index:10;
-  }
-  .sb-brand{padding:0 1.5rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.06);}
-  .sb-brand .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:#fff;}
-  .sb-brand .logo span{color:var(--mint);}
-  .sb-brand .badge{
-    display:inline-block;margin-top:.4rem;
-    background:rgba(239,68,68,.15);color:#fca5a5;
-    font-size:.68rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;
-    padding:.2rem .6rem;border-radius:50px;
-  }
-  .sb-nav{flex:1;padding:1.25rem 0;overflow-y:auto;}
-  .sb-section{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;
-    color:rgba(255,255,255,.2);padding:.5rem 1.5rem;margin-top:.5rem;}
-  .sb-link{
-    display:flex;align-items:center;gap:.75rem;padding:.7rem 1.5rem;
-    color:rgba(255,255,255,.4);text-decoration:none;font-size:.9rem;font-weight:400;
-    transition:all .2s;border-left:3px solid transparent;
-  }
-  .sb-link:hover{color:#fff;background:rgba(255,255,255,.04);}
-  .sb-link.active{color:#fff;background:rgba(0,81,255,.1);border-left-color:var(--blue);}
-  .sb-link .sb-icon{font-size:1rem;width:20px;text-align:center;}
-
-  .sb-footer{padding:1.25rem 1.5rem;border-top:1px solid rgba(255,255,255,.06);}
-  .sb-user{display:flex;align-items:center;gap:.75rem;}
-  .sb-avatar{
-    width:34px;height:34px;border-radius:10px;
-    background:linear-gradient(135deg,var(--blue),var(--sky));
-    display:flex;align-items:center;justify-content:center;
-    font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;color:#fff;
-  }
-  .sb-user-info{flex:1;}
-  .sb-user-info .name{font-size:.85rem;color:#fff;font-weight:500;}
-  .sb-user-info .role{font-size:.72rem;color:rgba(255,255,255,.3);}
-  .logout-btn{
-    background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;
-    font-size:.8rem;padding:.2rem .5rem;border-radius:6px;transition:all .2s;
-  }
-  .logout-btn:hover{color:var(--red);background:rgba(239,68,68,.08);}
-
-  .main{margin-left:240px;padding:2.5rem;min-height:100vh;}
-  .top-bar{
-    display:flex;align-items:center;justify-content:space-between;
-    margin-bottom:2.5rem;
-  }
-  .top-bar h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:-.5px;}
-  .top-bar .date{font-size:.85rem;color:rgba(255,255,255,.3);}
-  .top-actions{display:flex;gap:.75rem;}
-  .action-btn{
-    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
-    color:rgba(255,255,255,.6);padding:.5rem 1rem;border-radius:10px;
-    font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:pointer;transition:all .2s;
-  }
-  .action-btn:hover{background:rgba(255,255,255,.09);color:#fff;}
-  .action-btn.primary{background:var(--blue);border-color:var(--blue);color:#fff;}
-  .action-btn.primary:hover{box-shadow:0 6px 20px rgba(0,81,255,.35);}
-
-  /* stat cards */
-  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem;margin-bottom:2.5rem;}
-  .stat-card{
-    background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
-    border-radius:16px;padding:1.5rem;position:relative;overflow:hidden;
-  }
-  .stat-card::after{
-    content:'';position:absolute;bottom:-20px;right:-20px;
-    width:80px;height:80px;border-radius:50%;
-  }
-  .stat-card.blue::after{background:radial-gradient(circle,rgba(0,81,255,.12) 0%,transparent 70%);}
-  .stat-card.mint::after{background:radial-gradient(circle,rgba(0,229,176,.1) 0%,transparent 70%);}
-  .stat-card.sky::after{background:radial-gradient(circle,rgba(56,189,248,.1) 0%,transparent 70%);}
-  .stat-card.red::after{background:radial-gradient(circle,rgba(239,68,68,.1) 0%,transparent 70%);}
-  .stat-card .label{font-size:.78rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.3);margin-bottom:.75rem;}
-  .stat-card .value{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;color:#fff;}
-  .stat-card .change{font-size:.8rem;margin-top:.4rem;}
-  .change.up{color:var(--green);}
-  .change.down{color:var(--red);}
-
-  /* table */
-  .panel{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;overflow:hidden;margin-bottom:2rem;}
-  .panel-head{
-    padding:1.25rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.06);
-    display:flex;align-items:center;justify-content:space-between;
-  }
-  .panel-head h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;}
-  .panel-head .see-all{font-size:.82rem;color:var(--blue);text-decoration:none;cursor:pointer;}
-  table{width:100%;border-collapse:collapse;}
-  th{
-    padding:.75rem 1.5rem;text-align:left;font-size:.75rem;
-    text-transform:uppercase;letter-spacing:1px;
-    color:rgba(255,255,255,.3);font-weight:500;
-    border-bottom:1px solid rgba(255,255,255,.06);
-  }
-  td{
-    padding:.9rem 1.5rem;font-size:.88rem;color:rgba(255,255,255,.7);
-    border-bottom:1px solid rgba(255,255,255,.04);
-  }
-  tr:last-child td{border-bottom:none;}
-  tr:hover td{background:rgba(255,255,255,.02);}
-  .status{
-    display:inline-flex;align-items:center;gap:.4rem;
-    padding:.25rem .75rem;border-radius:50px;font-size:.75rem;font-weight:500;
-  }
-  .status.active{background:rgba(34,197,94,.1);color:#86efac;}
-  .status.pending{background:rgba(251,191,36,.1);color:#fde68a;}
-  .status.suspended{background:rgba(239,68,68,.1);color:#fca5a5;}
-  .status::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;}
-
-  @media(max-width:900px){
-    .sidebar{width:64px;}
-    .sb-brand .logo,.sb-brand .badge,.sb-link span,.sb-section,.sb-user-info,.sb-user-info,.sb-footer .name{display:none;}
-    .sb-link{justify-content:center;padding:.8rem;}
-    .main{margin-left:64px;}
-  }
-  @media(max-width:600px){
-    .main{padding:1.25rem;}
-    .stats-grid{grid-template-columns:1fr 1fr;}
-  }
+:root{--blue:#0051ff;--mint:#00e5b0;--sky:#38bdf8;--yellow:#f59e0b;--green:#22c55e;--red:#ef4444;--purple:#8b5cf6;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#060b18;color:#fff;min-height:100vh;}
+/* GATE */
+#gate{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse 70% 60% at 50% 40%,rgba(0,81,255,.07) 0%,transparent 70%);padding:2rem;}
+.gate-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:28px;padding:3rem;max-width:400px;width:100%;text-align:center;}
+.gate-icon{font-size:2.5rem;margin-bottom:1rem;}
+.gate-box h1{font-weight:800;font-size:1.5rem;margin-bottom:.35rem;}
+.gate-box p{font-size:.85rem;color:rgba(255,255,255,.3);margin-bottom:2rem;}
+.g-inp{width:100%;padding:.85rem 1rem;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.08);border-radius:12px;color:#fff;font-family:inherit;font-size:.95rem;outline:none;margin-bottom:1rem;text-align:center;letter-spacing:2px;}
+.g-inp:focus{border-color:rgba(0,81,255,.5);}
+.g-btn{width:100%;padding:.9rem;background:var(--blue);color:#fff;border:none;border-radius:12px;font-family:inherit;font-weight:800;font-size:.95rem;cursor:pointer;}
+.g-btn:hover{opacity:.9;}
+.g-err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;border-radius:10px;padding:.65rem;font-size:.82rem;margin-bottom:1rem;display:none;}
+.g-err.show{display:block;}
+/* DASHBOARD */
+#dashboard{display:none;min-height:100vh;}
+.sidebar{width:230px;position:fixed;top:0;left:0;bottom:0;background:#0a0f1e;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;z-index:50;}
+.sb-logo{padding:1.5rem;border-bottom:1px solid rgba(255,255,255,.06);}
+.sb-logo .name{font-weight:800;font-size:1.1rem;}.sb-logo .badge{display:inline-block;margin-top:.35rem;background:rgba(239,68,68,.15);color:#fca5a5;font-size:.65rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:.18rem .6rem;border-radius:50px;}
+.sb-nav{flex:1;padding:1rem 0;overflow-y:auto;}
+.sb-sec{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.18);padding:.5rem 1.25rem;margin-top:.5rem;}
+.sb-btn{display:flex;align-items:center;gap:.7rem;padding:.68rem 1.25rem;color:rgba(255,255,255,.38);border:none;background:none;font-family:inherit;font-size:.87rem;font-weight:600;cursor:pointer;width:100%;text-align:left;border-left:3px solid transparent;transition:all .2s;}
+.sb-btn:hover{color:#fff;background:rgba(255,255,255,.04);}
+.sb-btn.active{color:#fff;background:rgba(0,81,255,.1);border-left-color:var(--blue);}
+.sb-badge-count{margin-left:auto;background:var(--red);color:#fff;font-size:.65rem;font-weight:800;padding:.15rem .5rem;border-radius:50px;min-width:18px;text-align:center;}
+.sb-foot{padding:1.25rem;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:.65rem;}
+.sb-av{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--sky));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;flex-shrink:0;}
+.sb-uname{font-size:.82rem;font-weight:700;}
+.sb-role{font-size:.68rem;color:rgba(255,255,255,.3);}
+.lg-btn{margin-left:auto;background:none;border:none;color:rgba(255,255,255,.25);cursor:pointer;font-size:.9rem;transition:color .2s;}
+.lg-btn:hover{color:var(--red);}
+.main{margin-left:230px;min-height:100vh;}
+.topbar{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(10,15,30,.95);position:sticky;top:0;z-index:40;}
+.topbar h1{font-weight:800;font-size:1.2rem;}
+.topbar-date{font-size:.78rem;color:rgba(255,255,255,.25);}
+.act-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.55);padding:.48rem 1rem;border-radius:10px;font-family:inherit;font-size:.82rem;cursor:pointer;transition:all .2s;}
+.act-btn:hover{background:rgba(255,255,255,.1);color:#fff;}
+.act-btn.primary{background:var(--blue);border-color:var(--blue);color:#fff;}
+.act-btn.primary:hover{box-shadow:0 6px 18px rgba(0,81,255,.35);}
+.content{padding:2rem 2.5rem;}
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.1rem;margin-bottom:2rem;}
+.stat-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:1.4rem;}
+.stat-lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.28);margin-bottom:.5rem;}
+.stat-val{font-weight:800;font-size:1.8rem;}
+/* PANEL */
+.panel{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;overflow:hidden;margin-bottom:1.5rem;}
+.panel-head{padding:1.1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;}
+.panel-head h3{font-weight:800;font-size:.95rem;}
+/* FILTER TABS */
+.filter-tabs{display:flex;flex-wrap:wrap;gap:.5rem;}
+.ftab{padding:.35rem .85rem;border-radius:8px;border:none;background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.ftab.active{background:var(--blue);color:#fff;}
+/* ORDER ROWS */
+.order-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;padding:1.1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s;}
+.order-row:last-child{border-bottom:none;}
+.order-row:hover{background:rgba(255,255,255,.02);}
+.o-info .o-bundle{font-weight:800;color:var(--blue);font-size:.95rem;}
+.o-tags{display:flex;gap:.35rem;flex-wrap:wrap;margin:.2rem 0;}
+.o-tag{font-size:.68rem;font-weight:700;background:rgba(255,255,255,.06);color:rgba(255,255,255,.45);padding:.15rem .55rem;border-radius:6px;}
+.o-tag.agent-tag{background:rgba(0,229,176,.1);color:var(--mint);}
+.o-phone{font-weight:700;font-size:1rem;margin:.25rem 0;}
+.o-ref{font-size:.72rem;font-weight:700;color:var(--blue);font-family:monospace;letter-spacing:1px;}
+.o-price-row{display:flex;align-items:center;gap:.6rem;margin-top:.3rem;}
+.o-total{font-weight:700;color:var(--green);font-size:.88rem;}
+.o-breakdown{font-size:.72rem;color:rgba(255,255,255,.25);}
+.o-agent-profit{font-size:.75rem;color:var(--mint);font-weight:700;}
+.o-time{font-size:.72rem;color:rgba(255,255,255,.28);margin-top:.2rem;}
+.o-ref-txn{font-size:.68rem;color:rgba(255,255,255,.18);font-family:monospace;}
+.status-sel{padding:.42rem .7rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;font-family:inherit;font-size:.8rem;font-weight:600;color:#fff;outline:none;cursor:pointer;}
+.status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.sd-Pending{background:var(--yellow)}.sd-Processing{background:var(--blue)}.sd-Delivered{background:var(--green)}.sd-Failed{background:var(--red)}
+/* AGENTS TABLE */
+.agents-table{width:100%;border-collapse:collapse;}
+.agents-table th{padding:.75rem 1.5rem;text-align:left;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.25);border-bottom:1px solid rgba(255,255,255,.05);}
+.agents-table td{padding:1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle;}
+.agents-table tr:last-child td{border-bottom:none;}
+.agents-table tr:hover td{background:rgba(255,255,255,.02);}
+.a-name{font-weight:700;}
+.a-username{font-size:.78rem;color:var(--blue);font-family:monospace;}
+.a-status{font-size:.72rem;font-weight:800;padding:.22rem .7rem;border-radius:50px;color:#fff;display:inline-block;}
+.as-active{background:var(--green)}.as-pending{background:var(--yellow)}.as-banned{background:var(--red)}
+.a-wallet{font-weight:700;color:var(--mint);}
+.a-actions{display:flex;gap:.4rem;flex-wrap:wrap;}
+.a-act-btn{padding:.35rem .75rem;border-radius:8px;font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;border:none;transition:all .2s;}
+.a-act-btn.approve{background:rgba(34,197,94,.1);color:var(--green);}
+.a-act-btn.approve:hover{background:rgba(34,197,94,.2);}
+.a-act-btn.ban{background:rgba(239,68,68,.1);color:var(--red);}
+.a-act-btn.ban:hover{background:rgba(239,68,68,.2);}
+.a-act-btn.unban{background:rgba(245,158,11,.1);color:var(--yellow);}
+.a-act-btn.unban:hover{background:rgba(245,158,11,.2);}
+/* PRODUCTS GRID */
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;padding:1.5rem;}
+.prod-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:1.25rem;cursor:pointer;position:relative;transition:border-color .2s;}
+.prod-card:hover{border-color:rgba(0,81,255,.3);}
+.prod-net{font-size:.7rem;font-weight:700;background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);padding:.22rem .55rem;border-radius:6px;display:inline-block;margin-bottom:.5rem;}
+.prod-size{font-weight:800;font-size:1.2rem;}.prod-type{font-size:.7rem;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:1px;margin-top:.2rem;}
+.prod-prices{margin-top:.65rem;display:flex;flex-direction:column;gap:.3rem;}
+.price-line{display:flex;justify-content:space-between;font-size:.78rem;}
+.price-lbl{color:rgba(255,255,255,.3);}.price-val{font-weight:700;}
+.price-val.direct{color:#fff;}.price-val.agent{color:var(--mint);}
+.del-prod{position:absolute;top:.75rem;right:.75rem;width:28px;height:28px;background:rgba(239,68,68,.08);border:none;border-radius:8px;color:var(--red);cursor:pointer;font-size:.85rem;display:none;align-items:center;justify-content:center;}
+.prod-card:hover .del-prod{display:flex;}
+/* CASHOUT ROWS */
+.cashout-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;padding:1.1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.04);}
+.cashout-row:last-child{border-bottom:none;}
+.co-agent{font-weight:700;}.co-amount{font-weight:800;color:var(--mint);font-size:1rem;}
+.co-momo{font-size:.78rem;color:rgba(255,255,255,.4);}
+.co-time{font-size:.72rem;color:rgba(255,255,255,.25);}
+.co-status-badge{font-size:.72rem;font-weight:800;padding:.22rem .7rem;border-radius:50px;color:#fff;}
+.cos-pending{background:var(--yellow)}.cos-paid{background:var(--green)}.cos-rejected{background:var(--red)}
+.co-actions{display:flex;gap:.4rem;}
+/* MODALS */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:1.5rem;}
+.modal-bg.show{display:flex;}
+.modal-box{background:#0f172a;border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:2rem;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;}
+.modal-title{font-weight:800;font-size:1.15rem;margin-bottom:1.5rem;}
+.m-lbl{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.28);margin-bottom:.4rem;margin-top:.9rem;}
+.m-inp,.m-sel,.m-ta{width:100%;padding:.75rem 1rem;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.08);border-radius:10px;font-family:inherit;font-size:.88rem;color:#fff;outline:none;transition:border-color .2s;}
+.m-inp:focus,.m-sel:focus,.m-ta:focus{border-color:rgba(0,81,255,.5);}
+.m-ta{resize:none;}
+.m-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;}
+.m-sec{margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,.06);}
+.m-sec-title{font-weight:800;font-size:.95rem;margin-bottom:.75rem;color:rgba(255,255,255,.7);}
+.m-check{display:flex;align-items:center;gap:.6rem;cursor:pointer;margin-top:.5rem;}
+.m-check input{accent-color:var(--blue);width:15px;height:15px;}
+.m-check span{font-weight:600;font-size:.88rem;}
+.m-hint{font-size:.72rem;color:rgba(255,255,255,.22);margin-top:.3rem;}
+.m-btns{display:flex;gap:.75rem;margin-top:1.75rem;}
+.m-cancel{flex:1;padding:.8rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;color:rgba(255,255,255,.45);font-family:inherit;font-weight:700;cursor:pointer;}
+.m-save{flex:1;padding:.8rem;background:var(--blue);border:none;border-radius:10px;color:#fff;font-family:inherit;font-weight:800;cursor:pointer;}
+.m-save:hover{box-shadow:0 6px 18px rgba(0,81,255,.35);}
+.logo-preview-row{display:none;align-items:center;gap:.75rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:.75rem 1rem;margin-top:.5rem;}
+.logo-preview-row.show{display:flex;}
+.logo-preview-row img{width:36px;height:36px;object-fit:contain;border-radius:8px;}
+.clear-logo{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:var(--red);padding:.45rem .85rem;border-radius:8px;font-size:.72rem;font-weight:700;cursor:pointer;}
+.empty-state{padding:3rem;text-align:center;color:rgba(255,255,255,.18);font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:.75rem;}
+.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;display:inline-block;vertical-align:middle;}
+@keyframes sp{to{transform:rotate(360deg);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.content{animation:fadeUp .3s ease;}
+@media(max-width:900px){.sidebar{width:56px;}.sb-logo .name,.sb-logo .badge,.sb-btn span:last-child,.sb-badge-count,.sb-sec,.sb-uname,.sb-role{display:none;}.sb-btn{justify-content:center;padding:.8rem;}.main{margin-left:56px;}.topbar,.content{padding:0 1.25rem;}.content{padding:1.25rem;}.stats-grid{grid-template-columns:1fr 1fr;}}
+.hidden{display:none!important;}
 </style>
 </head>
 <body>
 
-<!-- ════════════════════ GATE ════════════════════ -->
+<!-- GATE -->
 <div id="gate">
   <div class="gate-box">
-    <div class="gate-top">
-      <div class="shield">🔐</div>
-      <h1>Restricted Access</h1>
-      <p>Authorised personnel only</p>
-    </div>
-
-    <div class="gate-err" id="gateErr">Incorrect password. Access denied.</div>
-
+    <div class="gate-icon">🔐</div>
+    <h1>Restricted Access</h1>
+    <p>Authorised personnel only. All access attempts are logged.</p>
+    <div class="g-err" id="gate-err">Incorrect password. Access denied.</div>
     <form onsubmit="checkAccess(event)">
-      <div class="gate-input-wrap">
-        <span class="icon">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-        </span>
-        <input type="password" id="gatePass" placeholder="Enter access code" required autocomplete="off"/>
-        <button type="button" class="pw-eye" onclick="toggleGatePw()">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" id="gateEye">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-          </svg>
-        </button>
-      </div>
-      <button type="submit" class="gate-btn">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
-        Authenticate
-      </button>
+      <input type="password" class="g-inp" id="gate-pass" placeholder="Enter access code" autocomplete="off"/>
+      <button type="submit" class="g-btn">Authenticate</button>
     </form>
-    <p class="gate-footer">Unauthorised access attempts are logged.</p>
   </div>
 </div>
 
-<!-- ════════════════════ DASHBOARD ════════════════════ -->
+<!-- DASHBOARD -->
 <div id="dashboard">
-  <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="sb-brand">
-      <div class="logo">Swift<span>Data</span></div>
+    <div class="sb-logo">
+      <div class="name">SwiftData<span style="color:var(--mint);">GH</span></div>
       <div class="badge">Admin</div>
     </div>
     <nav class="sb-nav">
-      <div class="sb-section">Main</div>
-      <a href="#" class="sb-link active"><span class="sb-icon">📊</span><span>Dashboard</span></a>
-      <a href="#" class="sb-link"><span class="sb-icon">👥</span><span>Agents</span></a>
-      <a href="#" class="sb-link"><span class="sb-icon">🔄</span><span>Transactions</span></a>
-      <a href="#" class="sb-link"><span class="sb-icon">📦</span><span>Bundles</span></a>
-      <div class="sb-section">Reports</div>
-      <a href="#" class="sb-link"><span class="sb-icon">📈</span><span>Analytics</span></a>
-      <a href="#" class="sb-link"><span class="sb-icon">📋</span><span>Reports</span></a>
-      <div class="sb-section">System</div>
-      <a href="#" class="sb-link"><span class="sb-icon">⚙️</span><span>Settings</span></a>
-      <a href="#" class="sb-link"><span class="sb-icon">📢</span><span>Announcements</span></a>
+      <div class="sb-sec">Overview</div>
+      <button class="sb-btn active" onclick="switchTab('overview')"><span>📊</span><span>Dashboard</span></button>
+      <div class="sb-sec">Operations</div>
+      <button class="sb-btn" onclick="switchTab('orders')"><span>🔄</span><span>All Orders</span><span class="sb-badge-count" id="pending-count-badge">0</span></button>
+      <button class="sb-btn" onclick="switchTab('products')"><span>📦</span><span>Products</span></button>
+      <button class="sb-btn" onclick="switchTab('agents')"><span>👥</span><span>Agents</span></button>
+      <button class="sb-btn" onclick="switchTab('cashouts')"><span>💰</span><span>Cashout Requests</span><span class="sb-badge-count" id="co-count-badge">0</span></button>
+      <div class="sb-sec">System</div>
+      <button class="sb-btn" onclick="openSettings()"><span>⚙️</span><span>Settings</span></button>
     </nav>
-    <div class="sb-footer">
-      <div class="sb-user">
-        <div class="sb-avatar">SA</div>
-        <div class="sb-user-info">
-          <div class="name">Super Admin</div>
-          <div class="role">Full Access</div>
-        </div>
-        <button class="logout-btn" onclick="logout()" title="Logout">✕</button>
-      </div>
+    <div class="sb-foot">
+      <div class="sb-av">SA</div>
+      <div><div class="sb-uname">Super Admin</div><div class="sb-role">Full Access</div></div>
+      <button class="lg-btn" onclick="doLogout()">✕</button>
     </div>
   </aside>
 
-  <!-- MAIN CONTENT -->
-  <main class="main">
-    <div class="top-bar">
-      <div>
-        <h1>Dashboard</h1>
-        <div class="date" id="dateDisplay"></div>
-      </div>
-      <div class="top-actions">
-        <button class="action-btn">Export ↓</button>
-        <button class="action-btn primary">+ Add Agent</button>
+  <div class="main">
+    <div class="topbar">
+      <div><h1 id="tab-title">Dashboard</h1><div class="topbar-date" id="topbar-date"></div></div>
+      <div style="display:flex;gap:.6rem;">
+        <button class="act-btn" onclick="openSettings()">⚙️ Settings</button>
+        <button class="act-btn primary hidden" id="add-prod-btn" onclick="openProductModal()">+ Add Product</button>
       </div>
     </div>
 
-    <!-- STATS -->
-    <div class="stats-grid">
-      <div class="stat-card blue">
-        <div class="label">Total Revenue</div>
-        <div class="value">GHS 84,320</div>
-        <div class="change up">↑ 12.4% this month</div>
-      </div>
-      <div class="stat-card mint">
-        <div class="label">Active Agents</div>
-        <div class="value">1,247</div>
-        <div class="change up">↑ 38 new this week</div>
-      </div>
-      <div class="stat-card sky">
-        <div class="label">Transactions Today</div>
-        <div class="value">3,891</div>
-        <div class="change up">↑ 7.2% vs yesterday</div>
-      </div>
-      <div class="stat-card red">
-        <div class="label">Pending Orders</div>
-        <div class="value">14</div>
-        <div class="change down">↑ 3 in last hour</div>
-      </div>
-    </div>
+    <div class="content">
 
-    <!-- AGENTS TABLE -->
-    <div class="panel">
-      <div class="panel-head">
-        <h3>Recent Agents</h3>
-        <a class="see-all">View All Agents →</a>
+      <!-- OVERVIEW -->
+      <div id="tab-overview">
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-lbl">Total Revenue</div><div class="stat-val" id="s-rev" style="color:var(--mint);">GHS 0</div></div>
+          <div class="stat-card"><div class="stat-lbl">Pending Orders</div><div class="stat-val" id="s-pending" style="color:var(--yellow);">0</div></div>
+          <div class="stat-card"><div class="stat-lbl">Delivered</div><div class="stat-val" id="s-delivered" style="color:var(--green);">0</div></div>
+          <div class="stat-card"><div class="stat-lbl">Total Orders</div><div class="stat-val" id="s-total" style="color:var(--sky);">0</div></div>
+          <div class="stat-card"><div class="stat-lbl">Active Agents</div><div class="stat-val" id="s-agents" style="color:var(--blue);">0</div></div>
+          <div class="stat-card"><div class="stat-lbl">Agent Revenue</div><div class="stat-val" id="s-agent-rev" style="color:var(--purple);">GHS 0</div></div>
+          <div class="stat-card"><div class="stat-lbl">Pending Cashouts</div><div class="stat-val" id="s-cashouts" style="color:var(--red);">0</div></div>
+          <div class="stat-card"><div class="stat-lbl">Total Products</div><div class="stat-val" id="s-prods" style="color:rgba(255,255,255,.6);">0</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>Recent Orders (All Types)</h3></div>
+          <div id="overview-orders"><div class="empty-state"><span class="spin"></span> Loading…</div></div>
+        </div>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Agent Name</th><th>Region</th><th>Sales (MTD)</th><th>Commission</th><th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>Kofi Mensah</td><td>Greater Accra</td><td>GHS 4,820</td><td>GHS 241</td><td><span class="status active">Active</span></td></tr>
-          <tr><td>Ama Asante</td><td>Ashanti</td><td>GHS 3,100</td><td>GHS 155</td><td><span class="status active">Active</span></td></tr>
-          <tr><td>Kwame Boateng</td><td>Western</td><td>GHS 980</td><td>GHS 49</td><td><span class="status pending">Pending</span></td></tr>
-          <tr><td>Abena Darko</td><td>Eastern</td><td>GHS 2,450</td><td>GHS 122</td><td><span class="status active">Active</span></td></tr>
-          <tr><td>Yaw Owusu</td><td>Volta</td><td>GHS 0</td><td>GHS 0</td><td><span class="status suspended">Suspended</span></td></tr>
-        </tbody>
-      </table>
-    </div>
 
-    <!-- TRANSACTIONS TABLE -->
-    <div class="panel">
-      <div class="panel-head">
-        <h3>Latest Transactions</h3>
-        <a class="see-all">View All →</a>
+      <!-- ORDERS -->
+      <div id="tab-orders" class="hidden">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>All Orders</h3>
+            <div class="filter-tabs">
+              <button class="ftab active" onclick="filterOrders('all',this)">All</button>
+              <button class="ftab" onclick="filterOrders('direct',this)">Direct</button>
+              <button class="ftab" onclick="filterOrders('agent_customer',this)">Agent Store</button>
+              <button class="ftab" onclick="filterOrders('Pending',this)">Pending</button>
+              <button class="ftab" onclick="filterOrders('Delivered',this)">Delivered</button>
+            </div>
+          </div>
+          <div id="orders-list"><div class="empty-state"><span class="spin"></span> Loading…</div></div>
+        </div>
       </div>
-      <table>
-        <thead>
-          <tr><th>TXN ID</th><th>Agent</th><th>Bundle</th><th>Amount</th><th>Time</th><th>Status</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>#TXN-8821</td><td>Kofi Mensah</td><td>5GB Monthly</td><td>GHS 25</td><td>2 min ago</td><td><span class="status active">Success</span></td></tr>
-          <tr><td>#TXN-8820</td><td>Ama Asante</td><td>1GB Weekly</td><td>GHS 8</td><td>5 min ago</td><td><span class="status active">Success</span></td></tr>
-          <tr><td>#TXN-8819</td><td>Abena Darko</td><td>100MB Daily</td><td>GHS 2</td><td>8 min ago</td><td><span class="status pending">Processing</span></td></tr>
-          <tr><td>#TXN-8818</td><td>Kofi Mensah</td><td>Airtime GHS 20</td><td>GHS 20</td><td>11 min ago</td><td><span class="status active">Success</span></td></tr>
-        </tbody>
-      </table>
+
+      <!-- PRODUCTS -->
+      <div id="tab-products" class="hidden">
+        <div class="panel">
+          <div class="panel-head"><h3>Products (Dual Pricing)</h3></div>
+          <div class="prod-grid" id="prod-grid"><div class="empty-state" style="grid-column:1/-1;"><span class="spin"></span> Loading…</div></div>
+        </div>
+        <p style="font-size:.78rem;color:rgba(255,255,255,.2);text-align:center;padding:.75rem;">Each product has a <strong style="color:#fff;">Direct Customer Price</strong> and an <strong style="color:var(--mint);">Agent Price</strong>. Agents add their own markup on top of agent price.</p>
+      </div>
+
+      <!-- AGENTS -->
+      <div id="tab-agents" class="hidden">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>All Agents</h3>
+            <div class="filter-tabs">
+              <button class="ftab active" onclick="filterAgents('all',this)">All</button>
+              <button class="ftab" onclick="filterAgents('active',this)">Active</button>
+              <button class="ftab" onclick="filterAgents('pending',this)">Pending</button>
+              <button class="ftab" onclick="filterAgents('banned',this)">Banned</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="agents-table">
+              <thead><tr><th>Name / Username</th><th>Email</th><th>Status</th><th>Wallet</th><th>Orders</th><th>Joined</th><th>Actions</th></tr></thead>
+              <tbody id="agents-tbody"><tr><td colspan="7" class="empty-state"><span class="spin"></span> Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- CASHOUTS -->
+      <div id="tab-cashouts" class="hidden">
+        <div class="panel">
+          <div class="panel-head"><h3>Cashout Requests</h3></div>
+          <div id="cashout-list"><div class="empty-state"><span class="spin"></span> Loading…</div></div>
+        </div>
+      </div>
+
     </div>
-  </main>
+  </div>
 </div>
 
-<script>
-  // ── Set password here (change "admin2025" to your own secure password) ──
-  const ADMIN_PASSWORD = "admin2025";
+<!-- PRODUCT MODAL -->
+<div class="modal-bg" id="prod-modal">
+  <div class="modal-box">
+    <div class="modal-title" id="prod-modal-title">Add Product</div>
+    <form onsubmit="saveProduct(event)">
+      <input type="hidden" id="prod-id"/>
+      <div class="m-grid">
+        <div><div class="m-lbl">Network</div><select id="p-net" class="m-sel"><option>MTN</option><option>Telecel</option><option>AT</option></select></div>
+        <div><div class="m-lbl">Type (SME, CG, etc)</div><input id="p-type" class="m-inp" placeholder="SME"/></div>
+      </div>
+      <div><div class="m-lbl">Data Size</div><input id="p-size" class="m-inp" placeholder="e.g. 1GB" required/></div>
+      <div class="m-sec">
+        <div class="m-sec-title">💰 Pricing (Dual Price Control)</div>
+        <div class="m-grid">
+          <div>
+            <div class="m-lbl">Direct Customer Price (GHS)</div>
+            <input id="p-direct-price" class="m-inp" type="number" step="0.01" placeholder="e.g. 12.00" required/>
+            <div class="m-hint">Price shown on main store to regular customers</div>
+          </div>
+          <div>
+            <div class="m-lbl">Agent Price (GHS)</div>
+            <input id="p-agent-price" class="m-inp" type="number" step="0.01" placeholder="e.g. 9.00" required/>
+            <div class="m-hint">Base cost for agents — they add their own markup</div>
+          </div>
+        </div>
+      </div>
+      <div><div class="m-lbl">Sort Rank (1 = top)</div><input id="p-rank" class="m-inp" type="number" placeholder="999"/></div>
+      <div class="m-btns">
+        <button type="button" class="m-cancel" onclick="closeProdModal()">Cancel</button>
+        <button type="submit" class="m-save">Save Product</button>
+      </div>
+    </form>
+  </div>
+</div>
 
-  function checkAccess(e){
-    e.preventDefault();
-    const val = document.getElementById('gatePass').value;
-    const err = document.getElementById('gateErr');
-    if(val === ADMIN_PASSWORD){
-      document.getElementById('gate').style.display = 'none';
-      document.getElementById('dashboard').style.display = 'block';
-      document.getElementById('dateDisplay').textContent = new Date().toLocaleDateString('en-GH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-    } else {
-      err.classList.add('show');
-      document.getElementById('gatePass').value = '';
-      document.getElementById('gatePass').focus();
-      setTimeout(()=>err.classList.remove('show'), 3500);
-    }
-  }
+<!-- SETTINGS MODAL -->
+<div class="modal-bg" id="settings-modal">
+  <div class="modal-box">
+    <div class="modal-title">Store Settings</div>
+    <form onsubmit="saveSettings(event)">
+      <!-- LOGO -->
+      <div class="m-sec" style="margin-top:0;padding-top:0;border:none;">
+        <div class="m-sec-title">🖼 Brand Logo</div>
+        <div class="m-hint" style="margin-bottom:.5rem;">Direct image URL. Leave blank to use default ⚡ icon.</div>
+        <div style="display:flex;gap:.6rem;align-items:center;">
+          <input id="s-logo" class="m-inp" type="url" placeholder="https://i.imgur.com/logo.png"/>
+          <button type="button" class="clear-logo" onclick="clearLogo()">Clear</button>
+        </div>
+        <div class="logo-preview-row" id="logo-preview">
+          <img id="logo-img" src="" alt=""/><span style="font-size:.78rem;color:rgba(255,255,255,.3);">Logo preview</span>
+        </div>
+      </div>
+      <!-- PAYSTACK -->
+      <div class="m-sec">
+        <div class="m-sec-title">💳 Paystack</div>
+        <div class="m-lbl">Public Key</div>
+        <input id="s-pk" class="m-inp" placeholder="pk_live_xxxxx"/>
+        <div class="m-hint">Paystack Dashboard → Settings → API Keys</div>
+        <div class="m-lbl" style="margin-top:.75rem;">Secret Key</div>
+        <input id="s-sk" class="m-inp" type="password" placeholder="sk_live_xxxxx"/>
+      </div>
+      <!-- STORE -->
+      <div class="m-sec">
+        <div class="m-sec-title">🏪 Store Status</div>
+        <label class="m-check"><input type="checkbox" id="s-open"/><span>Store is Open</span></label>
+        <div class="m-hint" style="margin-left:1.5rem;">When disabled, customers cannot place orders.</div>
+      </div>
+      <!-- ANNOUNCEMENT -->
+      <div class="m-sec">
+        <div class="m-sec-title">📢 Announcement Banner</div>
+        <label class="m-check"><input type="checkbox" id="s-ann-active"/><span>Show Announcement</span></label>
+        <div class="m-lbl" style="margin-top:.75rem;">Message</div>
+        <textarea id="s-ann-text" class="m-ta" rows="2" placeholder="Flash Sale: 20% off all MTN bundles!"></textarea>
+      </div>
+      <!-- POPUP -->
+      <div class="m-sec">
+        <div class="m-sec-title">🔔 Welcome Popup</div>
+        <div class="m-lbl">Title</div>
+        <input id="s-popup-title" class="m-inp" placeholder="Welcome to SwiftData GH 👋"/>
+        <div class="m-lbl" style="margin-top:.75rem;">Message</div>
+        <textarea id="s-popup-body" class="m-ta" rows="3" placeholder="🛎 Don't forget to..."></textarea>
+      </div>
+      <div class="m-btns">
+        <button type="button" class="m-cancel" onclick="closeSettings()">Cancel</button>
+        <button type="submit" class="m-save">Save All Settings</button>
+      </div>
+    </form>
+  </div>
+</div>
 
-  function logout(){
-    document.getElementById('dashboard').style.display = 'none';
-    document.getElementById('gate').style.display = 'flex';
-    document.getElementById('gatePass').value = '';
-  }
+<script type="module">
+import { initializeApp }      from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-  function toggleGatePw(){
-    const inp = document.getElementById('gatePass');
-    const eye = document.getElementById('gateEye');
-    if(inp.type === 'password'){
-      inp.type = 'text';
-      eye.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>';
-    } else {
-      inp.type = 'password';
-      eye.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>';
-    }
+const ADMIN_PIN="0202148015@Gh";
+const GLOBAL_ORDERS='swiftdata_global_orders';
+const APP_ID='swiftdata-main-app';
+
+const firebaseConfig={apiKey:"AIzaSyBVTQqx3fpkpUeCRO5B4N9Hb8dDxJGDIsg",authDomain:"swiftdata-32d80.firebaseapp.com",projectId:"swiftdata-32d80",storageBucket:"swiftdata-32d80.firebasestorage.app",messagingSenderId:"112123396026",appId:"1:112123396026:web:8673fe7a2e5b77e2156783"};
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+let orders=[],products=[],agents=[],cashouts=[],settings={},announcement={},popup={};
+let orderFilter='all',agentFilter='all';
+
+/* GATE */
+window.checkAccess=(e)=>{
+  e.preventDefault();
+  const val=document.getElementById('gate-pass').value;
+  const err=document.getElementById('gate-err');
+  if(val===ADMIN_PIN){
+    document.getElementById('gate').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    document.getElementById('topbar-date').textContent=new Date().toLocaleDateString('en-GH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    initData();
+  }else{
+    err.classList.add('show');document.getElementById('gate-pass').value='';
+    setTimeout(()=>err.classList.remove('show'),3500);
   }
+};
+window.doLogout=()=>{document.getElementById('dashboard').style.display='none';document.getElementById('gate').style.display='flex';document.getElementById('gate-pass').value='';};
+
+/* TABS */
+const TAB_TITLES={overview:'Dashboard',orders:'All Orders',products:'Products',agents:'Agents',cashouts:'Cashout Requests'};
+window.switchTab=(tab)=>{
+  ['overview','orders','products','agents','cashouts'].forEach(t=>{document.getElementById(`tab-${t}`).classList.toggle('hidden',t!==tab);});
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-title').textContent=TAB_TITLES[tab]||tab;
+  document.getElementById('add-prod-btn').classList.toggle('hidden',tab!=='products');
+  const map={overview:0,orders:1,products:2,agents:3,cashouts:4};
+  const btns=document.querySelectorAll('.sb-btn');
+  if(btns[map[tab]])btns[map[tab]].classList.add('active');
+};
+
+/* STATS */
+function updateStats(){
+  const rev=orders.filter(o=>o.status!=='Failed').reduce((s,o)=>s+(o.price||0),0);
+  const agentRev=orders.filter(o=>o.orderType==='agent_customer'&&o.status!=='Failed').reduce((s,o)=>s+(o.price||0),0);
+  document.getElementById('s-rev').textContent='GHS '+rev.toFixed(2);
+  document.getElementById('s-pending').textContent=orders.filter(o=>o.status==='Pending').length;
+  document.getElementById('s-delivered').textContent=orders.filter(o=>o.status==='Delivered').length;
+  document.getElementById('s-total').textContent=orders.length;
+  document.getElementById('s-agents').textContent=agents.filter(a=>a.status==='active').length;
+  document.getElementById('s-agent-rev').textContent='GHS '+agentRev.toFixed(2);
+  document.getElementById('s-cashouts').textContent=cashouts.filter(c=>c.status==='pending').length;
+  document.getElementById('s-prods').textContent=products.length;
+  const pendCount=orders.filter(o=>o.status==='Pending').length;
+  document.getElementById('pending-count-badge').textContent=pendCount;
+  document.getElementById('co-count-badge').textContent=cashouts.filter(c=>c.status==='pending').length;
+}
+
+/* ORDERS */
+function orderRowHtml(o){
+  const displayPrice=(o.price||0).toFixed(2);
+  const base=o.basePrice?`GHS ${o.basePrice.toFixed(2)}`:'';
+  const fee=o.fee?`+ GHS ${o.fee.toFixed(2)} fee`:'';
+  const isAgent=o.orderType==='agent_customer';
+  return `<div class="order-row">
+    <div class="o-info">
+      <div class="o-bundle">${o.size}</div>
+      <div class="o-tags">
+        <span class="o-tag">${o.network}</span>
+        <span class="o-tag">${o.type||'Standard'}</span>
+        ${isAgent?`<span class="o-tag agent-tag">Agent: @${o.agentUsername||'—'}</span>`:'<span class="o-tag">Direct</span>'}
+      </div>
+      <div class="o-phone">📱 ${o.recipient}</div>
+      ${o.orderRef?`<div class="o-ref">${o.orderRef}</div>`:''}
+      <div class="o-price-row">
+        <span class="o-total">GHS ${displayPrice}</span>
+        ${base?`<span class="o-breakdown">(${base} ${fee})</span>`:''}
+        ${isAgent&&o.agentProfit>0?`<span class="o-agent-profit">💰 Agent profit: GHS ${parseFloat(o.agentProfit).toFixed(2)}</span>`:''}
+      </div>
+      <div class="o-time">${o.createdAt?new Date(o.createdAt.seconds*1000).toLocaleString():'Just now'}</div>
+      ${o.paymentRef?`<div class="o-ref-txn">Ref: ${o.paymentRef}</div>`:''}
+    </div>
+    <div style="display:flex;align-items:center;gap:.6rem;flex-shrink:0;">
+      <select class="status-sel" onchange="updateOrderStatus('${o.id}',this.value)">
+        <option ${o.status==='Pending'?'selected':''}>Pending</option>
+        <option ${o.status==='Processing'?'selected':''}>Processing</option>
+        <option ${o.status==='Delivered'?'selected':''}>Delivered</option>
+        <option ${o.status==='Failed'?'selected':''}>Failed</option>
+      </select>
+      <div class="status-dot sd-${o.status}"></div>
+    </div>
+  </div>`;
+}
+
+function renderOrders(){
+  let filtered=orders;
+  if(orderFilter==='direct') filtered=orders.filter(o=>o.orderType==='direct'||!o.orderType);
+  else if(orderFilter==='agent_customer') filtered=orders.filter(o=>o.orderType==='agent_customer');
+  else if(['Pending','Processing','Delivered','Failed'].includes(orderFilter)) filtered=orders.filter(o=>o.status===orderFilter);
+  const el=document.getElementById('orders-list');
+  el.innerHTML=filtered.length?filtered.map(orderRowHtml).join(''):'<div class="empty-state">No orders found.</div>';
+  // Overview
+  const ovEl=document.getElementById('overview-orders');
+  ovEl.innerHTML=orders.slice(0,8).map(orderRowHtml).join('')||'<div class="empty-state">No orders yet.</div>';
+}
+
+window.filterOrders=(filter,btn)=>{
+  orderFilter=filter;
+  document.querySelectorAll('#tab-orders .ftab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');renderOrders();
+};
+
+window.updateOrderStatus=async(id,status)=>{
+  try{await updateDoc(doc(db,GLOBAL_ORDERS,id),{status,updatedAt:serverTimestamp()});}
+  catch(e){console.error(e);alert('Failed to update order status.');}
+};
+
+/* PRODUCTS */
+function renderProducts(){
+  const el=document.getElementById('prod-grid');
+  if(!products.length){el.innerHTML='<div class="empty-state" style="grid-column:1/-1;">No products yet.</div>';return;}
+  el.innerHTML=products.map(p=>`
+    <div class="prod-card" onclick="openProductModal('${p.id}')">
+      <div class="prod-net">${p.network}</div>
+      <div class="prod-size">${p.size}</div>
+      <div class="prod-type">${p.type||''} · Rank ${p.rank||999}</div>
+      <div class="prod-prices">
+        <div class="price-line"><span class="price-lbl">Direct price:</span><span class="price-val direct">GHS ${parseFloat(p.direct_price||p.price||0).toFixed(2)}</span></div>
+        <div class="price-line"><span class="price-lbl">Agent price:</span><span class="price-val agent">GHS ${parseFloat(p.agent_price||0).toFixed(2)}</span></div>
+      </div>
+      <button class="del-prod" onclick="event.stopPropagation();deleteProd('${p.id}')">🗑</button>
+    </div>`).join('');
+}
+
+window.openProductModal=(id=null)=>{
+  document.getElementById('prod-modal').classList.add('show');
+  document.getElementById('prod-id').value=id||'';
+  if(id){
+    const p=products.find(x=>x.id===id);
+    document.getElementById('prod-modal-title').textContent='Edit Product';
+    document.getElementById('p-net').value=p.network;
+    document.getElementById('p-type').value=p.type||'';
+    document.getElementById('p-size').value=p.size;
+    document.getElementById('p-direct-price').value=p.direct_price||p.price||'';
+    document.getElementById('p-agent-price').value=p.agent_price||'';
+    document.getElementById('p-rank').value=p.rank||'';
+  }else{
+    document.getElementById('prod-modal-title').textContent='Add Product';
+    ['p-type','p-size','p-direct-price','p-agent-price','p-rank'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('p-net').value='MTN';
+  }
+};
+window.closeProdModal=()=>document.getElementById('prod-modal').classList.remove('show');
+
+window.saveProduct=async(e)=>{
+  e.preventDefault();
+  const id=document.getElementById('prod-id').value;
+  const data={
+    network:document.getElementById('p-net').value,
+    type:document.getElementById('p-type').value,
+    size:document.getElementById('p-size').value,
+    direct_price:parseFloat(document.getElementById('p-direct-price').value),
+    agent_price:parseFloat(document.getElementById('p-agent-price').value),
+    price:parseFloat(document.getElementById('p-direct-price').value),// backwards compat
+    rank:parseInt(document.getElementById('p-rank').value)||999
+  };
+  try{
+    if(id) await updateDoc(doc(db,'artifacts',APP_ID,'public','data','products',id),data);
+    else   await addDoc(collection(db,'artifacts',APP_ID,'public','data','products'),data);
+    closeProdModal();
+  }catch(e){console.error(e);alert('Error saving product.');}
+};
+
+window.deleteProd=async(id)=>{
+  if(!confirm('Delete this product?'))return;
+  try{await deleteDoc(doc(db,'artifacts',APP_ID,'public','data','products',id));}
+  catch(e){console.error(e);alert('Error deleting.');}
+};
+
+/* AGENTS */
+function renderAgents(){
+  const tbody=document.getElementById('agents-tbody');
+  let filtered=agents;
+  if(agentFilter!=='all') filtered=agents.filter(a=>a.status===agentFilter);
+  if(!filtered.length){tbody.innerHTML='<tr><td colspan="7" class="empty-state">No agents found.</td></tr>';return;}
+  tbody.innerHTML=filtered.map(a=>`
+    <tr>
+      <td><div class="a-name">${a.name||'—'}</div><div class="a-username">@${a.username||'—'}</div></td>
+      <td style="font-size:.82rem;color:rgba(255,255,255,.5);">${a.email||'—'}</td>
+      <td><span class="a-status as-${a.status||'pending'}">${a.status||'pending'}</span></td>
+      <td class="a-wallet">GHS ${parseFloat(a.walletBalance||0).toFixed(2)}</td>
+      <td style="font-weight:700;">${a.totalOrders||0}</td>
+      <td style="font-size:.75rem;color:rgba(255,255,255,.3);">${a.createdAt?new Date(a.createdAt.seconds*1000).toLocaleDateString():'—'}</td>
+      <td>
+        <div class="a-actions">
+          ${a.status==='pending'?`<button class="a-act-btn approve" onclick="updateAgentStatus('${a.uid}','active')">Approve</button>`:''}
+          ${a.status==='active'?`<button class="a-act-btn ban" onclick="updateAgentStatus('${a.uid}','banned')">Ban</button>`:''}
+          ${a.status==='banned'?`<button class="a-act-btn unban" onclick="updateAgentStatus('${a.uid}','active')">Unban</button>`:''}
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+window.filterAgents=(filter,btn)=>{
+  agentFilter=filter;
+  document.querySelectorAll('#tab-agents .ftab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');renderAgents();
+};
+
+window.updateAgentStatus=async(uid,status)=>{
+  const action=status==='banned'?'ban':'change status of';
+  if(!confirm(`Are you sure you want to ${action} this agent?`))return;
+  try{await updateDoc(doc(db,'swiftdata_agents',uid),{status,updatedAt:serverTimestamp()});alert(`Agent status updated to: ${status}`);}
+  catch(e){console.error(e);alert('Error updating agent.');}
+};
+
+/* CASHOUTS */
+function renderCashouts(){
+  const el=document.getElementById('cashout-list');
+  if(!cashouts.length){el.innerHTML='<div class="empty-state">No cashout requests yet.</div>';return;}
+  el.innerHTML=cashouts.map(c=>`
+    <div class="cashout-row">
+      <div>
+        <div class="co-agent">${c.agentName||'—'} <span style="color:var(--blue);font-size:.78rem;">@${c.agentUsername||'—'}</span></div>
+        <div class="co-amount">GHS ${parseFloat(c.amount||0).toFixed(2)}</div>
+        <div class="co-momo">📱 ${c.momoNumber||'—'} (${c.momoNetwork||'—'}) · ${c.accountName||'—'}</div>
+        <div class="co-time">${c.createdAt?new Date(c.createdAt.seconds*1000).toLocaleString():'—'}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;">
+        <span class="co-status-badge cos-${c.status||'pending'}">${c.status||'Pending'}</span>
+        ${c.status==='pending'?`
+          <div class="co-actions">
+            <button class="a-act-btn approve" onclick="processCashout('${c.id}','paid')">Mark Paid</button>
+            <button class="a-act-btn ban" onclick="processCashout('${c.id}','rejected')">Reject</button>
+          </div>`:''
+        }
+      </div>
+    </div>`).join('');
+}
+
+window.processCashout=async(id,status)=>{
+  const action=status==='paid'?'mark as paid':'reject';
+  if(!confirm(`${action.charAt(0).toUpperCase()+action.slice(1)} this cashout request?`))return;
+  try{
+    await updateDoc(doc(db,'swiftdata_cashout_requests',id),{status,processedAt:serverTimestamp()});
+    alert(`Cashout ${status==='paid'?'marked as paid!':'rejected.'}`);
+  }catch(e){console.error(e);alert('Error processing cashout.');}
+};
+
+/* SETTINGS */
+window.openSettings=()=>{
+  document.getElementById('settings-modal').classList.add('show');
+  document.getElementById('s-pk').value=settings.paystackPublicKey||'';
+  document.getElementById('s-sk').value=settings.paystackSecretKey||'';
+  document.getElementById('s-open').checked=settings.storeOpen!==false;
+  document.getElementById('s-ann-active').checked=announcement.active||false;
+  document.getElementById('s-ann-text').value=announcement.text||'';
+  document.getElementById('s-popup-title').value=popup.title||'';
+  document.getElementById('s-popup-body').value=popup.body||'';
+  const logoUrl=settings.logoUrl||'';
+  document.getElementById('s-logo').value=logoUrl;
+  const prev=document.getElementById('logo-preview'),img=document.getElementById('logo-img');
+  if(logoUrl){img.src=logoUrl;prev.classList.add('show');}else{prev.classList.remove('show');}
+  document.getElementById('s-logo').oninput=()=>{
+    const v=document.getElementById('s-logo').value.trim();
+    if(v){img.src=v;prev.classList.add('show');}else{prev.classList.remove('show');}
+  };
+};
+window.closeSettings=()=>document.getElementById('settings-modal').classList.remove('show');
+window.clearLogo=()=>{document.getElementById('s-logo').value='';document.getElementById('logo-preview').classList.remove('show');};
+window.saveSettings=async(e)=>{
+  e.preventDefault();
+  try{
+    await setDoc(doc(db,'artifacts',APP_ID,'public','data','config','settings_doc'),{paystackPublicKey:document.getElementById('s-pk').value,paystackSecretKey:document.getElementById('s-sk').value,storeOpen:document.getElementById('s-open').checked,logoUrl:document.getElementById('s-logo').value.trim()});
+    await setDoc(doc(db,'artifacts',APP_ID,'public','data','config','announcement_doc'),{active:document.getElementById('s-ann-active').checked,text:document.getElementById('s-ann-text').value});
+    await setDoc(doc(db,'artifacts',APP_ID,'public','data','config','popup_doc'),{title:document.getElementById('s-popup-title').value||'Welcome to SwiftData GH 👋',body:document.getElementById('s-popup-body').value||"🛎 Don't forget to follow our WhatsApp channel!"});
+    closeSettings();alert('Settings saved!');
+  }catch(e){console.error(e);alert('Error saving settings.');}
+};
+
+/* FIREBASE INIT */
+function initData(){
+  onSnapshot(doc(db,'artifacts',APP_ID,'public','data','config','settings_doc'),d=>{if(d.exists())settings=d.data();});
+  onSnapshot(doc(db,'artifacts',APP_ID,'public','data','config','announcement_doc'),d=>{if(d.exists())announcement=d.data();});
+  onSnapshot(doc(db,'artifacts',APP_ID,'public','data','config','popup_doc'),d=>{if(d.exists())popup=d.data();});
+  onSnapshot(collection(db,'artifacts',APP_ID,'public','data','products'),snap=>{products=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.rank||999)-(b.rank||999));renderProducts();updateStats();});
+  onSnapshot(collection(db,GLOBAL_ORDERS),snap=>{orders=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));renderOrders();updateStats();});
+  onSnapshot(collection(db,'swiftdata_agents'),snap=>{agents=snap.docs.map(d=>({...d.data(),_id:d.id})).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));renderAgents();updateStats();});
+  onSnapshot(collection(db,'swiftdata_cashout_requests'),snap=>{cashouts=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));renderCashouts();updateStats();});
+}
+
+signInAnonymously(auth).catch(e=>console.error(e));
 </script>
 </body>
 </html>
