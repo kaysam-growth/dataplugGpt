@@ -1,0 +1,13 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/",               "destination": "/home.html"          },
+    { "source": "/home",           "destination": "/home.html"          },
+    { "source": "/track",          "destination": "/track.html"         },
+    { "source": "/agent.login",    "destination": "/agent-login.html"   },
+    { "source": "/agent.dashboard","destination": "/agent-dashboard.html"},
+    { "source": "/store",          "destination": "/store.html"         },
+    { "source": "/panel.admin",    "destination": "/admin.html"         }
+  ]
+}
