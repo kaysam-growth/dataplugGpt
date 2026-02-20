@@ -16,7 +16,7 @@ nav{height:64px;display:flex;align-items:center;border-bottom:1px solid rgba(255
 .nav-inner{max-width:1100px;margin:0 auto;width:100%;padding:0 5%;display:flex;align-items:center;justify-content:space-between;}
 .logo{font-weight:800;font-size:1.25rem;color:#fff;text-decoration:none;letter-spacing:-.3px;}
 .logo span{color:var(--mint);}
-.nav-home{color:rgba(255,255,255,.45);text-decoration:none;font-size:.85rem;font-weight:600;display:flex;align-items:center;gap:.4rem;transition:color .2s;}
+.nav-home{color:rgba(255,255,255,.45);text-decoration:none;font-size:.85rem;font-weight:600;transition:color .2s;}
 .nav-home:hover{color:#fff;}
 .page-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem 1.5rem;}
 .auth-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:28px;padding:2.5rem;max-width:480px;width:100%;backdrop-filter:blur(20px);animation:fadeUp .35s ease;}
@@ -31,7 +31,6 @@ nav{height:64px;display:flex;align-items:center;border-bottom:1px solid rgba(255
 .finput{width:100%;padding:.82rem 1rem;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.08);border-radius:12px;color:#fff;font-family:inherit;font-size:.92rem;outline:none;transition:border-color .2s;margin-bottom:.85rem;}
 .finput::placeholder{color:rgba(255,255,255,.2);}
 .finput:focus{border-color:rgba(0,81,255,.5);background:rgba(0,81,255,.05);}
-.finput.error{border-color:rgba(239,68,68,.5);}
 .pw-wrap{position:relative;}
 .pw-wrap .finput{padding-right:3rem;margin-bottom:0;}
 .pw-eye{position:absolute;right:.85rem;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:.9rem;}
@@ -49,7 +48,7 @@ nav{height:64px;display:flex;align-items:center;border-bottom:1px solid rgba(255
 .submit-btn:disabled{opacity:.4;cursor:not-allowed;}
 .submit-btn.mint-btn{background:linear-gradient(135deg,var(--mint),#00b4d8);color:#0a1020;}
 .submit-btn.mint-btn:hover:not(:disabled){box-shadow:0 10px 28px rgba(0,229,176,.35);}
-.err-box{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;border-radius:10px;padding:.7rem 1rem;font-size:.83rem;margin-bottom:1rem;display:none;line-height:1.5;}
+.err-box{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;border-radius:10px;padding:.7rem 1rem;font-size:.83rem;margin-bottom:1rem;display:none;line-height:1.55;}
 .err-box.show{display:block;}
 .success-box{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#86efac;border-radius:10px;padding:.7rem 1rem;font-size:.83rem;margin-bottom:1rem;display:none;}
 .success-box.show{display:block;}
@@ -70,7 +69,6 @@ footer{text-align:center;padding:1.25rem;font-size:.75rem;color:rgba(255,255,255
     <a href="/index.html" class="nav-home">← Back to Store</a>
   </div>
 </nav>
-
 <div class="page-wrap">
   <div class="auth-card">
     <div class="auth-tabs">
@@ -78,7 +76,7 @@ footer{text-align:center;padding:1.25rem;font-size:.75rem;color:rgba(255,255,255
       <button class="auth-tab" id="tab-login" onclick="switchTab('login')">Login</button>
     </div>
 
-    <!-- SIGNUP FORM -->
+    <!-- SIGNUP -->
     <div class="auth-form show" id="form-signup">
       <div class="form-title">Become an Agent ⚡</div>
       <div class="form-sub">Sign up, pay the one-time activation fee, and get your own store dashboard immediately.</div>
@@ -89,7 +87,7 @@ footer{text-align:center;padding:1.25rem;font-size:.75rem;color:rgba(255,255,255
         <input class="finput" type="text" id="su-name" placeholder="e.g. Kwame's Data Store" required/>
         <div class="flabel">Username (your store link ID)</div>
         <input class="finput" type="text" id="su-username" placeholder="e.g. kwame123" required oninput="sanitizeUsername(this)"/>
-        <div class="field-hint">Your store link will be: swiftdatagh.vercel.app/store?agent=kwame123</div>
+        <div class="field-hint">Your store link: swiftdatagh.vercel.app/store?agent=kwame123</div>
         <div class="flabel">Email Address</div>
         <input class="finput" type="email" id="su-email" placeholder="your@email.com" required/>
         <div class="flabel">Password</div>
@@ -99,23 +97,19 @@ footer{text-align:center;padding:1.25rem;font-size:.75rem;color:rgba(255,255,255
         </div>
         <div class="flabel">Phone Number</div>
         <input class="finput" type="tel" id="su-phone" placeholder="05XXXXXXXX" maxlength="10" inputmode="numeric"/>
-
         <div class="fee-box">
           <div class="fee-box-title">⚡ Store Activation Fee</div>
           <div class="fee-row"><span>One-time activation</span><strong>GHS 24.39</strong></div>
           <div class="fee-row"><span>Platform fee (2.5%)</span><strong>GHS 0.61</strong></div>
           <div class="fee-total"><span>Total (via Paystack)</span><span class="amount">GHS 25.00</span></div>
         </div>
-
-        <button type="submit" class="submit-btn mint-btn" id="signup-btn">
-          Register & Pay GHS 25 →
-        </button>
+        <button type="submit" class="submit-btn mint-btn" id="signup-btn">Register & Pay GHS 25 →</button>
       </form>
       <div class="or-divider">Already have an account?</div>
       <div class="switch-link"><button onclick="switchTab('login')">Login to your dashboard</button></div>
     </div>
 
-    <!-- LOGIN FORM -->
+    <!-- LOGIN -->
     <div class="auth-form" id="form-login">
       <div class="form-title">Welcome Back 👋</div>
       <div class="form-sub">Log in to access your agent dashboard and manage your store.</div>
@@ -143,128 +137,106 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInAnonymously,       // ← KEY FIX: we sign in anonymously first so Firestore queries are authenticated
   onAuthStateChanged,
-  signOut
+  signOut,
+  linkWithCredential,
+  EmailAuthProvider
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 import {
   getFirestore,
-  collection,
-  doc,
-  setDoc,
-  getDoc,
-  getDocs,
-  deleteDoc,   // FIX: Use SDK deleteDoc instead of REST fetch
-  query,
-  where,
-  serverTimestamp
+  collection, doc, setDoc, getDoc, getDocs,
+  deleteDoc, query, where, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCs7lN4itvWZPichtFLdEE4swNQHSX_j1M",
-  authDomain: "dataplus-a93c7.firebaseapp.com",
-  projectId: "dataplus-a93c7",
-  storageBucket: "dataplus-a93c7.firebasestorage.app",
-  messagingSenderId: "1040979049946",
-  appId: "1:1040979049946:web:d5d7957a6c209f56dd94e3",
-  measurementId: "G-GW9DNT0DQ0"
+  apiKey: "AIzaSyBVTQqx3fpkpUeCRO5B4N9Hb8dDxJGDIsg",
+  authDomain: "swiftdata-32d80.firebaseapp.com",
+  projectId: "swiftdata-32d80",
+  storageBucket: "swiftdata-32d80.firebasestorage.app",
+  messagingSenderId: "112123396026",
+  appId: "1:112123396026:web:8673fe7a2e5b77e2156783",
+  measurementId: "G-GPS00TXFLD"
 };
-
 const APP_ID = 'swiftdata-main-app';
 
-let app, auth, db;
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-// FIX: Wrap Firebase init in try-catch to surface config errors clearly
-try {
-  app = initializeApp(firebaseConfig);
-  auth = getAuth(app);
-  db = getFirestore(app);
-} catch (e) {
-  console.error('Firebase init failed:', e);
-  showErr('signup-err', '⚠️ Firebase configuration error. Please contact the site administrator.');
-  showErr('login-err', '⚠️ Firebase configuration error. Please contact the site administrator.');
-}
-
-// ─── Redirect if already logged in as active agent ───────────────────────────
-onAuthStateChanged(auth, async user => {
-  if (!user) return;
-  try {
-    const agentDoc = await getDoc(doc(db, 'swiftdata_agents', user.uid));
-    if (agentDoc.exists() && agentDoc.data().status === 'active') {
-      window.location.href = '/agent.dashboard';
-    }
-  } catch (e) {
-    console.warn('Could not check agent status:', e.message);
-  }
-});
+// ─── Auth error messages ────────────────────────────────────────────────────
+const AUTH_ERRORS = {
+  'auth/email-already-in-use':    'This email is already registered. Please log in instead.',
+  'auth/weak-password':           'Password must be at least 6 characters.',
+  'auth/invalid-email':           'Please enter a valid email address.',
+  'auth/user-not-found':          'No account found with that email address.',
+  'auth/wrong-password':          'Incorrect password. Please try again.',
+  'auth/invalid-credential':      'Incorrect email or password.',
+  'auth/too-many-requests':       'Too many failed attempts. Please wait a few minutes and try again.',
+  'auth/user-disabled':           'This account has been disabled. Contact support.',
+  'auth/network-request-failed':  'Network error. Check your connection and try again.',
+  'auth/operation-not-allowed':   '⚠️ Email/Password sign-in is not enabled. Please enable it in Firebase Console → Authentication → Sign-in method.',
+  'auth/configuration-not-found': '⚠️ Firebase Auth is not configured. Contact the administrator.',
+  'auth/credential-already-in-use': 'This email is already linked to another account.'
+};
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
+function showErr(id, msg) { const el = document.getElementById(id); if (!el) return; el.textContent = msg; el.classList.add('show'); }
+function hideErr(id) { const el = document.getElementById(id); if (el) el.classList.remove('show'); }
+function setBtn(id, html, disabled = false) { const b = document.getElementById(id); if (!b) return; b.innerHTML = html; b.disabled = disabled; }
+
 window.switchTab = (tab) => {
   document.getElementById('form-signup').classList.toggle('show', tab === 'signup');
   document.getElementById('form-login').classList.toggle('show', tab === 'login');
   document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
   document.getElementById('tab-login').classList.toggle('active', tab === 'login');
 };
+window.sanitizeUsername = (inp) => { inp.value = inp.value.toLowerCase().replace(/[^a-z0-9_]/g, '').substring(0, 20); };
+window.togglePw = (id) => { const i = document.getElementById(id); i.type = i.type === 'password' ? 'text' : 'password'; };
 
-window.sanitizeUsername = (inp) => {
-  inp.value = inp.value.toLowerCase().replace(/[^a-z0-9_]/g, '').substring(0, 20);
-};
+// ─── KEY FIX: sign in anonymously first so Firestore security rules pass ───
+// The Firestore rules require request.auth != null for agent reads/writes.
+// Without this, getDocs(query(...)) fails with permission-denied even if
+// Email/Password is fully enabled, because the user is NOT authenticated yet.
+let anonReady = false;
+signInAnonymously(auth)
+  .then(() => { anonReady = true; })
+  .catch(e => {
+    console.warn('Anonymous sign-in failed:', e.code);
+    // Still allow the page to work — it just means username check may fail
+    anonReady = true;
+  });
 
-window.togglePw = (id) => {
-  const i = document.getElementById(id);
-  i.type = i.type === 'password' ? 'text' : 'password';
-};
+// ─── Redirect already-active agents ─────────────────────────────────────────
+onAuthStateChanged(auth, async user => {
+  if (!user || user.isAnonymous) return;
+  try {
+    const agentDoc = await getDoc(doc(db, 'swiftdata_agents', user.uid));
+    if (agentDoc.exists() && agentDoc.data().status === 'active') {
+      window.location.href = '/agent.dashboard';
+    }
+  } catch (e) { console.warn('Status check failed:', e.message); }
+});
 
-function showErr(id, msg) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.textContent = msg;
-  el.classList.add('show');
-}
-function hideErr(id) {
-  const el = document.getElementById(id);
-  if (el) el.classList.remove('show');
-}
-function showSuccess(id, msg) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.textContent = msg;
-  el.classList.add('show');
-}
-
-function setBtn(id, html, disabled = false) {
-  const btn = document.getElementById(id);
-  if (!btn) return;
-  btn.innerHTML = html;
-  btn.disabled = disabled;
-}
-
-// ─── Get Paystack public key ──────────────────────────────────────────────────
+// ─── Get Paystack key ────────────────────────────────────────────────────────
 async function getPaystackKey() {
   try {
     const d = await getDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config', 'settings_doc'));
-    return d.exists() ? (d.data().paystackPublicKey ||pk_live_6d3e8e97e00804864eb1cb0607fe40d32b5af8a9 '') : '';
-  } catch {
-    return '';
-  }
+    return d.exists() ? (d.data().paystackPublicKey || '') : '';
+  } catch { return ''; }
 }
 
-// ─── Check username availability ─────────────────────────────────────────────
+// ─── Username availability ───────────────────────────────────────────────────
 async function isUsernameAvailable(username) {
   const q = query(collection(db, 'swiftdata_agents'), where('username', '==', username));
   const snap = await getDocs(q);
   return snap.empty;
 }
 
-// ─── SIGNUP ───────────────────────────────────────────────────────────────────
+// ─── SIGNUP ──────────────────────────────────────────────────────────────────
 window.handleSignup = async (e) => {
   e.preventDefault();
   hideErr('signup-err');
-  hideErr('signup-success');
-
-  if (!auth || !db) {
-    showErr('signup-err', '⚠️ Firebase not initialized. Please refresh the page and try again.');
-    return;
-  }
 
   const name     = document.getElementById('su-name').value.trim();
   const username = document.getElementById('su-username').value.trim().toLowerCase();
@@ -272,17 +244,16 @@ window.handleSignup = async (e) => {
   const pass     = document.getElementById('su-pass').value;
   const phone    = document.getElementById('su-phone').value.replace(/\D/g, '');
 
-  // ── Validation ──
-  if (!name) { showErr('signup-err', 'Please enter your full name or store name.'); return; }
+  if (!name)                          { showErr('signup-err', 'Please enter your full name or store name.'); return; }
   if (!username || username.length < 3) { showErr('signup-err', 'Username must be at least 3 characters.'); return; }
   if (!/^[a-z0-9_]+$/.test(username)) { showErr('signup-err', 'Username can only contain letters, numbers, and underscores.'); return; }
-  if (!email) { showErr('signup-err', 'Please enter a valid email address.'); return; }
-  if (pass.length < 6) { showErr('signup-err', 'Password must be at least 6 characters.'); return; }
+  if (!email)                          { showErr('signup-err', 'Please enter a valid email address.'); return; }
+  if (pass.length < 6)                 { showErr('signup-err', 'Password must be at least 6 characters.'); return; }
 
-  setBtn('signup-btn', '<span class="spin"></span> Checking username…', true);
+  setBtn('signup-btn', '<span class="spin"></span> Checking…', true);
 
   try {
-    // ── Check username uniqueness ──
+    // Check username (works because we're signed in anonymously)
     const available = await isUsernameAvailable(username);
     if (!available) {
       showErr('signup-err', 'That username is already taken. Please choose another.');
@@ -290,96 +261,82 @@ window.handleSignup = async (e) => {
       return;
     }
 
-    // ── Get Paystack key ──
     const psKey = await getPaystackKey();
 
     if (!psKey) {
-      // Demo mode — no payment required
-      await completeFreeSignup({ name, username, email, phone }, email, pass, 'DEMO_ACTIVATION_' + Date.now());
+      // Demo mode — skip payment
+      await completeSignup(name, username, email, pass, phone, 'DEMO_ACTIVATION_' + Date.now());
       return;
     }
 
     setBtn('signup-btn', '<span class="spin"></span> Creating account…', true);
 
-    // ── Create Firebase auth account first (as pending) ──
+    // ── Create the email/password account ──────────────────────────────────
+    // STRATEGY: We use createUserWithEmailAndPassword directly (not linking from anon).
+    // The anonymous session is just for Firestore reads. We sign out of anon first
+    // so there's no conflict, then create the real account.
+    const currentUser = auth.currentUser;
+    if (currentUser && currentUser.isAnonymous) {
+      await signOut(auth);
+    }
+
     let userCred;
     try {
       userCred = await createUserWithEmailAndPassword(auth, email, pass);
     } catch (authErr) {
-      const msgs = {
-        'auth/email-already-in-use': 'This email is already registered. Please log in instead.',
-        'auth/weak-password': 'Password must be at least 6 characters.',
-        'auth/invalid-email': 'Please enter a valid email address.',
-        'auth/operation-not-allowed': '⚠️ Email/Password sign-in is not enabled. Please contact the administrator to enable it in Firebase Console.',
-        'auth/configuration-not-found': '⚠️ Firebase Auth is not configured correctly. Contact the administrator.'
-      };
-      showErr('signup-err', msgs[authErr.code] || 'Registration error: ' + authErr.message);
+      showErr('signup-err', AUTH_ERRORS[authErr.code] || 'Registration error: ' + authErr.message);
       setBtn('signup-btn', 'Register & Pay GHS 25 →', false);
+      // Re-sign-in anonymously so the page works again
+      signInAnonymously(auth).catch(() => {});
       return;
     }
 
     const uid = userCred.user.uid;
 
-    // ── Save pending agent record ──
+    // Save pending agent record
     await setDoc(doc(db, 'swiftdata_agents', uid), {
       uid, name, username, email, phone,
-      status: 'pending',
-      walletBalance: 0,
-      totalEarned: 0,
-      totalOrders: 0,
-      createdAt: serverTimestamp(),
-      paymentRef: null
+      status: 'pending', walletBalance: 0, totalEarned: 0, totalOrders: 0,
+      createdAt: serverTimestamp(), paymentRef: null
     });
 
     setBtn('signup-btn', '<span class="spin"></span> Loading payment…', true);
 
-    // ── Launch Paystack ──
+    // Launch Paystack
     const ps = new PaystackPop();
     ps.newTransaction({
-      key: psKey,
-      email,
+      key: psKey, email,
       amount: 2500, // GHS 25.00 in pesewas
       currency: 'GHS',
       ref: 'AGENT_ACT_' + Date.now() + '_' + uid.substring(0, 8),
       metadata: { uid, username, name, type: 'agent_activation' },
 
       onSuccess: async (tx) => {
-        setBtn('signup-btn', '<span class="spin"></span> Activating account…', true);
+        setBtn('signup-btn', '<span class="spin"></span> Activating…', true);
         try {
           await setDoc(doc(db, 'swiftdata_agents', uid), {
-            uid, name, username, email, phone,
-            status: 'active',
-            walletBalance: 0,
-            totalEarned: 0,
-            totalOrders: 0,
-            createdAt: serverTimestamp(),
-            activatedAt: serverTimestamp(),
-            paymentRef: tx.reference,
-            activationFee: 25
+            uid, name, username, email, phone, status: 'active',
+            walletBalance: 0, totalEarned: 0, totalOrders: 0,
+            createdAt: serverTimestamp(), activatedAt: serverTimestamp(),
+            paymentRef: tx.reference, activationFee: 25
           }, { merge: true });
           window.location.href = '/agent.dashboard';
         } catch (err) {
           console.error('Activation write failed:', err);
-          showErr('signup-err', 'Payment received but account activation failed. Please contact support with reference: ' + tx.reference);
+          showErr('signup-err', '⚠️ Payment received but activation failed. Contact support with ref: ' + tx.reference);
           setBtn('signup-btn', 'Register & Pay GHS 25 →', false);
         }
       },
 
       onCancel: async () => {
-        // FIX: Use Firestore SDK deleteDoc (not REST fetch which bypasses auth)
-        try {
-          await deleteDoc(doc(db, 'swiftdata_agents', uid));
-        } catch (delErr) {
-          console.warn('Could not delete pending agent doc:', delErr.message);
-        }
-        try {
-          await userCred.user.delete();
-        } catch (delUserErr) {
-          console.warn('Could not delete pending user:', delUserErr.message);
-        }
+        // Clean up: delete pending Firestore doc and Firebase auth user
+        try { await deleteDoc(doc(db, 'swiftdata_agents', uid)); } catch (er) { console.warn(er); }
+        try { await userCred.user.delete(); } catch (er) { console.warn(er); }
         try { await signOut(auth); } catch {}
+        // Restore anonymous session for future use
+        signInAnonymously(auth).catch(() => {});
         setBtn('signup-btn', 'Register & Pay GHS 25 →', false);
-        showErr('signup-err', 'Payment was cancelled. Your account was not created. Please try again.');
+        showErr('signup-err', 'Payment cancelled. Your account was not created. Please try again.');
       }
     });
 
@@ -390,102 +347,78 @@ window.handleSignup = async (e) => {
   }
 };
 
-// ─── Demo / free signup (no Paystack key set) ─────────────────────────────────
-async function completeFreeSignup(data, email, pass, payRef) {
+// ─── Demo / free signup ──────────────────────────────────────────────────────
+async function completeSignup(name, username, email, pass, phone, payRef) {
   setBtn('signup-btn', '<span class="spin"></span> Creating account…', true);
+  const currentUser = auth.currentUser;
+  if (currentUser && currentUser.isAnonymous) await signOut(auth);
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
     const uid = cred.user.uid;
     await setDoc(doc(db, 'swiftdata_agents', uid), {
-      uid,
-      name: data.name,
-      username: data.username,
-      email,
-      phone: data.phone || '',
-      status: 'active',
-      walletBalance: 0,
-      totalEarned: 0,
-      totalOrders: 0,
-      createdAt: serverTimestamp(),
-      activatedAt: serverTimestamp(),
-      paymentRef: payRef,
-      activationFee: 0,
-      isDemoAccount: true
+      uid, name, username, email, phone: phone || '',
+      status: 'active', walletBalance: 0, totalEarned: 0, totalOrders: 0,
+      createdAt: serverTimestamp(), activatedAt: serverTimestamp(),
+      paymentRef: payRef, activationFee: 0, isDemoAccount: true
     });
     window.location.href = '/agent.dashboard';
   } catch (err) {
-    const msgs = {
-      'auth/email-already-in-use': 'This email is already registered. Please log in instead.',
-      'auth/operation-not-allowed': '⚠️ Email/Password sign-in is not enabled in Firebase Console.',
-      'auth/weak-password': 'Password must be at least 6 characters.'
-    };
-    showErr('signup-err', msgs[err.code] || err.message);
+    showErr('signup-err', AUTH_ERRORS[err.code] || err.message);
     setBtn('signup-btn', 'Register & Pay GHS 25 →', false);
+    signInAnonymously(auth).catch(() => {});
   }
 }
 
-// ─── LOGIN ────────────────────────────────────────────────────────────────────
+// ─── LOGIN ───────────────────────────────────────────────────────────────────
 window.handleLogin = async (e) => {
   e.preventDefault();
   hideErr('login-err');
 
-  if (!auth || !db) {
-    showErr('login-err', '⚠️ Firebase not initialized. Please refresh the page and try again.');
-    return;
-  }
-
   const email = document.getElementById('li-email').value.trim();
   const pass  = document.getElementById('li-pass').value;
-
   setBtn('login-btn', '<span class="spin"></span> Logging in…', true);
 
   try {
+    // Sign out anonymous session first to avoid conflicts
+    const currentUser = auth.currentUser;
+    if (currentUser && currentUser.isAnonymous) await signOut(auth);
+
     const cred = await signInWithEmailAndPassword(auth, email, pass);
     const uid  = cred.user.uid;
 
     const agentDoc = await getDoc(doc(db, 'swiftdata_agents', uid));
-
     if (!agentDoc.exists()) {
       await signOut(auth);
-      showErr('login-err', 'No agent account found for this email. Please sign up first.');
+      showErr('login-err', 'No agent account found. Please sign up first.');
       setBtn('login-btn', 'Login →', false);
+      signInAnonymously(auth).catch(() => {});
       return;
     }
 
     const data = agentDoc.data();
-
     if (data.status === 'banned') {
       await signOut(auth);
-      showErr('login-err', 'Your account has been suspended. Please contact support on WhatsApp.');
+      showErr('login-err', 'Your account has been suspended. Contact support on WhatsApp.');
       setBtn('login-btn', 'Login →', false);
+      signInAnonymously(auth).catch(() => {});
       return;
     }
-
     if (data.status === 'pending') {
       await signOut(auth);
-      showErr('login-err', 'Your account is pending payment activation. Please complete the registration process.');
+      showErr('login-err', 'Your account is pending activation. Please complete the GHS 25 payment or contact admin.');
       setBtn('login-btn', 'Login →', false);
+      signInAnonymously(auth).catch(() => {});
       return;
     }
 
-    // All good — redirect to dashboard
     window.location.href = '/agent.dashboard';
-
   } catch (err) {
-    const msgs = {
-      'auth/user-not-found':        'No account found with that email address.',
-      'auth/wrong-password':        'Incorrect password. Please try again.',
-      'auth/invalid-credential':    'Incorrect email or password.',
-      'auth/invalid-email':         'Please enter a valid email address.',
-      'auth/too-many-requests':     'Too many failed attempts. Please wait a few minutes and try again.',
-      'auth/user-disabled':         'This account has been disabled. Please contact support.',
-      'auth/operation-not-allowed': '⚠️ Email/Password sign-in is not enabled. Contact the administrator.',
-      'auth/network-request-failed':'Network error. Please check your connection and try again.'
-    };
-    showErr('login-err', msgs[err.code] || 'Login error: ' + err.message);
+    showErr('login-err', AUTH_ERRORS[err.code] || 'Login error: ' + err.message);
     setBtn('login-btn', 'Login →', false);
+    // Restore anonymous session
+    if (!auth.currentUser) signInAnonymously(auth).catch(() => {});
   }
 };
 </script>
 </body>
-  </html>
+</html>
