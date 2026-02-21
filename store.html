@@ -98,6 +98,7 @@ nav{position:sticky;top:0;z-index:100;height:64px;display:flex;align-items:cente
 .not-found{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4rem 2rem;text-align:center;}
 .not-found h2{font-weight:800;font-size:1.75rem;margin:.75rem 0;}
 .not-found p{color:var(--muted);max-width:400px;line-height:1.65;}
+.error-banner{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;padding:1.25rem;border-radius:14px;margin-bottom:1.5rem;}
 .spin{width:18px;height:18px;border:2.5px solid rgba(0,81,255,.2);border-top-color:var(--blue);border-radius:50%;animation:sp .7s linear infinite;display:inline-block;vertical-align:middle;}
 @keyframes sp{to{transform:rotate(360deg);}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
@@ -136,7 +137,7 @@ footer{background:rgba(248,250,255,.85);border-top:1.5px solid rgba(0,81,255,.08
   <div style="font-size:3rem;">🔍</div>
   <h2>Store Not Found</h2>
   <p>This agent store link is invalid or the agent is no longer active. Check the link and try again.</p>
-  <a href="/home" style="display:inline-block;margin-top:1.5rem;background:var(--blue);color:#fff;padding:.75rem 1.75rem;border-radius:12px;font-weight:700;text-decoration:none;">Visit Main Store</a>
+  <a href="/" style="display:inline-block;margin-top:1.5rem;background:var(--blue);color:#fff;padding:.75rem 1.75rem;border-radius:12px;font-weight:700;text-decoration:none;">Visit Main Store</a>
 </div>
 
 <!-- STORE CONTENT -->
@@ -182,134 +183,302 @@ footer{background:rgba(248,250,255,.85);border-top:1.5px solid rgba(0,81,255,.08
 </div>
 
 <footer>
-  © <span id="year"></span> SwiftData GH · <a href="/home" style="color:var(--blue);">Main Store</a> · <a href="/agent.login" style="color:var(--blue);">Become an Agent</a>
+  © <span id="year"></span> SwiftData GH · <a href="/" style="color:var(--blue);">Main Store</a> · <a href="/agent.login" style="color:var(--blue);">Become an Agent</a>
 </footer>
 
 <script type="module">
-import { initializeApp }      from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 import { getFirestore, collection, addDoc, onSnapshot, doc, getDoc, updateDoc, query, where, getDocs, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-const firebaseConfig={apiKey:"AIzaSyBVTQqx3fpkpUeCRO5B4N9Hb8dDxJGDIsg",authDomain:"swiftdata-32d80.firebaseapp.com",projectId:"swiftdata-32d80",storageBucket:"swiftdata-32d80.firebasestorage.app",messagingSenderId:"112123396026",appId:"1:112123396026:web:8673fe7a2e5b77e2156783"};
-const GLOBAL_ORDERS='swiftdata_global_orders';
-const APP_ID='swiftdata-main-app';
-const FEE_RATE=0.025;
-const NET_LOGOS={MTN:'https://upload.wikimedia.org/wikipedia/commons/9/93/New-mtn-logo.jpg',Telecel:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Telecel_Group_Logo.svg/512px-Telecel_Group_Logo.svg.png',AT:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/AirtelTigo_logo.png/640px-AirtelTigo_logo.png'};
-
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
-
-let agentData=null,agentProducts=[],psKey='';
-let S={network:'MTN',bundle:null,phone:'',phoneConfirm:'',processing:false};
-
-// Get agent username from URL
-const params=new URLSearchParams(window.location.search);
-const agentUsername=(params.get('agent')||'').toLowerCase();
-
-function genEmail(p){return `customer_${p.replace(/\D/g,'')}@swiftdata.com`;}
-function computeTotal(price){const p=parseFloat(price),f=p*FEE_RATE;return{price:p,fee:f,total:p+f};}
-function genRef(){const now=Date.now(),num=((now%900)+100);const L='ABCDEFGHJKLMNPQRSTUVWXYZ';const l=L[Math.floor(Math.random()*L.length)];const code=(now%10)>=7?`${l}${String(num).slice(1)}`:String(num).padStart(3,'0');return `SdG-${code}`;}
-
-window.toggleTheme=()=>{const d=document.documentElement,b=document.getElementById('theme-btn');if(d.classList.contains('dark')){d.classList.remove('dark');localStorage.setItem('theme','light');b.textContent='🌙';}else{d.classList.add('dark');localStorage.setItem('theme','dark');b.textContent='☀️';}};
-if(localStorage.getItem('theme')==='dark'){document.documentElement.classList.add('dark');document.getElementById('theme-btn').textContent='☀️';}
-
-window.selectNetwork=(net,btn)=>{S.network=net;S.bundle=null;S.phone='';S.phoneConfirm='';document.querySelectorAll('.net-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderBundles();};
-window.selectBundle=(id)=>{S.bundle=S.bundle?.id===id?null:agentProducts.find(p=>p.id===id);S.phone='';S.phoneConfirm='';renderBundles();};
-window.updatePhone=(val,field)=>{S[field]=val.replace(/\D/g,'').substring(0,10);const btn=document.getElementById('co-btn');if(btn){const ok=S.phone.length===10&&S.phone.startsWith('0')&&S.phone===S.phoneConfirm;btn.disabled=!ok;}};
-window.closeSuccessModal=()=>{document.getElementById('success-modal').classList.remove('show');S.bundle=null;S.phone='';S.phoneConfirm='';S.processing=false;renderBundles();};
-
-window.initPayment=async()=>{
-  if(!S.bundle||!S.phone)return;
-  const{total}=computeTotal(S.bundle.storePrice);
-  const email=genEmail(S.phone);
-  if(!psKey){await createDemoOrder();return;}
-  S.processing=true;renderBundles();
-  try{
-    const ps=new PaystackPop();
-    const ref='SD_'+Date.now()+'_'+Math.floor(Math.random()*10000);
-    ps.newTransaction({key:psKey,email,amount:Math.round(total*100),currency:'GHS',ref,
-      metadata:{network:S.bundle.network,bundle_size:S.bundle.size,recipient_phone:S.phone,order_type:'agent_store',agent_id:agentData.uid,agent_username:agentData.username},
-      onSuccess:async(tx)=>{await createOrder(tx.reference);},
-      onCancel:()=>{S.processing=false;renderBundles();alert('Payment cancelled.');}
-    });
-  }catch(e){console.error(e);S.processing=false;renderBundles();alert('Payment initialization failed.');}
+// ✅ FIXED: Using SAME Firebase config as dashboard (dataplus-a93c7)
+const firebaseConfig = {
+  apiKey: "AIzaSyCs7lN4itvWZPichtFLdEE4swNQHSX_j1M",
+  authDomain: "dataplus-a93c7.firebaseapp.com",
+  projectId: "dataplus-a93c7",
+  storageBucket: "dataplus-a93c7.firebasestorage.app",
+  messagingSenderId: "1040979049946",
+  appId: "1:1040979049946:web:d5d7957a6c209f56dd94e3",
+  measurementId: "G-GW9DNT0DQ0"
 };
 
-async function createOrder(payRef){
-  const markup=S.bundle.markup||0;
-  const storePrice=S.bundle.storePrice;
-  const{fee,total}=computeTotal(storePrice);
-  const ref=genRef();
+const GLOBAL_ORDERS = 'swiftdata_global_orders';
+const APP_ID = 'swiftdata-main-app';
+const FEE_RATE = 0.025;
+const NET_LOGOS = {
+  MTN: 'https://upload.wikimedia.org/wikipedia/commons/9/93/New-mtn-logo.jpg',
+  Telecel: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Telecel_Group_Logo.svg/512px-Telecel_Group_Logo.svg.png',
+  AT: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/AirtelTigo_logo.png/640px-AirtelTigo_logo.png'
+};
 
-  // Create global order
-  await addDoc(collection(db,GLOBAL_ORDERS),{
-    orderRef:ref,network:S.bundle.network,size:S.bundle.size,
-    basePrice:S.bundle.agentCost,fee:parseFloat(fee.toFixed(4)),price:parseFloat(total.toFixed(2)),
-    agentStorePrice:storePrice,agentMarkup:markup,
-    recipient:S.phone,email:genEmail(S.phone),status:'Pending',createdAt:serverTimestamp(),
-    type:S.bundle.type||'Standard',paymentRef:payRef,
-    orderType:'agent_customer',agentId:agentData.uid,agentUsername:agentData.username,agentProfit:markup
-  });
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-  // Credit agent wallet
-  if(markup>0 && agentData.uid){
-    try{
-      await updateDoc(doc(db,'swiftdata_agents',agentData.uid),{
-        walletBalance:increment(markup),
-        totalEarned:increment(markup),
-        totalOrders:increment(1)
-      });
-    }catch(e){console.error('Wallet credit error:',e);}
-  }
+let agentData = null, agentProducts = [], psKey = '';
+let S = {network: 'MTN', bundle: null, phone: '', phoneConfirm: '', processing: false};
 
-  S.processing=false;
-  document.getElementById('success-phone').textContent=S.phone;
-  document.getElementById('success-ref').textContent=ref;
-  document.getElementById('success-bundle').textContent=`${S.bundle.size} ${S.bundle.network}`;
-  document.getElementById('success-modal').classList.add('show');
+// Get agent username from URL
+const params = new URLSearchParams(window.location.search);
+const agentUsername = (params.get('agent') || '').toLowerCase();
+
+function genEmail(p) {
+  return `customer_${p.replace(/\D/g, '')}@swiftdata.com`;
 }
 
-async function createDemoOrder(){
-  const markup=S.bundle.markup||0;
-  const storePrice=S.bundle.storePrice;
-  const{fee,total}=computeTotal(storePrice);
-  const ref=genRef();
-  await addDoc(collection(db,GLOBAL_ORDERS),{
-    orderRef:ref,network:S.bundle.network,size:S.bundle.size,
-    basePrice:S.bundle.agentCost,fee:parseFloat(fee.toFixed(4)),price:parseFloat(total.toFixed(2)),
-    agentStorePrice:storePrice,agentMarkup:markup,
-    recipient:S.phone,email:genEmail(S.phone),status:'Pending',createdAt:serverTimestamp(),
-    type:S.bundle.type||'Standard',paymentRef:'DEMO_'+Date.now(),
-    orderType:'agent_customer',agentId:agentData?.uid,agentUsername:agentData?.username,agentProfit:markup
-  });
-  if(markup>0&&agentData?.uid){
-    await updateDoc(doc(db,'swiftdata_agents',agentData.uid),{walletBalance:increment(markup),totalEarned:increment(markup),totalOrders:increment(1)}).catch(()=>{});
-  }
-  document.getElementById('success-phone').textContent=S.phone;
-  document.getElementById('success-ref').textContent=ref;
-  document.getElementById('success-bundle').textContent=`${S.bundle.size} ${S.bundle.network}`;
-  document.getElementById('success-modal').classList.add('show');
+function computeTotal(price) {
+  const p = parseFloat(price);
+  const f = p * FEE_RATE;
+  return {price: p, fee: f, total: p + f};
 }
 
-function renderBundles(){
-  const grid=document.getElementById('bundle-grid');if(!grid)return;
-  const visible=agentProducts.filter(p=>p.network===S.network&&p.visible);
-  if(!visible.length){grid.innerHTML='<div style="grid-column:1/-1;padding:3rem;text-align:center;color:var(--muted);font-weight:600;">No products available for this network.</div>';return;}
-  let html='';
-  visible.forEach(b=>{
-    const sel=S.bundle?.id===b.id;
-    html+=`<div class="bundle-card${sel?' selected':''}" onclick="selectBundle('${b.id}')">
-      <div class="net-logo-w"><img src="${NET_LOGOS[b.network]||''}" alt="${b.network}"/></div>
-      <div class="btype">${b.type||'Standard'}</div>
+function genRef() {
+  const now = Date.now();
+  const num = ((now % 900) + 100);
+  const L = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const l = L[Math.floor(Math.random() * L.length)];
+  const code = (now % 10) >= 7 ? `${l}${String(num).slice(1)}` : String(num).padStart(3, '0');
+  return `SdG-${code}`;
+}
+
+window.toggleTheme = () => {
+  const d = document.documentElement;
+  const b = document.getElementById('theme-btn');
+  if (d.classList.contains('dark')) {
+    d.classList.remove('dark');
+    localStorage.setItem('theme', 'light');
+    b.textContent = '🌙';
+  } else {
+    d.classList.add('dark');
+    localStorage.setItem('theme', 'dark');
+    b.textContent = '☀️';
+  }
+};
+
+if (localStorage.getItem('theme') === 'dark') {
+  document.documentElement.classList.add('dark');
+  document.getElementById('theme-btn').textContent = '☀️';
+}
+
+window.selectNetwork = (net, btn) => {
+  S.network = net;
+  S.bundle = null;
+  S.phone = '';
+  S.phoneConfirm = '';
+  document.querySelectorAll('.net-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderBundles();
+};
+
+window.selectBundle = (id) => {
+  S.bundle = S.bundle?.id === id ? null : agentProducts.find(p => p.id === id);
+  S.phone = '';
+  S.phoneConfirm = '';
+  renderBundles();
+};
+
+window.updatePhone = (val, field) => {
+  S[field] = val.replace(/\D/g, '').substring(0, 10);
+  const btn = document.getElementById('co-btn');
+  if (btn) {
+    const ok = S.phone.length === 10 && S.phone.startsWith('0') && S.phone === S.phoneConfirm;
+    btn.disabled = !ok;
+  }
+};
+
+window.closeSuccessModal = () => {
+  document.getElementById('success-modal').classList.remove('show');
+  S.bundle = null;
+  S.phone = '';
+  S.phoneConfirm = '';
+  S.processing = false;
+  renderBundles();
+};
+
+window.initPayment = async () => {
+  if (!S.bundle || !S.phone) return;
+  
+  const {total} = computeTotal(S.bundle.storePrice);
+  const email = genEmail(S.phone);
+  
+  if (!psKey) {
+    await createDemoOrder();
+    return;
+  }
+  
+  S.processing = true;
+  renderBundles();
+  
+  try {
+    const ps = new PaystackPop();
+    const ref = 'SD_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+    
+    ps.newTransaction({
+      key: psKey,
+      email,
+      amount: Math.round(total * 100),
+      currency: 'GHS',
+      ref,
+      metadata: {
+        network: S.bundle.network,
+        bundle_size: S.bundle.size,
+        recipient_phone: S.phone,
+        order_type: 'agent_store',
+        agent_id: agentData.uid,
+        agent_username: agentData.username
+      },
+      onSuccess: async (tx) => {
+        await createOrder(tx.reference);
+      },
+      onCancel: () => {
+        S.processing = false;
+        renderBundles();
+        alert('Payment cancelled.');
+      }
+    });
+  } catch (e) {
+    console.error('Payment error:', e);
+    S.processing = false;
+    renderBundles();
+    alert('Payment initialization failed: ' + e.message);
+  }
+};
+
+async function createOrder(payRef) {
+  try {
+    const markup = S.bundle.markup || 0;
+    const storePrice = S.bundle.storePrice;
+    const {fee, total} = computeTotal(storePrice);
+    const ref = genRef();
+
+    // Create global order
+    await addDoc(collection(db, GLOBAL_ORDERS), {
+      orderRef: ref,
+      network: S.bundle.network,
+      size: S.bundle.size,
+      basePrice: S.bundle.agentCost,
+      fee: parseFloat(fee.toFixed(4)),
+      price: parseFloat(total.toFixed(2)),
+      agentStorePrice: storePrice,
+      agentMarkup: markup,
+      recipient: S.phone,
+      email: genEmail(S.phone),
+      status: 'Pending',
+      createdAt: serverTimestamp(),
+      type: S.bundle.type || 'Standard',
+      paymentRef: payRef,
+      orderType: 'agent_customer',
+      agentId: agentData.uid,
+      agentUsername: agentData.username,
+      agentProfit: markup
+    });
+
+    // ✅ FIXED: Credit agent wallet with error handling
+    if (markup > 0 && agentData && agentData.uid) {
+      try {
+        await updateDoc(doc(db, 'swiftdata_agents', agentData.uid), {
+          walletBalance: increment(markup),
+          totalEarned: increment(markup),
+          totalOrders: increment(1)
+        });
+      } catch (walletErr) {
+        console.error('Wallet credit error:', walletErr);
+        // Don't fail the order if wallet update fails
+      }
+    }
+
+    S.processing = false;
+    document.getElementById('success-phone').textContent = S.phone;
+    document.getElementById('success-ref').textContent = ref;
+    document.getElementById('success-bundle').textContent = `${S.bundle.size} ${S.bundle.network}`;
+    document.getElementById('success-modal').classList.add('show');
+  } catch (error) {
+    console.error('Create order error:', error);
+    S.processing = false;
+    renderBundles();
+    alert('Order creation failed: ' + error.message);
+  }
+}
+
+async function createDemoOrder() {
+  try {
+    const markup = S.bundle.markup || 0;
+    const storePrice = S.bundle.storePrice;
+    const {fee, total} = computeTotal(storePrice);
+    const ref = genRef();
+    
+    await addDoc(collection(db, GLOBAL_ORDERS), {
+      orderRef: ref,
+      network: S.bundle.network,
+      size: S.bundle.size,
+      basePrice: S.bundle.agentCost,
+      fee: parseFloat(fee.toFixed(4)),
+      price: parseFloat(total.toFixed(2)),
+      agentStorePrice: storePrice,
+      agentMarkup: markup,
+      recipient: S.phone,
+      email: genEmail(S.phone),
+      status: 'Pending',
+      createdAt: serverTimestamp(),
+      type: S.bundle.type || 'Standard',
+      paymentRef: 'DEMO_' + Date.now(),
+      orderType: 'agent_customer',
+      agentId: agentData?.uid,
+      agentUsername: agentData?.username,
+      agentProfit: markup
+    });
+    
+    if (markup > 0 && agentData?.uid) {
+      try {
+        await updateDoc(doc(db, 'swiftdata_agents', agentData.uid), {
+          walletBalance: increment(markup),
+          totalEarned: increment(markup),
+          totalOrders: increment(1)
+        });
+      } catch (e) {
+        console.warn('Wallet update failed:', e);
+      }
+    }
+    
+    S.processing = false;
+    document.getElementById('success-phone').textContent = S.phone;
+    document.getElementById('success-ref').textContent = ref;
+    document.getElementById('success-bundle').textContent = `${S.bundle.size} ${S.bundle.network}`;
+    document.getElementById('success-modal').classList.add('show');
+  } catch (error) {
+    console.error('Demo order error:', error);
+    S.processing = false;
+    renderBundles();
+    alert('Order creation failed: ' + error.message);
+  }
+}
+
+function renderBundles() {
+  const grid = document.getElementById('bundle-grid');
+  if (!grid) return;
+  
+  const visible = agentProducts.filter(p => p.network === S.network && p.visible);
+  
+  if (!visible.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;padding:3rem;text-align:center;color:var(--muted);font-weight:600;">No products available for this network.</div>';
+    return;
+  }
+  
+  let html = '';
+  visible.forEach(b => {
+    const sel = S.bundle?.id === b.id;
+    html += `<div class="bundle-card${sel ? ' selected' : ''}" onclick="selectBundle('${b.id}')">
+      <div class="net-logo-w"><img src="${NET_LOGOS[b.network] || ''}" alt="${b.network}"/></div>
+      <div class="btype">${b.type || 'Standard'}</div>
       <div class="bsize">${b.size}</div>
       <div class="bprice">GHS ${parseFloat(b.storePrice).toFixed(2)}</div>
-      ${sel?'<div class="bsel-tag">✓ Selected — click to deselect</div>':''}
+      ${sel ? '<div class="bsel-tag">✓ Selected — click to deselect</div>' : ''}
     </div>`;
-    if(sel){
-      const{fee,total}=computeTotal(b.storePrice);
-      const ok=S.phone.length===10&&S.phone.startsWith('0')&&S.phone===S.phoneConfirm;
-      html+=`<div class="co-inline">
+    
+    if (sel) {
+      const {fee, total} = computeTotal(b.storePrice);
+      const ok = S.phone.length === 10 && S.phone.startsWith('0') && S.phone === S.phoneConfirm;
+      html += `<div class="co-inline">
         <div class="co-title">📱 Recipient Details</div>
         <div class="phone-grid">
           <div><div class="flabel">Phone Number</div><input class="phone-inp" type="tel" placeholder="05XXXXXXXX" maxlength="10" oninput="updatePhone(this.value,'phone')" value="${S.phone}" inputmode="numeric"/></div>
@@ -322,49 +491,88 @@ function renderBundles(){
             <div class="sum-row fee">Platform fee (2.5%): <strong>GHS ${fee.toFixed(2)}</strong></div>
             <div class="sum-total">GHS ${total.toFixed(2)}</div>
           </div>
-          ${S.processing?`<button class="co-btn" disabled>⏳ Processing…</button>`:`<button id="co-btn" class="co-btn" onclick="initPayment()" ${ok?'':'disabled'}>Secure Checkout →</button>`}
+          ${S.processing ? `<button class="co-btn" disabled>⏳ Processing…</button>` : `<button id="co-btn" class="co-btn" onclick="initPayment()" ${ok ? '' : 'disabled'}>Secure Checkout →</button>`}
         </div>
       </div>`;
     }
   });
-  grid.innerHTML=html;
+  
+  grid.innerHTML = html;
 }
 
 // LOAD STORE
-async function loadStore(){
-  if(!agentUsername){document.getElementById('not-found').classList.remove('hidden');return;}
+async function loadStore() {
+  if (!agentUsername) {
+    document.getElementById('not-found').classList.remove('hidden');
+    return;
+  }
 
-  // Find agent by username
-  const q=query(collection(db,'swiftdata_agents'),where('username','==',agentUsername),where('status','==','active'));
-  const snap=await getDocs(q);
-  if(snap.empty){document.getElementById('not-found').classList.remove('hidden');return;}
+  try {
+    // Find agent by username
+    const q = query(
+      collection(db, 'swiftdata_agents'),
+      where('username', '==', agentUsername),
+      where('status', '==', 'active')
+    );
+    const snap = await getDocs(q);
+    
+    if (snap.empty) {
+      document.getElementById('not-found').classList.remove('hidden');
+      return;
+    }
 
-  agentData=snap.docs[0].data();
-  const initials=(agentData.name||'A').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+    agentData = snap.docs[0].data();
+    const initials = (agentData.name || 'A').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
 
-  // Update UI
-  document.title=`${agentData.name} — SwiftData GH`;
-  document.getElementById('nav-avatar').textContent=initials;
-  document.getElementById('nav-store-name').textContent=agentData.name||'Agent Store';
-  document.getElementById('hero-avatar').textContent=initials;
-  document.getElementById('store-title').textContent=agentData.name||'Agent Store';
-  document.getElementById('by-name').textContent=agentData.name||'—';
+    // Update UI
+    document.title = `${agentData.name} — SwiftData GH`;
+    document.getElementById('nav-avatar').textContent = initials;
+    document.getElementById('nav-store-name').textContent = agentData.name || 'Agent Store';
+    document.getElementById('hero-avatar').textContent = initials;
+    document.getElementById('store-title').textContent = agentData.name || 'Agent Store';
+    document.getElementById('by-name').textContent = agentData.name || '—';
 
-  document.getElementById('store-content').classList.remove('hidden');
+    document.getElementById('store-content').classList.remove('hidden');
 
-  // Load Paystack key
-  const settingsDoc=await getDoc(doc(db,'artifacts',APP_ID,'public','data','config','settings_doc'));
-  if(settingsDoc.exists()) psKey=settingsDoc.data().paystackPublicKey||'';
+    // Load Paystack key
+    try {
+      const settingsDoc = await getDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config', 'settings_doc'));
+      if (settingsDoc.exists()) {
+        psKey = settingsDoc.data().paystackPublicKey || '';
+      }
+    } catch (e) {
+      console.warn('Could not load Paystack key:', e.message);
+    }
 
-  // Listen to agent's products
-  onSnapshot(collection(db,'swiftdata_agents',agentData.uid,'products'),snap=>{
-    agentProducts=snap.docs.map(d=>({id:d.id,...d.data()})).filter(p=>p.visible);
-    renderBundles();
-  });
+    // Listen to agent's products with error handling
+    onSnapshot(
+      collection(db, 'swiftdata_agents', agentData.uid, 'products'),
+      (snap) => {
+        agentProducts = snap.docs
+          .map(d => ({id: d.id, ...d.data()}))
+          .filter(p => p.visible);
+        renderBundles();
+      },
+      (error) => {
+        console.error('Products listener error:', error);
+        document.getElementById('bundle-grid').innerHTML = 
+          '<div style="grid-column:1/-1;padding:3rem;text-align:center;"><div class="error-banner">Error loading products. Please refresh the page.</div></div>';
+      }
+    );
+
+  } catch (error) {
+    console.error('Store load error:', error);
+    document.getElementById('not-found').classList.remove('hidden');
+  }
 }
 
-document.getElementById('year').textContent=new Date().getFullYear();
-signInAnonymously(auth).then(loadStore).catch(e=>console.error(e));
+document.getElementById('year').textContent = new Date().getFullYear();
+signInAnonymously(auth)
+  .then(loadStore)
+  .catch(e => {
+    console.error('Auth error:', e);
+    document.getElementById('not-found').classList.remove('hidden');
+  });
 </script>
 </body>
 </html>
