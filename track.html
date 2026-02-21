@@ -32,6 +32,7 @@ main{flex:1;display:flex;align-items:center;justify-content:center;padding:3rem 
 .t-input:focus{border-color:var(--blue);}
 .t-btn{width:100%;padding:.9rem;background:var(--blue);color:#fff;border:none;border-radius:14px;font-family:inherit;font-weight:800;font-size:1rem;cursor:pointer;transition:transform .2s,box-shadow .2s;}
 .t-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,81,255,.35);}
+.t-btn:disabled{opacity:.5;cursor:not-allowed;}
 .results{margin-top:1.75rem;}
 .result-card{background:var(--offwht);border-radius:14px;padding:1.1rem 1.25rem;border:1.5px solid rgba(0,0,0,.06);margin-bottom:.7rem;}
 .dark .result-card{background:#0f172a;border-color:rgba(255,255,255,.06);}
@@ -52,10 +53,10 @@ main{flex:1;display:flex;align-items:center;justify-content:center;padding:3rem 
 <body>
 <nav>
   <div class="nav-inner">
-    <a href="/home" class="logo">SwiftData<span>GH</span></a>
+    <a href="/" class="logo">SwiftData<span>GH</span></a>
     <div class="nav-right">
       <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">🌙</button>
-      <a href="/home" class="back-nav">← Home</a>
+      <a href="/" class="back-nav">← Home</a>
     </div>
   </div>
 </nav>
@@ -65,33 +66,143 @@ main{flex:1;display:flex;align-items:center;justify-content:center;padding:3rem 
     <h2>Track Your Order</h2>
     <p class="sub">Enter your phone number or order reference (e.g. <strong>SdG-001</strong>)</p>
     <input class="t-input" type="text" id="t-input" placeholder="05XXXXXXXX  or  SdG-001"/>
-    <button class="t-btn" onclick="checkStatus()">Check Status</button>
+    <button class="t-btn" id="search-btn" onclick="checkStatus()">Check Status</button>
     <div class="results" id="results"></div>
-    <a class="back-link" href="/home">← Return to Store</a>
+    <a class="back-link" href="/">← Return to Store</a>
   </div>
 </main>
 <script type="module">
-import { initializeApp }      from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
-const firebaseConfig={apiKey:"AIzaSyBVTQqx3fpkpUeCRO5B4N9Hb8dDxJGDIsg",authDomain:"swiftdata-32d80.firebaseapp.com",projectId:"swiftdata-32d80",storageBucket:"swiftdata-32d80.firebasestorage.app",messagingSenderId:"112123396026",appId:"1:112123396026:web:8673fe7a2e5b77e2156783"};
-const app=initializeApp(firebaseConfig);const auth=getAuth(app);const db=getFirestore(app);
-let allOrders=[];
-window.toggleTheme=()=>{const d=document.documentElement,b=document.getElementById('theme-btn');if(d.classList.contains('dark')){d.classList.remove('dark');localStorage.setItem('theme','light');b.textContent='🌙';}else{d.classList.add('dark');localStorage.setItem('theme','dark');b.textContent='☀️';}};
-if(localStorage.getItem('theme')==='dark'){document.documentElement.classList.add('dark');document.getElementById('theme-btn').textContent='☀️';}
-window.checkStatus=()=>{
-  const raw=document.getElementById('t-input').value.trim();
-  const res=document.getElementById('results');
-  if(!raw){res.innerHTML='<div class="no-results">Please enter your phone number or order reference.</div>';return;}
-  let found=[];
-  const isRef=/^sdg-/i.test(raw);
-  if(isRef){found=allOrders.filter(o=>o.orderRef&&o.orderRef.toLowerCase()===raw.toLowerCase());}
-  else{const phone=raw.replace(/\D/g,'');if(phone.length!==10){res.innerHTML='<div class="no-results">Enter a valid 10-digit phone number or order ref (e.g. SdG-001).</div>';return;}found=allOrders.filter(o=>o.recipient===phone);}
-  if(!found.length){res.innerHTML='<div class="no-results">No orders found. Please check and try again.</div>';return;}
-  res.innerHTML=found.slice(0,5).map(o=>`<div class="result-card"><div class="r-top"><span class="r-bundle">${o.size} (${o.network})</span><span class="r-status rs-${o.status}">${o.status}</span></div>${o.orderRef?`<div class="r-ref">${o.orderRef}</div>`:''}<div class="r-time">${o.createdAt?new Date(o.createdAt.seconds*1000).toLocaleString():'Just now'}</div></div>`).join('')+(found.length>5?'<p style="text-align:center;font-size:.75rem;color:var(--muted);margin-top:.5rem;">Showing 5 most recent</p>':'');
+
+// ✅ FIXED: Using CORRECT Firebase config (dataplus-a93c7)
+const firebaseConfig = {
+  apiKey: "AIzaSyCs7lN4itvWZPichtFLdEE4swNQHSX_j1M",
+  authDomain: "dataplus-a93c7.firebaseapp.com",
+  projectId: "dataplus-a93c7",
+  storageBucket: "dataplus-a93c7.firebasestorage.app",
+  messagingSenderId: "1040979049946",
+  appId: "1:1040979049946:web:d5d7957a6c209f56dd94e3",
+  measurementId: "G-GW9DNT0DQ0"
 };
-document.getElementById('t-input').addEventListener('keydown',e=>{if(e.key==='Enter')window.checkStatus();});
-signInAnonymously(auth).then(()=>{onSnapshot(collection(db,'swiftdata_global_orders'),snap=>{allOrders=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));});}).catch(e=>console.error(e));
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let allOrders = [];
+
+window.toggleTheme = () => {
+  const d = document.documentElement;
+  const b = document.getElementById('theme-btn');
+  if (d.classList.contains('dark')) {
+    d.classList.remove('dark');
+    localStorage.setItem('theme', 'light');
+    b.textContent = '🌙';
+  } else {
+    d.classList.add('dark');
+    localStorage.setItem('theme', 'dark');
+    b.textContent = '☀️';
+  }
+};
+
+if (localStorage.getItem('theme') === 'dark') {
+  document.documentElement.classList.add('dark');
+  document.getElementById('theme-btn').textContent = '☀️';
+}
+
+window.checkStatus = () => {
+  const raw = document.getElementById('t-input').value.trim();
+  const res = document.getElementById('results');
+  const btn = document.getElementById('search-btn');
+  
+  if (!raw) {
+    res.innerHTML = '<div class="no-results">Please enter your phone number or order reference.</div>';
+    return;
+  }
+  
+  let found = [];
+  const isRef = /^sdg-/i.test(raw);
+  
+  if (isRef) {
+    // Search by order reference
+    found = allOrders.filter(o => o.orderRef && o.orderRef.toLowerCase() === raw.toLowerCase());
+  } else {
+    // Search by phone number
+    const phone = raw.replace(/\D/g, '');
+    if (phone.length !== 10) {
+      res.innerHTML = '<div class="no-results">Enter a valid 10-digit phone number or order ref (e.g. SdG-001).</div>';
+      return;
+    }
+    found = allOrders.filter(o => o.recipient === phone);
+  }
+  
+  if (!found.length) {
+    res.innerHTML = '<div class="no-results">❌ No orders found. Please check and try again.</div>';
+    return;
+  }
+  
+  // ✅ Display results
+  res.innerHTML = found.slice(0, 5).map(o => {
+    const status = o.status || 'Unknown';
+    const timestamp = o.createdAt ? new Date(o.createdAt.seconds * 1000).toLocaleString() : 'Just now';
+    return `
+      <div class="result-card">
+        <div class="r-top">
+          <span class="r-bundle">${o.size} (${o.network})</span>
+          <span class="r-status rs-${status}">${status}</span>
+        </div>
+        ${o.orderRef ? `<div class="r-ref">${o.orderRef}</div>` : ''}
+        <div class="r-time">${timestamp}</div>
+      </div>
+    `;
+  }).join('') + (found.length > 5 ? '<p style="text-align:center;font-size:.75rem;color:var(--muted);margin-top:.5rem;">Showing 5 most recent orders</p>' : '');
+};
+
+// Allow Enter key to trigger search
+document.getElementById('t-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    window.checkStatus();
+  }
+});
+
+// ✅ FIXED: Better auth state management with error handling
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    console.warn('No authenticated user');
+    return;
+  }
+  
+  try {
+    // ✅ FIXED: Error handler on listener
+    onSnapshot(
+      collection(db, 'swiftdata_global_orders'),
+      (snap) => {
+        allOrders = snap.docs
+          .map(d => ({id: d.id, ...d.data()}))
+          .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+        console.log(`Loaded ${allOrders.length} orders`);
+      },
+      (error) => {
+        console.error('Orders listener error:', error);
+        if (error.code === 'permission-denied') {
+          console.error('Permission denied reading orders. Check Firestore rules.');
+        }
+      }
+    );
+  } catch (err) {
+    console.error('Setup error:', err);
+  }
+});
+
+// ✅ FIXED: Better error handling for anonymous auth
+signInAnonymously(auth).catch((err) => {
+  console.error('Anonymous auth error:', err.code, err.message);
+  if (err.code === 'auth/configuration-not-found' || err.code === 'auth/operation-not-allowed') {
+    console.warn('Anonymous sign-in not enabled. Enable in Firebase Console.');
+  }
+});
 </script>
 </body>
-</html>
+  </html>
