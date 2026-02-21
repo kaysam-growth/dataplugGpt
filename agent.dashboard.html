@@ -94,6 +94,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#060b18;color:#fff;mi
 .o-meta{font-size:.75rem;color:rgba(255,255,255,.3);}
 .o-profit{font-size:.78rem;color:var(--mint);font-weight:700;}
 .empty-state{padding:3rem;text-align:center;color:rgba(255,255,255,.2);font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:.78rem;}
+.error-msg{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;padding:1rem;border-radius:10px;margin-bottom:1rem;}
 /* CASHOUT LIST */
 .cashout-row{padding:1.1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.04);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;}
 .cashout-row:last-child{border-bottom:none;}
@@ -169,7 +170,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#060b18;color:#fff;mi
     <div class="top-title" id="top-title">Overview</div>
     <div class="top-right">
       <div class="store-link-chip" onclick="copyStoreLink()" id="store-chip">📎 Copy Store Link</div>
-      <a href="/home" style="color:rgba(255,255,255,.35);text-decoration:none;font-size:.82rem;">← Public Store</a>
+      <a href="/" style="color:rgba(255,255,255,.35);text-decoration:none;font-size:.82rem;">← Public Store</a>
     </div>
   </div>
 
@@ -332,143 +333,229 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#060b18;color:#fff;mi
 </div>
 
 <script type="module">
-import { initializeApp }      from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, onSnapshot, addDoc, updateDoc, deleteDoc, query, where, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+import { getFirestore, collection, doc, getDoc, onSnapshot, addDoc, updateDoc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-const firebaseConfig={ apiKey: "AIzaSyCs7lN4itvWZPichtFLdEE4swNQHSX_j1M",
+// ✅ FIXED: Using correct Firebase config (dataplus-a93c7)
+const firebaseConfig = {
+  apiKey: "AIzaSyCs7lN4itvWZPichtFLdEE4swNQHSX_j1M",
   authDomain: "dataplus-a93c7.firebaseapp.com",
   projectId: "dataplus-a93c7",
   storageBucket: "dataplus-a93c7.firebasestorage.app",
   messagingSenderId: "1040979049946",
   appId: "1:1040979049946:web:d5d7957a6c209f56dd94e3",
   measurementId: "G-GW9DNT0DQ0"
-const GLOBAL_ORDERS='swiftdata_global_orders';
-const APP_ID='swiftdata-main-app';
-const FEE_RATE=0.025;
+};
 
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
+const GLOBAL_ORDERS = 'swiftdata_global_orders';
+const APP_ID = 'swiftdata-main-app';
+const FEE_RATE = 0.025;
 
-let agentData=null,agentUid=null;
-let baseProducts=[],agentProducts=[],myOrders=[],cashoutRequests=[];
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-// AUTH GUARD
-onAuthStateChanged(auth,async user=>{
-  if(!user){window.location.href='/agent.login';return;}
-  agentUid=user.uid;
-  const agentDoc=await getDoc(doc(db,'swiftdata_agents',agentUid));
-  if(!agentDoc.exists()||agentDoc.data().status!=='active'){await signOut(auth);window.location.href='/agent.login';return;}
-  agentData=agentDoc.data();
-  initDashboard();
+let agentData = null, agentUid = null;
+let baseProducts = [], agentProducts = [], myOrders = [], cashoutRequests = [];
+
+// ✅ FIXED: Better auth guard with error handling
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    window.location.href = '/agent.login';
+    return;
+  }
+  
+  agentUid = user.uid;
+  
+  try {
+    const agentDoc = await getDoc(doc(db, 'swiftdata_agents', agentUid));
+    
+    if (!agentDoc.exists()) {
+      console.error('Agent document not found');
+      await signOut(auth);
+      window.location.href = '/agent.login';
+      return;
+    }
+    
+    const status = agentDoc.data().status;
+    if (status !== 'active') {
+      console.warn('Agent status:', status);
+      await signOut(auth);
+      window.location.href = '/agent.login';
+      return;
+    }
+    
+    agentData = agentDoc.data();
+    initDashboard();
+  } catch (error) {
+    console.error('Auth check failed:', error);
+    alert('Connection error. Please refresh the page.');
+  }
 });
 
-function initDashboard(){
-  // Set UI
-  const initials=(agentData.name||'A').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
-  document.getElementById('sb-initials').textContent=initials;
-  document.getElementById('sb-agent-name').textContent=`@${agentData.username}`;
-  document.getElementById('sb-uname-txt').textContent=agentData.name||'Agent';
-  document.getElementById('sb-email-txt').textContent=agentData.email||'';
-  const domain='https://swiftdatagh.vercel.app';
-  const storeUrl=`${domain}/store?agent=${agentData.username}`;
-  document.getElementById('store-link-url').textContent=storeUrl;
-  document.getElementById('store-chip').onclick=()=>copyStoreLink();
+function initDashboard() {
+  const initials = (agentData.name || 'A').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+  document.getElementById('sb-initials').textContent = initials;
+  document.getElementById('sb-agent-name').textContent = `@${agentData.username}`;
+  document.getElementById('sb-uname-txt').textContent = agentData.name || 'Agent';
+  document.getElementById('sb-email-txt').textContent = agentData.email || '';
+  
+  const domain = window.location.origin;
+  const storeUrl = `${domain}/store?agent=${agentData.username}`;
+  document.getElementById('store-link-url').textContent = storeUrl;
 
+  // ✅ FIXED: Added error handlers to all listeners
+  
   // Live agent data listener
-  onSnapshot(doc(db,'swiftdata_agents',agentUid),d=>{
-    if(!d.exists())return;
-    agentData={...agentData,...d.data()};
-    updateWalletUI();
-  });
+  onSnapshot(
+    doc(db, 'swiftdata_agents', agentUid),
+    (d) => {
+      if (!d.exists()) return;
+      agentData = {...agentData, ...d.data()};
+      updateWalletUI();
+    },
+    (error) => {
+      console.error('Agent listener error:', error);
+      if (error.code === 'permission-denied') {
+        console.error('Firestore rules may not be configured correctly');
+      }
+    }
+  );
 
-  // Base products
-  onSnapshot(collection(db,'artifacts',APP_ID,'public','data','products'),snap=>{
-    baseProducts=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.rank||999)-(b.rank||999));
-    populateProductDropdown();
-  });
+  // Base products listener
+  onSnapshot(
+    collection(db, 'artifacts', APP_ID, 'public', 'data', 'products'),
+    (snap) => {
+      baseProducts = snap.docs.map(d => ({id: d.id, ...d.data()}))
+        .sort((a, b) => (a.rank || 999) - (b.rank || 999));
+      populateProductDropdown();
+    },
+    (error) => {
+      console.error('Products listener error:', error);
+    }
+  );
 
-  // Agent products
-  onSnapshot(collection(db,'swiftdata_agents',agentUid,'products'),snap=>{
-    agentProducts=snap.docs.map(d=>({id:d.id,...d.data()}));
-    renderAgentProducts();
-    document.getElementById('stat-prods').textContent=agentProducts.filter(p=>p.visible).length;
-  });
+  // Agent products listener
+  onSnapshot(
+    collection(db, 'swiftdata_agents', agentUid, 'products'),
+    (snap) => {
+      agentProducts = snap.docs.map(d => ({id: d.id, ...d.data()}));
+      renderAgentProducts();
+      const visibleCount = agentProducts.filter(p => p.visible).length;
+      document.getElementById('stat-prods').textContent = visibleCount;
+    },
+    (error) => {
+      console.error('Agent products listener error:', error);
+      if (error.code === 'permission-denied') {
+        document.getElementById('products-list').innerHTML = 
+          '<div class="error-msg">Cannot load products due to permissions. Make sure Firestore rules are configured.</div>';
+      }
+    }
+  );
 
-  // My orders
-  const ordersQ=query(collection(db,GLOBAL_ORDERS),where('agentId','==',agentUid));
-  onSnapshot(ordersQ,snap=>{
-    myOrders=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
-    renderOrders();
-    document.getElementById('stat-orders').textContent=myOrders.length;
-  });
+  // My orders listener
+  onSnapshot(
+    query(collection(db, GLOBAL_ORDERS), where('agentId', '==', agentUid)),
+    (snap) => {
+      myOrders = snap.docs
+        .map(d => ({id: d.id, ...d.data()}))
+        .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+      renderOrders();
+      document.getElementById('stat-orders').textContent = myOrders.length;
+    },
+    (error) => {
+      console.error('Orders listener error:', error);
+    }
+  );
 
-  // Cashout requests
-  const coQ=query(collection(db,'swiftdata_cashout_requests'),where('agentId','==',agentUid));
-  onSnapshot(coQ,snap=>{
-    cashoutRequests=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
-    renderCashouts();
-  });
+  // Cashout requests listener
+  onSnapshot(
+    query(collection(db, 'swiftdata_cashout_requests'), where('agentId', '==', agentUid)),
+    (snap) => {
+      cashoutRequests = snap.docs
+        .map(d => ({id: d.id, ...d.data()}))
+        .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+      renderCashouts();
+    },
+    (error) => {
+      console.error('Cashout listener error:', error);
+    }
+  );
 }
 
-function updateWalletUI(){
-  const bal=agentData.walletBalance||0;
-  const earned=agentData.totalEarned||0;
-  const balStr=`GHS ${bal.toFixed(2)}`;
-  const earnedStr=`GHS ${earned.toFixed(2)}`;
-  document.getElementById('stat-wallet').textContent=balStr;
-  document.getElementById('stat-earned').textContent=earnedStr;
-  document.getElementById('wallet-bal').textContent=balStr;
-  document.getElementById('wallet-bal-2').textContent=balStr;
-  document.getElementById('cashout-available').textContent=balStr;
-  const canCashout=bal>=5;
-  ['cashout-btn','cashout-btn-2'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=!canCashout;});
-  ['cashout-hint','cashout-hint-2'].forEach(id=>{const h=document.getElementById(id);if(h)h.textContent=canCashout?'':'Need GHS 5+ to cashout';});
+function updateWalletUI() {
+  const bal = agentData.walletBalance || 0;
+  const earned = agentData.totalEarned || 0;
+  const balStr = `GHS ${bal.toFixed(2)}`;
+  const earnedStr = `GHS ${earned.toFixed(2)}`;
+  
+  document.getElementById('stat-wallet').textContent = balStr;
+  document.getElementById('stat-earned').textContent = earnedStr;
+  document.getElementById('wallet-bal').textContent = balStr;
+  document.getElementById('wallet-bal-2').textContent = balStr;
+  document.getElementById('cashout-available').textContent = balStr;
+  
+  const canCashout = bal >= 5;
+  ['cashout-btn', 'cashout-btn-2'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.disabled = !canCashout;
+  });
+  
+  ['cashout-hint', 'cashout-hint-2'].forEach(id => {
+    const h = document.getElementById(id);
+    if (h) h.textContent = canCashout ? '' : 'Need GHS 5+ to cashout';
+  });
 }
 
 // TABS
-window.showTab=(tab)=>{
-  ['overview','products','orders','wallet','store'].forEach(t=>{
-    document.getElementById(`tab-${t}`).classList.toggle('hidden',t!==tab);
+window.showTab = (tab) => {
+  ['overview', 'products', 'orders', 'wallet', 'store'].forEach(t => {
+    document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tab);
   });
-  document.querySelectorAll('.sb-btn').forEach((b,i)=>b.classList.remove('active'));
-  const btnMap={overview:0,products:1,orders:2,wallet:3,store:4};
-  const btns=document.querySelectorAll('.sb-btn');
-  if(btns[btnMap[tab]])btns[btnMap[tab]].classList.add('active');
-  const titles={overview:'Overview',products:'My Products',orders:'My Orders',wallet:'Wallet & Cashout',store:'My Store Link'};
-  document.getElementById('top-title').textContent=titles[tab]||tab;
+  
+  document.querySelectorAll('.sb-btn').forEach(b => b.classList.remove('active'));
+  const btnMap = {overview: 0, products: 1, orders: 2, wallet: 3, store: 4};
+  const btns = document.querySelectorAll('.sb-btn');
+  if (btns[btnMap[tab]]) btns[btnMap[tab]].classList.add('active');
+  
+  const titles = {overview: 'Overview', products: 'My Products', orders: 'My Orders', wallet: 'Wallet & Cashout', store: 'My Store Link'};
+  document.getElementById('top-title').textContent = titles[tab] || tab;
 };
 
 // STORE LINK COPY
-window.copyStoreLink=()=>{
-  const url=document.getElementById('store-link-url').textContent;
-  navigator.clipboard.writeText(url).then(()=>{
-    const chip=document.getElementById('store-chip');
-    chip.textContent='✓ Copied!';
-    setTimeout(()=>chip.textContent='📎 Copy Store Link',2000);
-  }).catch(()=>alert(`Your store link: ${url}`));
+window.copyStoreLink = () => {
+  const url = document.getElementById('store-link-url').textContent;
+  navigator.clipboard.writeText(url).then(() => {
+    const chip = document.getElementById('store-chip');
+    chip.textContent = '✓ Copied!';
+    setTimeout(() => chip.textContent = '📎 Copy Store Link', 2000);
+  }).catch(() => alert(`Your store link: ${url}`));
 };
 
 // RENDER AGENT PRODUCTS
-function renderAgentProducts(){
-  const el=document.getElementById('products-list');
-  if(!agentProducts.length){el.innerHTML='<div class="empty-state">No products yet. Click "+ Add Product" to get started.</div>';return;}
-  el.innerHTML=agentProducts.map(p=>{
-    const profit=(p.markup||0).toFixed(2);
+function renderAgentProducts() {
+  const el = document.getElementById('products-list');
+  if (!agentProducts.length) {
+    el.innerHTML = '<div class="empty-state">No products yet. Click "+ Add Product" to get started.</div>';
+    return;
+  }
+  
+  el.innerHTML = agentProducts.map(p => {
+    const profit = (p.markup || 0).toFixed(2);
     return `<div class="prod-row">
       <div class="prod-info">
         <span class="pnet">${p.network}</span>
         <div class="psize">${p.size}</div>
-        <div class="ptype">${p.type||'Standard'}</div>
+        <div class="ptype">${p.type || 'Standard'}</div>
       </div>
       <div class="prod-prices">
-        <div class="price-row"><span class="price-label">Agent cost:</span><span class="agent-cost">GHS ${parseFloat(p.agentCost||0).toFixed(2)}</span></div>
-        <div class="price-row"><span class="price-label">Customer pays:</span><span class="store-price">GHS ${parseFloat(p.storePrice||0).toFixed(2)}</span></div>
+        <div class="price-row"><span class="price-label">Agent cost:</span><span class="agent-cost">GHS ${parseFloat(p.agentCost || 0).toFixed(2)}</span></div>
+        <div class="price-row"><span class="price-label">Customer pays:</span><span class="store-price">GHS ${parseFloat(p.storePrice || 0).toFixed(2)}</span></div>
         <span class="profit-badge">+GHS ${profit} profit</span>
       </div>
       <div style="display:flex;gap:.5rem;align-items:center;">
-        <button class="toggle-btn ${p.visible?'visible':'hidden'}" onclick="toggleProductVisibility('${p.id}',${!p.visible})">${p.visible?'👁 Visible':'Hidden'}</button>
+        <button class="toggle-btn ${p.visible ? 'visible' : 'hidden'}" onclick="toggleProductVisibility('${p.id}',${!p.visible})">${p.visible ? '👁 Visible' : 'Hidden'}</button>
         <button class="edit-prod-btn" onclick="openEditProduct('${p.id}')">Edit</button>
       </div>
     </div>`;
@@ -476,182 +563,265 @@ function renderAgentProducts(){
 }
 
 // RENDER ORDERS
-function renderOrders(){
-  const el=document.getElementById('orders-list');
-  const recEl=document.getElementById('recent-orders-list');
-  if(!myOrders.length){
-    const empty='<div class="empty-state">No orders yet — share your store link to start earning!</div>';
-    el.innerHTML=empty;recEl.innerHTML=empty;return;
+function renderOrders() {
+  const el = document.getElementById('orders-list');
+  const recEl = document.getElementById('recent-orders-list');
+  
+  if (!myOrders.length) {
+    const empty = '<div class="empty-state">No orders yet — share your store link to start earning!</div>';
+    el.innerHTML = empty;
+    recEl.innerHTML = empty;
+    return;
   }
-  const html=myOrders.map(o=>`
+  
+  const html = myOrders.map(o => `
     <div class="order-row">
       <div class="o-top">
         <span class="o-bundle">${o.size} (${o.network})</span>
         <span class="o-status s-${o.status}">${o.status}</span>
       </div>
       <div class="o-phone">📱 ${o.recipient}</div>
-      <div class="o-meta">${o.orderRef||''} · ${o.createdAt?new Date(o.createdAt.seconds*1000).toLocaleString():'Just now'}</div>
-      ${o.agentProfit>0?`<div class="o-profit">+GHS ${parseFloat(o.agentProfit).toFixed(2)} profit</div>`:''}
+      <div class="o-meta">${o.orderRef || ''} · ${o.createdAt ? new Date(o.createdAt.seconds * 1000).toLocaleString() : 'Just now'}</div>
+      ${o.agentProfit > 0 ? `<div class="o-profit">+GHS ${parseFloat(o.agentProfit).toFixed(2)} profit</div>` : ''}
     </div>`).join('');
-  el.innerHTML=html;
-  recEl.innerHTML=myOrders.slice(0,5).map(o=>`
+  
+  el.innerHTML = html;
+  recEl.innerHTML = myOrders.slice(0, 5).map(o => `
     <div class="order-row">
       <div class="o-top"><span class="o-bundle">${o.size} (${o.network})</span><span class="o-status s-${o.status}">${o.status}</span></div>
       <div class="o-phone">📱 ${o.recipient}</div>
-      ${o.agentProfit>0?`<div class="o-profit">+GHS ${parseFloat(o.agentProfit).toFixed(2)}</div>`:''}
+      ${o.agentProfit > 0 ? `<div class="o-profit">+GHS ${parseFloat(o.agentProfit).toFixed(2)}</div>` : ''}
     </div>`).join('');
 }
 
 // RENDER CASHOUTS
-function renderCashouts(){
-  const el=document.getElementById('cashout-list');
-  if(!cashoutRequests.length){el.innerHTML='<div class="empty-state">No cashout requests yet.</div>';return;}
-  el.innerHTML=cashoutRequests.map(c=>`
+function renderCashouts() {
+  const el = document.getElementById('cashout-list');
+  if (!cashoutRequests.length) {
+    el.innerHTML = '<div class="empty-state">No cashout requests yet.</div>';
+    return;
+  }
+  
+  el.innerHTML = cashoutRequests.map(c => `
     <div class="cashout-row">
       <div>
         <div class="cashout-amt">GHS ${parseFloat(c.amount).toFixed(2)}</div>
-        <div style="font-size:.75rem;color:rgba(255,255,255,.3);">${c.momoNumber} (${c.momoNetwork}) · ${c.createdAt?new Date(c.createdAt.seconds*1000).toLocaleDateString():'—'}</div>
+        <div style="font-size:.75rem;color:rgba(255,255,255,.3);">${c.momoNumber} (${c.momoNetwork}) · ${c.createdAt ? new Date(c.createdAt.seconds * 1000).toLocaleDateString() : '—'}</div>
       </div>
-      <span class="cashout-status cs-${c.status||'pending'}">${c.status||'Pending'}</span>
+      <span class="cashout-status cs-${c.status || 'pending'}">${c.status || 'Pending'}</span>
     </div>`).join('');
 }
 
 // PRODUCT MODAL
-function populateProductDropdown(){
-  const sel=document.getElementById('prod-base-select');
-  sel.innerHTML='<option value="">— Select a product —</option>'+
-    baseProducts.map(p=>`<option value="${p.id}" data-agent-price="${p.agent_price||p.price}" data-size="${p.size}" data-network="${p.network}" data-type="${p.type||'Standard'}">${p.network} · ${p.size} (Agent: GHS ${parseFloat(p.agent_price||p.price).toFixed(2)})</option>`).join('');
+function populateProductDropdown() {
+  const sel = document.getElementById('prod-base-select');
+  sel.innerHTML = '<option value="">— Select a product —</option>' +
+    baseProducts.map(p => `<option value="${p.id}" data-agent-price="${p.agent_price || p.price}" data-size="${p.size}" data-network="${p.network}" data-type="${p.type || 'Standard'}">${p.network} · ${p.size} (Agent: GHS ${parseFloat(p.agent_price || p.price).toFixed(2)})</option>`).join('');
 }
 
-window.openAddProduct=()=>{
-  document.getElementById('prod-doc-id').value='';
-  document.getElementById('prod-modal-title').textContent='Add Product to Store';
-  document.getElementById('prod-base-select').value='';
-  document.getElementById('prod-markup').value='';
-  document.getElementById('agent-price-display').style.display='none';
-  document.getElementById('markup-section').style.display='none';
+window.openAddProduct = () => {
+  document.getElementById('prod-doc-id').value = '';
+  document.getElementById('prod-modal-title').textContent = 'Add Product to Store';
+  document.getElementById('prod-base-select').value = '';
+  document.getElementById('prod-markup').value = '';
+  document.getElementById('agent-price-display').style.display = 'none';
+  document.getElementById('markup-section').style.display = 'none';
   document.getElementById('prod-modal').classList.add('show');
 };
 
-window.openEditProduct=(id)=>{
-  const p=agentProducts.find(x=>x.id===id);if(!p)return;
-  document.getElementById('prod-doc-id').value=id;
-  document.getElementById('prod-modal-title').textContent='Edit Product';
-  // Set dropdown
-  const sel=document.getElementById('prod-base-select');
-  sel.value=p.baseProductId||'';
-  document.getElementById('prod-markup').value=p.markup||0;
-  document.getElementById('agent-cost-display').textContent=`GHS ${parseFloat(p.agentCost||0).toFixed(2)}`;
-  document.getElementById('agent-price-display').style.display='block';
-  document.getElementById('markup-section').style.display='block';
+window.openEditProduct = (id) => {
+  const p = agentProducts.find(x => x.id === id);
+  if (!p) return;
+  
+  document.getElementById('prod-doc-id').value = id;
+  document.getElementById('prod-modal-title').textContent = 'Edit Product';
+  const sel = document.getElementById('prod-base-select');
+  sel.value = p.baseProductId || '';
+  document.getElementById('prod-markup').value = p.markup || 0;
+  document.getElementById('agent-cost-display').textContent = `GHS ${parseFloat(p.agentCost || 0).toFixed(2)}`;
+  document.getElementById('agent-price-display').style.display = 'block';
+  document.getElementById('markup-section').style.display = 'block';
   updatePriceCalc();
   document.getElementById('prod-modal').classList.add('show');
 };
 
-window.onBaseProductChange=()=>{
-  const sel=document.getElementById('prod-base-select');
-  const opt=sel.options[sel.selectedIndex];
-  if(!opt.value){document.getElementById('agent-price-display').style.display='none';document.getElementById('markup-section').style.display='none';return;}
-  const agentPrice=parseFloat(opt.dataset.agentPrice)||0;
-  document.getElementById('agent-cost-display').textContent=`GHS ${agentPrice.toFixed(2)}`;
-  document.getElementById('agent-price-display').style.display='block';
-  document.getElementById('markup-section').style.display='block';
-  document.getElementById('prod-markup').value='';
+window.onBaseProductChange = () => {
+  const sel = document.getElementById('prod-base-select');
+  const opt = sel.options[sel.selectedIndex];
+  if (!opt.value) {
+    document.getElementById('agent-price-display').style.display = 'none';
+    document.getElementById('markup-section').style.display = 'none';
+    return;
+  }
+  
+  const agentPrice = parseFloat(opt.dataset.agentPrice) || 0;
+  document.getElementById('agent-cost-display').textContent = `GHS ${agentPrice.toFixed(2)}`;
+  document.getElementById('agent-price-display').style.display = 'block';
+  document.getElementById('markup-section').style.display = 'block';
+  document.getElementById('prod-markup').value = '';
   updatePriceCalc();
 };
 
-window.updatePriceCalc=()=>{
-  const sel=document.getElementById('prod-base-select');
-  const opt=sel.options[sel.selectedIndex];
-  if(!opt||!opt.value)return;
-  const agentCost=parseFloat(opt.dataset.agentPrice)||0;
-  const markup=parseFloat(document.getElementById('prod-markup').value)||0;
-  const storeBase=agentCost+markup;
-  const fee=storeBase*FEE_RATE;
-  const total=storeBase+fee;
-  document.getElementById('calc-agent-cost').textContent=`GHS ${agentCost.toFixed(2)}`;
-  document.getElementById('calc-markup').textContent=`GHS ${markup.toFixed(2)}`;
-  document.getElementById('calc-fee').textContent=`GHS ${fee.toFixed(2)}`;
-  document.getElementById('calc-total').textContent=`GHS ${total.toFixed(2)}`;
+window.updatePriceCalc = () => {
+  const sel = document.getElementById('prod-base-select');
+  const opt = sel.options[sel.selectedIndex];
+  if (!opt || !opt.value) return;
+  
+  const agentCost = parseFloat(opt.dataset.agentPrice) || 0;
+  const markup = parseFloat(document.getElementById('prod-markup').value) || 0;
+  const storeBase = agentCost + markup;
+  const fee = storeBase * FEE_RATE;
+  const total = storeBase + fee;
+  
+  document.getElementById('calc-agent-cost').textContent = `GHS ${agentCost.toFixed(2)}`;
+  document.getElementById('calc-markup').textContent = `GHS ${markup.toFixed(2)}`;
+  document.getElementById('calc-fee').textContent = `GHS ${fee.toFixed(2)}`;
+  document.getElementById('calc-total').textContent = `GHS ${total.toFixed(2)}`;
 };
 
-window.closeProdModal=()=>document.getElementById('prod-modal').classList.remove('show');
+window.closeProdModal = () => document.getElementById('prod-modal').classList.remove('show');
 
-window.saveAgentProduct=async(e)=>{
+window.saveAgentProduct = async (e) => {
   e.preventDefault();
-  const docId=document.getElementById('prod-doc-id').value;
-  const sel=document.getElementById('prod-base-select');
-  const opt=sel.options[sel.selectedIndex];
-  if(!opt||!opt.value){alert('Please select a product.');return;}
-  const markup=parseFloat(document.getElementById('prod-markup').value)||0;
-  const agentCost=parseFloat(opt.dataset.agentPrice)||0;
-  const storePrice=agentCost+markup;
-  const prodData={
-    baseProductId:opt.value,
-    network:opt.dataset.network,
-    size:opt.dataset.size,
-    type:opt.dataset.type,
-    agentCost,markup,storePrice,
-    visible:true,
-    agentId:agentUid,
-    updatedAt:serverTimestamp()
+  
+  const docId = document.getElementById('prod-doc-id').value;
+  const sel = document.getElementById('prod-base-select');
+  const opt = sel.options[sel.selectedIndex];
+  
+  if (!opt || !opt.value) {
+    alert('Please select a product.');
+    return;
+  }
+  
+  const markup = parseFloat(document.getElementById('prod-markup').value) || 0;
+  const agentCost = parseFloat(opt.dataset.agentPrice) || 0;
+  const storePrice = agentCost + markup;
+  
+  const prodData = {
+    baseProductId: opt.value,
+    network: opt.dataset.network,
+    size: opt.dataset.size,
+    type: opt.dataset.type,
+    agentCost,
+    markup,
+    storePrice,
+    visible: true,
+    agentId: agentUid,
+    updatedAt: serverTimestamp()
   };
-  const btn=document.getElementById('save-prod-btn');
-  btn.disabled=true;btn.textContent='Saving…';
-  try{
-    if(docId) await updateDoc(doc(db,'swiftdata_agents',agentUid,'products',docId),prodData);
-    else await addDoc(collection(db,'swiftdata_agents',agentUid,'products'),{...prodData,createdAt:serverTimestamp()});
+  
+  const btn = document.getElementById('save-prod-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  
+  try {
+    if (docId) {
+      await updateDoc(doc(db, 'swiftdata_agents', agentUid, 'products', docId), prodData);
+    } else {
+      await addDoc(collection(db, 'swiftdata_agents', agentUid, 'products'), {
+        ...prodData,
+        createdAt: serverTimestamp()
+      });
+    }
     closeProdModal();
-  }catch(err){console.error(err);alert('Error saving product.');}
-  btn.disabled=false;btn.textContent='Add to Store';
+  } catch (err) {
+    console.error('Save product error:', err);
+    alert('Error saving product: ' + err.message);
+  }
+  
+  btn.disabled = false;
+  btn.textContent = 'Add to Store';
 };
 
-window.toggleProductVisibility=async(id,visible)=>{
-  await updateDoc(doc(db,'swiftdata_agents',agentUid,'products',id),{visible});
+window.toggleProductVisibility = async (id, visible) => {
+  try {
+    await updateDoc(doc(db, 'swiftdata_agents', agentUid, 'products', id), {visible});
+  } catch (err) {
+    console.error('Toggle visibility error:', err);
+    alert('Error updating product visibility');
+  }
 };
 
 // CASHOUT
-window.openCashoutModal=()=>{
-  const bal=agentData.walletBalance||0;
-  if(bal<5){alert('You need at least GHS 5.00 to request a cashout.');return;}
-  document.getElementById('cashout-amount').value=bal.toFixed(2);
+window.openCashoutModal = () => {
+  const bal = agentData.walletBalance || 0;
+  if (bal < 5) {
+    alert('You need at least GHS 5.00 to request a cashout.');
+    return;
+  }
+  document.getElementById('cashout-amount').value = bal.toFixed(2);
   document.getElementById('cashout-modal').classList.add('show');
 };
-window.closeCashoutModal=()=>document.getElementById('cashout-modal').classList.remove('show');
 
-window.submitCashout=async(e)=>{
+window.closeCashoutModal = () => document.getElementById('cashout-modal').classList.remove('show');
+
+window.submitCashout = async (e) => {
   e.preventDefault();
-  const amount=parseFloat(document.getElementById('cashout-amount').value);
-  const momo=document.getElementById('cashout-momo').value.replace(/\D/g,'');
-  const network=document.getElementById('cashout-network').value;
-  const name=document.getElementById('cashout-name').value.trim();
-  const bal=agentData.walletBalance||0;
-  if(amount<5){alert('Minimum cashout is GHS 5.00');return;}
-  if(amount>bal){alert('Amount exceeds your wallet balance.');return;}
-  if(momo.length!==10){alert('Enter a valid 10-digit MoMo number.');return;}
-  if(!name){alert('Enter the account name.');return;}
-  const btn=document.getElementById('cashout-submit-btn');
-  btn.disabled=true;btn.textContent='Submitting…';
-  try{
-    await addDoc(collection(db,'swiftdata_cashout_requests'),{
-      agentId:agentUid,agentName:agentData.name,agentUsername:agentData.username,
-      amount,momoNumber:momo,momoNetwork:network,accountName:name,
-      status:'pending',createdAt:serverTimestamp()
+  
+  const amount = parseFloat(document.getElementById('cashout-amount').value);
+  const momo = document.getElementById('cashout-momo').value.replace(/\D/g, '');
+  const network = document.getElementById('cashout-network').value;
+  const name = document.getElementById('cashout-name').value.trim();
+  const bal = agentData.walletBalance || 0;
+  
+  if (amount < 5) {
+    alert('Minimum cashout is GHS 5.00');
+    return;
+  }
+  if (amount > bal) {
+    alert('Amount exceeds your wallet balance.');
+    return;
+  }
+  if (momo.length !== 10) {
+    alert('Enter a valid 10-digit MoMo number.');
+    return;
+  }
+  if (!name) {
+    alert('Enter the account name.');
+    return;
+  }
+  
+  const btn = document.getElementById('cashout-submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+  
+  try {
+    await addDoc(collection(db, 'swiftdata_cashout_requests'), {
+      agentId: agentUid,
+      agentName: agentData.name,
+      agentUsername: agentData.username,
+      amount,
+      momoNumber: momo,
+      momoNetwork: network,
+      accountName: name,
+      status: 'pending',
+      createdAt: serverTimestamp()
     });
+    
     // Deduct from wallet
-    await updateDoc(doc(db,'swiftdata_agents',agentUid),{
-      walletBalance:(bal-amount)
+    await updateDoc(doc(db, 'swiftdata_agents', agentUid), {
+      walletBalance: (bal - amount)
     });
+    
     closeCashoutModal();
     alert(`Cashout request for GHS ${amount.toFixed(2)} submitted! We'll process it within 24 hours.`);
-  }catch(err){console.error(err);alert('Error submitting cashout request.');}
-  btn.disabled=false;btn.textContent='Submit Request';
+  } catch (err) {
+    console.error('Cashout error:', err);
+    alert('Error submitting cashout request: ' + err.message);
+  }
+  
+  btn.disabled = false;
+  btn.textContent = 'Submit Request';
 };
 
 // LOGOUT
-window.doLogout=async()=>{
-  await signOut(auth);
-  window.location.href='/home';
+window.doLogout = async () => {
+  try {
+    await signOut(auth);
+    window.location.href = '/';
+  } catch (err) {
+    console.error('Logout error:', err);
+  }
 };
 </script>
 </body>
