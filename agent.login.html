@@ -63,7 +63,6 @@ footer{text-align:center;padding:1.25rem;font-size:.75rem;color:rgba(255,255,255
 <body>
 <nav>
   <div class="nav-inner">
-    <!-- FIX #7: both nav links normalized to "/" -->
     <a href="/" class="logo">SwiftData<span>GH</span></a>
     <a href="/" class="nav-home">← Back to Store</a>
   </div>
@@ -80,7 +79,6 @@ footer{text-align:center;padding:1.25rem;font-size:.75rem;color:rgba(255,255,255
     <div class="auth-form show" id="form-signup">
       <div class="form-title">Become an Agent ⚡</div>
       <div class="form-sub">Sign up, pay the one-time activation fee, and get your own store dashboard immediately.</div>
-      <!-- FIX #4: removed dead signup-success div -->
       <div id="signup-err" class="err-box"></div>
       <form onsubmit="handleSignup(event)">
         <div class="flabel">Full Name / Store Name</div>
@@ -88,7 +86,6 @@ footer{text-align:center;padding:1.25rem;font-size:.75rem;color:rgba(255,255,255
 
         <div class="flabel">Username (your store link ID)</div>
         <input class="finput" type="text" id="su-username" placeholder="e.g. kwame123" required oninput="sanitizeUsername(this)"/>
-        <!-- FIX #5: hint has a live <span> that updates as user types -->
         <div class="field-hint">Your store link: swiftdatagh.vercel.app/store?agent=<span id="hint-username">kwame123</span></div>
 
         <div class="flabel">Email Address</div>
@@ -100,7 +97,6 @@ footer{text-align:center;padding:1.25rem;font-size:.75rem;color:rgba(255,255,255
           <button type="button" class="pw-eye" onclick="togglePw('su-pass')">👁</button>
         </div>
 
-        <!-- FIX #8: labelled optional clearly -->
         <div class="flabel">Phone Number <span style="color:rgba(255,255,255,.2);font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></div>
         <input class="finput" type="tel" id="su-phone" placeholder="05XXXXXXXX" maxlength="10" inputmode="numeric"/>
 
@@ -154,9 +150,6 @@ import {
   deleteDoc, query, where, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-// ============================================================
-// 🔧 FIREBASE CONFIG
-// ============================================================
 const firebaseConfig = {
   apiKey:            "AIzaSyCs7lN4itvWZPichtFLdEE4swNQHSX_j1M",
   authDomain:        "dataplus-a93c7.firebaseapp.com",
@@ -166,14 +159,12 @@ const firebaseConfig = {
   appId:             "1:1040979049946:web:d5d7957a6c209f56dd94e3",
   measurementId:     "G-GW9DNT0DQ0"
 };
-// ============================================================
 
 const APP_ID = 'swiftdata-main-app';
 const app    = initializeApp(firebaseConfig);
 const auth   = getAuth(app);
 const db     = getFirestore(app);
 
-// ── Auth error messages ──────────────────────────────────────
 const AUTH_ERRORS = {
   'auth/email-already-in-use':       'This email is already registered. Please log in instead.',
   'auth/weak-password':              'Password must be at least 6 characters.',
@@ -184,12 +175,10 @@ const AUTH_ERRORS = {
   'auth/too-many-requests':          'Too many failed attempts. Please wait a few minutes and try again.',
   'auth/user-disabled':              'This account has been disabled. Contact support.',
   'auth/network-request-failed':     'Network error. Check your connection and try again.',
-  'auth/operation-not-allowed':      '⚠️ Email/Password sign-in is not enabled. Please enable it in Firebase Console → Authentication → Sign-in method.',
-  'auth/configuration-not-found':    '⚠️ Firebase Auth is not configured. Contact the administrator.',
+  'auth/operation-not-allowed':      '⚠️ Email/Password sign-in is not enabled. Contact admin.',
   'auth/credential-already-in-use':  'This email is already linked to another account.'
 };
 
-// ── DOM helpers ──────────────────────────────────────────────
 function showErr(id, msg) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -207,7 +196,6 @@ function setBtn(id, html, disabled = false) {
   b.disabled  = disabled;
 }
 
-// ── UI helpers ───────────────────────────────────────────────
 window.switchTab = (tab) => {
   document.getElementById('form-signup').classList.toggle('show', tab === 'signup');
   document.getElementById('form-login').classList.toggle('show', tab === 'login');
@@ -215,7 +203,6 @@ window.switchTab = (tab) => {
   document.getElementById('tab-login').classList.toggle('active', tab === 'login');
 };
 
-// FIX #5: update live username hint as user types
 window.sanitizeUsername = (inp) => {
   inp.value = inp.value.toLowerCase().replace(/[^a-z0-9_]/g, '').substring(0, 20);
   const hint = document.getElementById('hint-username');
@@ -227,73 +214,74 @@ window.togglePw = (id) => {
   i.type = i.type === 'password' ? 'text' : 'password';
 };
 
-// FIX #8: optional phone validation (only checks if user filled it in)
 function validatePhone(phone) {
-  if (!phone) return true;  // phone is optional
+  if (!phone) return true;
   return phone.length === 10 && phone.startsWith('0');
 }
 
-// ── FIX #2: Store anon auth as an awaitable promise ─────────
-// Previously the code set a `anonReady` boolean flag but never awaited it,
-// meaning isUsernameAvailable() could run before auth completed → permission-denied.
-const anonAuthReady = signInAnonymously(auth)
-  .then(() => true)
-  .catch(e => {
-    console.warn('Anonymous sign-in failed:', e.code,
-      '— username availability check may fail if Firestore rules require auth.');
-    return false;
-  });
-
-// ── FIX #3: Flag to prevent onAuthStateChanged redirecting during active flows ─
-// When handleLogin/handleSignup calls signInWithEmailAndPassword or
-// createUserWithEmailAndPassword, Firebase immediately fires onAuthStateChanged.
-// Without this flag, onAuthStateChanged would race with handleLogin's own
-// status checks, causing duplicate getDoc calls and competing redirects.
+// ══════════════════════════════════════════════════════════════
+// 🔧 FIREBASE AUTH STATE MANAGEMENT
+// ══════════════════════════════════════════════════════════════
 let _suppressAuthRedirect = false;
+const anonAuthReady = signInAnonymously(auth).catch(e => {
+  console.warn('Anon signin failed (non-critical):', e.code);
+  return false;
+});
 
 onAuthStateChanged(auth, async user => {
-  if (!user || user.isAnonymous)  return;
-  if (_suppressAuthRedirect)      return;   // FIX #3: active flow owns this redirect
-
+  if (!user || user.isAnonymous) return;
+  if (_suppressAuthRedirect) return;
+  
   try {
     const agentDoc = await getDoc(doc(db, 'swiftdata_agents', user.uid));
     if (agentDoc.exists() && agentDoc.data().status === 'active') {
       window.location.href = '/agent.dashboard';
     }
-    // pending or banned: stay on page, don't redirect
   } catch (e) {
-    console.warn('onAuthStateChanged status check failed:', e.message);
+    console.warn('Auth state check error:', e.message);
   }
 });
 
-// ── Get Paystack key from Firestore settings ─────────────────
+async function safeSignOut() {
+  try {
+    await signOut(auth);
+  } catch (e) {
+    console.warn('Sign out error:', e.message);
+  }
+}
+
+async function restoreAnon() {
+  try {
+    await signInAnonymously(auth);
+  } catch (e) {
+    console.warn('Anon restore failed:', e.code);
+  }
+}
+
+async function isUsernameAvailable(username) {
+  try {
+    const q = query(collection(db, 'swiftdata_agents'), where('username', '==', username));
+    const snap = await getDocs(q);
+    return snap.empty;
+  } catch (err) {
+    console.error('Username check error:', err);
+    throw new Error('Could not verify username availability. Please try again.');
+  }
+}
+
 async function getPaystackKey() {
   try {
     const d = await getDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config', 'settings_doc'));
     return d.exists() ? (d.data().paystackPublicKey || '') : '';
-  } catch { return ''; }
+  } catch (err) {
+    console.warn('Could not fetch Paystack key:', err.message);
+    return '';
+  }
 }
 
-// ── Username availability check ──────────────────────────────
-async function isUsernameAvailable(username) {
-  const q    = query(collection(db, 'swiftdata_agents'), where('username', '==', username));
-  const snap = await getDocs(q);
-  return snap.empty;
-}
-
-// ── Safe sign-out (never throws) ─────────────────────────────
-async function safeSignOut() {
-  try { await signOut(auth); } catch (e) { console.warn('signOut error:', e.message); }
-}
-
-// ── Restore anonymous session ────────────────────────────────
-function restoreAnon() {
-  signInAnonymously(auth).catch(e => console.warn('Anon restore failed:', e.code));
-}
-
-// ════════════════════════════════════════════════════════════
-//  SIGNUP
-// ════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+// ✅ SIGNUP HANDLER (FIXED)
+// ══════════════════════════════════════════════════════════════
 window.handleSignup = async (e) => {
   e.preventDefault();
   hideErr('signup-err');
@@ -304,24 +292,39 @@ window.handleSignup = async (e) => {
   const pass     = document.getElementById('su-pass').value;
   const phone    = document.getElementById('su-phone').value.replace(/\D/g, '');
 
-  // ── Validation ────────────────────────────────────────────
-  if (!name)                              { showErr('signup-err', 'Please enter your full name or store name.'); return; }
-  if (!username || username.length < 3)   { showErr('signup-err', 'Username must be at least 3 characters.'); return; }
-  if (!/^[a-z0-9_]+$/.test(username))    { showErr('signup-err', 'Username can only contain letters, numbers, and underscores.'); return; }
-  if (!email)                             { showErr('signup-err', 'Please enter a valid email address.'); return; }
-  if (pass.length < 6)                    { showErr('signup-err', 'Password must be at least 6 characters.'); return; }
-  // FIX #8: validate phone only if provided
+  // Validation
+  if (!name) {
+    showErr('signup-err', 'Please enter your full name or store name.');
+    return;
+  }
+  if (!username || username.length < 3) {
+    showErr('signup-err', 'Username must be at least 3 characters.');
+    return;
+  }
+  if (!/^[a-z0-9_]+$/.test(username)) {
+    showErr('signup-err', 'Username can only contain letters, numbers, and underscores.');
+    return;
+  }
+  if (!email) {
+    showErr('signup-err', 'Please enter a valid email address.');
+    return;
+  }
+  if (pass.length < 6) {
+    showErr('signup-err', 'Password must be at least 6 characters.');
+    return;
+  }
   if (!validatePhone(phone)) {
-    showErr('signup-err', 'Phone number must be 10 digits and start with 0 (e.g. 0501234567).');
+    showErr('signup-err', 'Phone must be 10 digits and start with 0 (e.g. 0501234567).');
     return;
   }
 
   setBtn('signup-btn', '<span class="spin"></span> Checking username…', true);
 
   try {
-    // FIX #2: await the anonymous auth promise before any Firestore query
+    // Step 1: Wait for anonymous auth to complete
     await anonAuthReady;
 
+    // Step 2: Check if username is available
     const available = await isUsernameAvailable(username);
     if (!available) {
       showErr('signup-err', 'That username is already taken. Please choose another.');
@@ -329,20 +332,13 @@ window.handleSignup = async (e) => {
       return;
     }
 
+    // Step 3: Get Paystack key (if using payments)
     const psKey = await getPaystackKey();
 
-    if (!psKey) {
-      // Demo mode — no payment required
-      await completeSignup(name, username, email, pass, phone, 'DEMO_ACTIVATION_' + Date.now());
-      return;
-    }
-
     setBtn('signup-btn', '<span class="spin"></span> Creating account…', true);
-
-    // FIX #3: suppress onAuthStateChanged while we control the flow
     _suppressAuthRedirect = true;
 
-    // Sign out anon session before creating real account to avoid conflicts
+    // Step 4: Sign out anonymous session and create real account
     await safeSignOut();
 
     let userCred;
@@ -352,68 +348,117 @@ window.handleSignup = async (e) => {
       showErr('signup-err', AUTH_ERRORS[authErr.code] || 'Registration error: ' + authErr.message);
       setBtn('signup-btn', 'Register & Pay GHS 25 →', false);
       _suppressAuthRedirect = false;
-      restoreAnon();
+      await restoreAnon();
       return;
     }
 
     const uid = userCred.user.uid;
 
-    // Write PENDING agent doc — createdAt only set here, never overwritten on activation
-    await setDoc(doc(db, 'swiftdata_agents', uid), {
-      uid, name, username, email,
-      phone:         phone || '',
-      status:        'pending',
-      walletBalance: 0,
-      totalEarned:   0,
-      totalOrders:   0,
-      createdAt:     serverTimestamp(),   // FIX #1: set ONCE here, not again on activation
-      paymentRef:    null
-    });
+    // Step 5: Create agent document in Firestore
+    // ⚠️ CRITICAL: If this fails, we need to clean up the Firebase Auth user
+    try {
+      await setDoc(doc(db, 'swiftdata_agents', uid), {
+        uid,
+        name,
+        username,
+        email,
+        phone: phone || '',
+        status: 'pending',
+        walletBalance: 0,
+        totalEarned: 0,
+        totalOrders: 0,
+        createdAt: serverTimestamp(),
+        paymentRef: null,
+        activatedAt: null
+      });
+    } catch (firestoreErr) {
+      console.error('Firestore write failed:', firestoreErr);
+      // Clean up: Delete the Firebase Auth user we just created
+      try {
+        await userCred.user.delete();
+      } catch (delErr) {
+        console.warn('Could not delete orphaned auth user:', delErr.message);
+      }
+      showErr('signup-err', 
+        '⚠️ Database error: ' + firestoreErr.message + 
+        '\nPlease check your internet connection and try again. If the problem persists, contact support.'
+      );
+      setBtn('signup-btn', 'Register & Pay GHS 25 →', false);
+      _suppressAuthRedirect = false;
+      await restoreAnon();
+      return;
+    }
 
+    // Step 6: If no Paystack key, activate immediately (demo mode)
+    if (!psKey) {
+      try {
+        await setDoc(doc(db, 'swiftdata_agents', uid), {
+          status: 'active',
+          activatedAt: serverTimestamp(),
+          paymentRef: 'DEMO_' + Date.now(),
+          activationFee: 0,
+          isDemoAccount: true
+        }, { merge: true });
+        window.location.href = '/agent.dashboard';
+        return;
+      } catch (err) {
+        console.error('Demo activation failed:', err);
+        showErr('signup-err', '⚠️ Activation failed: ' + err.message);
+        setBtn('signup-btn', 'Register & Pay GHS 25 →', false);
+        _suppressAuthRedirect = false;
+        await restoreAnon();
+        return;
+      }
+    }
+
+    // Step 7: Paystack payment flow
     setBtn('signup-btn', '<span class="spin"></span> Loading payment…', true);
 
     const ps = new PaystackPop();
     ps.newTransaction({
-      key:      psKey,
+      key: psKey,
       email,
-      amount:   2500,   // GHS 25.00 in pesewas ✓
+      amount: 2500, // GHS 25.00 in pesewas
       currency: 'GHS',
-      ref:      'AGENT_ACT_' + Date.now() + '_' + uid.substring(0, 8),
+      ref: 'AGENT_ACT_' + Date.now() + '_' + uid.substring(0, 8),
       metadata: { uid, username, name, type: 'agent_activation' },
 
       onSuccess: async (tx) => {
         setBtn('signup-btn', '<span class="spin"></span> Activating…', true);
         try {
-          // FIX #1 — CRITICAL: Do NOT include createdAt here.
-          // The pending record already has the correct join timestamp.
-          // Including createdAt with merge:true would overwrite it with the
-          // payment time, making all join dates appear later than they are.
           await setDoc(doc(db, 'swiftdata_agents', uid), {
-            status:        'active',
-            activatedAt:   serverTimestamp(),
-            paymentRef:    tx.reference,
+            status: 'active',
+            activatedAt: serverTimestamp(),
+            paymentRef: tx.reference,
             activationFee: 25
           }, { merge: true });
-
           window.location.href = '/agent.dashboard';
         } catch (err) {
-          console.error('Activation write failed:', err);
+          console.error('Activation update failed:', err);
           _suppressAuthRedirect = false;
           showErr('signup-err',
-            '⚠️ Payment received but activation failed. Contact support with ref: ' + tx.reference);
+            '⚠️ Payment received but activation failed. Contact support with ref: ' + tx.reference
+          );
           setBtn('signup-btn', 'Register & Pay GHS 25 →', false);
         }
       },
 
       onCancel: async () => {
-        // Clean up both Firestore doc and Firebase Auth user
-        try { await deleteDoc(doc(db, 'swiftdata_agents', uid)); } catch (er) { console.warn(er); }
-        try { await userCred.user.delete(); }                     catch (er) { console.warn(er); }
+        try {
+          await deleteDoc(doc(db, 'swiftdata_agents', uid));
+        } catch (er) {
+          console.warn('Could not delete Firestore doc:', er.message);
+        }
+        try {
+          await userCred.user.delete();
+        } catch (er) {
+          console.warn('Could not delete auth user:', er.message);
+        }
         await safeSignOut();
         _suppressAuthRedirect = false;
-        restoreAnon();
+        await restoreAnon();
         setBtn('signup-btn', 'Register & Pay GHS 25 →', false);
-        showErr('signup-err', 'Payment cancelled. Your account was not created. Please try again.');
+        showErr('signup-err', 'Payment cancelled. Account creation cancelled. Please try again.');
       }
     });
 
@@ -422,43 +467,13 @@ window.handleSignup = async (e) => {
     showErr('signup-err', 'An unexpected error occurred: ' + err.message);
     setBtn('signup-btn', 'Register & Pay GHS 25 →', false);
     _suppressAuthRedirect = false;
-    if (!auth.currentUser) restoreAnon();
+    await restoreAnon();
   }
 };
 
-// ── Demo signup (no Paystack key in Firestore) ────────────────
-async function completeSignup(name, username, email, pass, phone, payRef) {
-  setBtn('signup-btn', '<span class="spin"></span> Creating account…', true);
-  _suppressAuthRedirect = true;
-  await safeSignOut();
-  try {
-    const cred = await createUserWithEmailAndPassword(auth, email, pass);
-    const uid  = cred.user.uid;
-    await setDoc(doc(db, 'swiftdata_agents', uid), {
-      uid, name, username, email,
-      phone:         phone || '',
-      status:        'active',
-      walletBalance: 0,
-      totalEarned:   0,
-      totalOrders:   0,
-      createdAt:     serverTimestamp(),
-      activatedAt:   serverTimestamp(),
-      paymentRef:    payRef,
-      activationFee: 0,
-      isDemoAccount: true
-    });
-    window.location.href = '/agent.dashboard';
-  } catch (err) {
-    showErr('signup-err', AUTH_ERRORS[err.code] || err.message);
-    setBtn('signup-btn', 'Register & Pay GHS 25 →', false);
-    _suppressAuthRedirect = false;
-    restoreAnon();
-  }
-}
-
-// ════════════════════════════════════════════════════════════
-//  LOGIN
-// ════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+// ✅ LOGIN HANDLER (FIXED)
+// ══════════════════════════════════════════════════════════════
 window.handleLogin = async (e) => {
   e.preventDefault();
   hideErr('login-err');
@@ -466,14 +481,19 @@ window.handleLogin = async (e) => {
   const email = document.getElementById('li-email').value.trim();
   const pass  = document.getElementById('li-pass').value;
 
-  setBtn('login-btn', '<span class="spin"></span> Logging in…', true);
+  if (!email || !pass) {
+    showErr('login-err', 'Please enter email and password.');
+    return;
+  }
 
-  // FIX #3: suppress onAuthStateChanged — handleLogin owns this redirect flow
+  setBtn('login-btn', '<span class="spin"></span> Logging in…', true);
   _suppressAuthRedirect = true;
 
   try {
-    await safeSignOut();  // clear any anon session first
+    // Clear any existing sessions
+    await safeSignOut();
 
+    // Attempt Firebase Auth sign-in
     let cred;
     try {
       cred = await signInWithEmailAndPassword(auth, email, pass);
@@ -481,19 +501,36 @@ window.handleLogin = async (e) => {
       showErr('login-err', AUTH_ERRORS[authErr.code] || 'Login error: ' + authErr.message);
       setBtn('login-btn', 'Login →', false);
       _suppressAuthRedirect = false;
-      restoreAnon();
+      await restoreAnon();
       return;
     }
 
-    const uid      = cred.user.uid;
-    const agentDoc = await getDoc(doc(db, 'swiftdata_agents', uid));
+    const uid = cred.user.uid;
 
-    if (!agentDoc.exists()) {
+    // Check if Firestore agent document exists
+    let agentDoc;
+    try {
+      agentDoc = await getDoc(doc(db, 'swiftdata_agents', uid));
+    } catch (firestoreErr) {
+      console.error('Firestore read error:', firestoreErr);
       await safeSignOut();
-      showErr('login-err', 'No agent account found for this email. Please sign up first.');
+      showErr('login-err', '⚠️ Database connection error: ' + firestoreErr.message);
       setBtn('login-btn', 'Login →', false);
       _suppressAuthRedirect = false;
-      restoreAnon();
+      await restoreAnon();
+      return;
+    }
+
+    // If no agent document, user was created in auth but not in database
+    if (!agentDoc.exists()) {
+      await safeSignOut();
+      showErr('login-err', 
+        '⚠️ Your account was partially created. Please contact support to complete setup.\n' +
+        'Reference: ' + uid.substring(0, 8)
+      );
+      setBtn('login-btn', 'Login →', false);
+      _suppressAuthRedirect = false;
+      await restoreAnon();
       return;
     }
 
@@ -504,20 +541,20 @@ window.handleLogin = async (e) => {
       showErr('login-err', 'Your account has been suspended. Contact support on WhatsApp.');
       setBtn('login-btn', 'Login →', false);
       _suppressAuthRedirect = false;
-      restoreAnon();
+      await restoreAnon();
       return;
     }
 
     if (status === 'pending') {
       await safeSignOut();
-      showErr('login-err', 'Your account is pending activation. Please complete the GHS 25 payment or contact admin.');
+      showErr('login-err', 'Your account is pending activation. Complete the GHS 25 payment to activate.');
       setBtn('login-btn', 'Login →', false);
       _suppressAuthRedirect = false;
-      restoreAnon();
+      await restoreAnon();
       return;
     }
 
-    // Active agent — proceed to dashboard
+    // Active agent — redirect to dashboard
     _suppressAuthRedirect = false;
     window.location.href = '/agent.dashboard';
 
@@ -526,9 +563,8 @@ window.handleLogin = async (e) => {
     showErr('login-err', 'An unexpected error occurred: ' + err.message);
     setBtn('login-btn', 'Login →', false);
     _suppressAuthRedirect = false;
-    // FIX #6: always cleanly restore anon, not conditional on currentUser being null
     await safeSignOut();
-    restoreAnon();
+    await restoreAnon();
   }
 };
 </script>
