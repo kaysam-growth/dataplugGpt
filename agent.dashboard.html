@@ -6,304 +6,178 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
-<script src="https://js.paystack.co/v2/inline.js"></script>
 <style>
-:root{--blue:#0051ff;--sky:#38bdf8;--mint:#00e5b0;--yellow:#f59e0b;--green:#22c55e;--red:#ef4444;}
+:root{--ink:#0a0f1e;--blue:#0051ff;--mint:#00e5b0;--yellow:#f59e0b;--green:#22c55e;--red:#ef4444;--sky:#38bdf8;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:#060b18;color:#fff;min-height:100vh;display:flex;}
-/* SIDEBAR */
-.sidebar{width:230px;flex-shrink:0;background:#0a0f1e;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;}
-.sb-brand{padding:1.5rem;border-bottom:1px solid rgba(255,255,255,.06);}
-.sb-logo{font-weight:800;font-size:1.1rem;color:#fff;letter-spacing:-.3px;}
-.sb-logo span{color:var(--mint);}
-.sb-agent-name{font-size:.78rem;color:rgba(255,255,255,.3);margin-top:.3rem;font-weight:500;}
-.sb-nav{flex:1;padding:1rem 0;overflow-y:auto;}
-.sb-sec{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.18);padding:.5rem 1.25rem;margin-top:.5rem;}
-.sb-btn{display:flex;align-items:center;gap:.7rem;padding:.68rem 1.25rem;color:rgba(255,255,255,.4);border:none;background:none;font-family:inherit;font-size:.88rem;font-weight:600;cursor:pointer;width:100%;text-align:left;border-left:3px solid transparent;transition:all .2s;}
-.sb-btn:hover{color:#fff;background:rgba(255,255,255,.04);}
-.sb-btn.active{color:#fff;background:rgba(0,81,255,.1);border-left-color:var(--blue);}
-.sb-icon{width:18px;text-align:center;flex-shrink:0;}
-.sb-footer{padding:1.25rem;border-top:1px solid rgba(255,255,255,.06);}
-.sb-user-row{display:flex;align-items:center;gap:.65rem;}
-.sb-avatar{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--sky));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;flex-shrink:0;}
-.sb-uname{font-size:.82rem;font-weight:700;color:#fff;}
-.sb-email{font-size:.7rem;color:rgba(255,255,255,.3);}
-.logout-btn{background:none;border:none;color:rgba(255,255,255,.25);cursor:pointer;font-size:.85rem;margin-left:auto;transition:color .2s;}
-.logout-btn:hover{color:var(--red);}
-/* MAIN */
-.main{flex:1;margin-left:230px;min-height:100vh;display:flex;flex-direction:column;}
-.top-bar{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(10,15,30,.95);position:sticky;top:0;z-index:40;}
-.top-title{font-weight:800;font-size:1.2rem;}
-.top-right{display:flex;align-items:center;gap:.85rem;}
-.store-link-chip{background:rgba(0,229,176,.08);border:1px solid rgba(0,229,176,.18);color:var(--mint);padding:.35rem .9rem;border-radius:50px;font-size:.75rem;font-weight:700;cursor:pointer;transition:all .2s;}
-.store-link-chip:hover{background:rgba(0,229,176,.14);}
-.content{flex:1;padding:2rem 2.5rem;}
-/* CARDS */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.1rem;margin-bottom:2rem;}
-.stat-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:1.4rem;}
-.stat-lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.3);margin-bottom:.5rem;}
-.stat-val{font-weight:800;font-size:1.8rem;}
-.stat-sub{font-size:.75rem;color:rgba(255,255,255,.3);margin-top:.3rem;}
-/* WALLET CARD */
-.wallet-card{background:linear-gradient(135deg,#0f2060 0%,#0a1040 50%,#0f1a3a 100%);border:1px solid rgba(0,81,255,.2);border-radius:20px;padding:2rem;margin-bottom:2rem;position:relative;overflow:hidden;}
-.wallet-card::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,176,.07) 0%,transparent 70%);}
-.wallet-lbl{font-size:.7rem;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.35);margin-bottom:.5rem;}
-.wallet-bal{font-weight:800;font-size:2.5rem;color:var(--mint);letter-spacing:-.5px;}
-.wallet-sub{font-size:.82rem;color:rgba(255,255,255,.3);margin-top:.3rem;}
-.wallet-row{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1rem;}
-.cashout-btn{background:var(--mint);color:#0a1020;border:none;padding:.75rem 1.75rem;border-radius:12px;font-family:inherit;font-weight:800;font-size:.88rem;cursor:pointer;transition:transform .2s,box-shadow .2s;}
-.cashout-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,229,176,.35);}
-.cashout-btn:disabled{opacity:.4;cursor:not-allowed;}
-.cashout-hint{font-size:.75rem;color:rgba(255,255,255,.2);margin-top:.3rem;}
-/* TABS */
-.page-tabs{display:flex;background:rgba(255,255,255,.04);border-radius:12px;padding:3px;margin-bottom:1.75rem;width:fit-content;}
-.page-tab{padding:.5rem 1.25rem;border-radius:10px;border:none;background:none;color:rgba(255,255,255,.35);font-family:inherit;font-weight:700;font-size:.85rem;cursor:pointer;transition:all .2s;}
-.page-tab.active{background:var(--blue);color:#fff;box-shadow:0 4px 12px rgba(0,81,255,.35);}
-/* PANEL */
-.panel{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;overflow:hidden;margin-bottom:1.5rem;}
-.panel-head{padding:1.1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;}
-.panel-head h3{font-weight:800;font-size:.95rem;}
-.add-product-btn{background:var(--blue);color:#fff;border:none;padding:.5rem 1.1rem;border-radius:10px;font-family:inherit;font-weight:700;font-size:.82rem;cursor:pointer;transition:box-shadow .2s;}
-.add-product-btn:hover{box-shadow:0 6px 18px rgba(0,81,255,.35);}
-/* PRODUCT ROWS */
-.prod-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;padding:1.1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s;}
-.prod-row:last-child{border-bottom:none;}
-.prod-row:hover{background:rgba(255,255,255,.02);}
-.prod-info .pnet{font-size:.68rem;font-weight:700;background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);padding:.18rem .55rem;border-radius:6px;}
-.prod-info .psize{font-weight:800;font-size:1.1rem;margin:.2rem 0;}
-.prod-info .ptype{font-size:.72rem;color:rgba(255,255,255,.3);}
-.prod-prices{display:flex;flex-direction:column;align-items:flex-end;gap:.2rem;}
-.price-row{display:flex;gap:.6rem;align-items:center;font-size:.8rem;}
-.price-label{color:rgba(255,255,255,.3);}
-.agent-cost{color:rgba(255,255,255,.5);font-weight:600;}
-.store-price{color:var(--mint);font-weight:800;}
-.profit-badge{background:rgba(0,229,176,.1);border:1px solid rgba(0,229,176,.2);color:var(--mint);font-size:.7rem;font-weight:700;padding:.15rem .55rem;border-radius:6px;}
-.edit-prod-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.5);padding:.4rem .8rem;border-radius:8px;font-family:inherit;font-size:.78rem;cursor:pointer;transition:all .2s;}
-.edit-prod-btn:hover{background:rgba(255,255,255,.1);color:#fff;}
-.toggle-btn{padding:.4rem .8rem;border-radius:8px;font-family:inherit;font-size:.75rem;font-weight:700;cursor:pointer;border:none;transition:all .2s;}
-.toggle-btn.visible{background:rgba(34,197,94,.1);color:var(--green);}
-.toggle-btn.hidden{background:rgba(255,255,255,.05);color:rgba(255,255,255,.3);}
-/* ORDER ROWS */
-.order-row{padding:1.1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.04);}
-.order-row:last-child{border-bottom:none;}
-.o-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.5rem;margin-bottom:.4rem;}
-.o-bundle{font-weight:800;color:var(--blue);}
-.o-status{font-size:.72rem;font-weight:700;padding:.22rem .7rem;border-radius:50px;color:#fff;}
-.s-Pending{background:var(--yellow)}.s-Processing{background:var(--blue)}.s-Delivered{background:var(--green)}.s-Failed{background:var(--red)}
-.o-phone{font-weight:700;margin:.2rem 0;}
-.o-meta{font-size:.75rem;color:rgba(255,255,255,.3);}
-.o-profit{font-size:.78rem;color:var(--mint);font-weight:700;}
-.empty-state{padding:3rem;text-align:center;color:rgba(255,255,255,.2);font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:.78rem;}
-.error-msg{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;padding:1rem;border-radius:10px;margin-bottom:1rem;}
-/* CASHOUT LIST */
-.cashout-row{padding:1.1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.04);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;}
-.cashout-row:last-child{border-bottom:none;}
-.cashout-amt{font-weight:800;font-size:1rem;color:var(--mint);}
-.cashout-status{font-size:.72rem;font-weight:700;padding:.22rem .7rem;border-radius:50px;color:#fff;}
-.cs-pending{background:var(--yellow)}.cs-paid{background:var(--green)}.cs-rejected{background:var(--red)}
-/* MODALS */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:1.5rem;}
-.modal-bg.show{display:flex;}
-.modal-box{background:#0f172a;border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:2rem;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;}
-.modal-title{font-weight:800;font-size:1.15rem;margin-bottom:1.5rem;}
-.m-lbl{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.3);margin-bottom:.4rem;margin-top:1rem;}
-.m-inp{width:100%;padding:.78rem 1rem;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.08);border-radius:10px;color:#fff;font-family:inherit;font-size:.9rem;outline:none;transition:border-color .2s;}
-.m-inp:focus{border-color:rgba(0,81,255,.5);}
-.m-hint{font-size:.72rem;color:rgba(255,255,255,.2);margin-top:.35rem;}
-.price-calc{background:rgba(0,229,176,.06);border:1px solid rgba(0,229,176,.12);border-radius:12px;padding:1rem;margin-top:.75rem;}
-.price-calc .calc-row{display:flex;justify-content:space-between;font-size:.82rem;color:rgba(255,255,255,.5);margin-bottom:.3rem;}
-.price-calc .calc-row strong{color:#fff;}.price-calc .calc-row.profit strong{color:var(--mint);}
-.price-calc .calc-total{display:flex;justify-content:space-between;font-weight:800;font-size:.95rem;margin-top:.6rem;padding-top:.6rem;border-top:1px solid rgba(0,229,176,.12);}
-.m-btns{display:flex;gap:.75rem;margin-top:1.75rem;}
-.m-cancel{flex:1;padding:.8rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;color:rgba(255,255,255,.5);font-family:inherit;font-weight:700;cursor:pointer;}
-.m-save{flex:1;padding:.8rem;background:var(--blue);border:none;border-radius:10px;color:#fff;font-family:inherit;font-weight:800;cursor:pointer;transition:box-shadow .2s;}
-.m-save:hover{box-shadow:0 6px 18px rgba(0,81,255,.35);}
-.m-save:disabled{opacity:.4;cursor:not-allowed;}
-/* LINK COPY BOX */
-.link-copy-box{background:rgba(0,81,255,.06);border:1.5px solid rgba(0,81,255,.15);border-radius:14px;padding:1.1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
-.link-url{font-size:.82rem;color:var(--sky);font-weight:600;word-break:break-all;}
-.copy-btn{background:rgba(0,81,255,.15);border:1px solid rgba(0,81,255,.25);color:var(--blue);padding:.4rem .9rem;border-radius:8px;font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;}
-.copy-btn:hover{background:rgba(0,81,255,.25);}
-/* SPINNER */
-.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;display:inline-block;vertical-align:middle;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#060b18;color:#fff;min-height:100vh;}
+.gate{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse 70% 60% at 50% 40%,rgba(0,81,255,.07) 0%,transparent 70%);padding:2rem;}
+.gate-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:28px;padding:3rem;max-width:420px;width:100%;text-align:center;animation:fadeUp .4s ease;}
+.gate-box h1{font-weight:800;font-size:1.6rem;margin-bottom:.35rem;}
+.gate-box p{font-size:.85rem;color:rgba(255,255,255,.3);margin-bottom:1.5rem;line-height:1.6;}
+.gate-box .spin{width:24px;height:24px;border:2.5px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;}
+.spin{display:inline-block;vertical-align:middle;}
 @keyframes sp{to{transform:rotate(360deg);}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-.content{animation:fadeUp .35s ease;}
-/* MOBILE */
-@media(max-width:768px){
-  .sidebar{width:56px;}.sb-brand .sb-logo span,.sb-brand .sb-agent-name,.sb-btn span:last-child,.sb-sec,.sb-uname,.sb-email{display:none;}
-  .sb-btn{justify-content:center;padding:.8rem;}.main{margin-left:56px;}.top-bar{padding:0 1.25rem;}.content{padding:1.25rem;}
-  .stats-grid{grid-template-columns:1fr 1fr;}
-}
-.hidden{display:none!important;}
+.gate-err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;padding:1rem;border-radius:12px;margin-bottom:1rem;font-size:.85rem;line-height:1.6;}
+.gate-btn{width:100%;padding:.9rem;background:var(--blue);color:#fff;border:none;border-radius:12px;font-family:inherit;font-weight:800;font-size:.95rem;cursor:pointer;transition:all .2s;}
+.gate-btn:hover{opacity:.9;box-shadow:0 10px 28px rgba(0,81,255,.35);}
+.dashboard{display:none;}
+.sidebar{width:240px;position:fixed;top:0;left:0;bottom:0;background:#0a0f1e;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;overflow-y:auto;}
+.sb-logo{padding:1.5rem;border-bottom:1px solid rgba(255,255,255,.06);font-weight:800;font-size:1.05rem;}
+.sb-logo span{color:var(--mint);}
+.sb-nav{flex:1;padding:1rem 0;}
+.sb-btn{display:flex;align-items:center;gap:.65rem;padding:.6rem 1.2rem;color:rgba(255,255,255,.35);border:none;background:none;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;width:100%;border-left:3px solid transparent;transition:all .2s;}
+.sb-btn:hover{color:#fff;background:rgba(255,255,255,.04);}
+.sb-btn.active{color:#fff;background:rgba(0,81,255,.1);border-left-color:var(--blue);}
+.sb-foot{padding:1.2rem;border-top:1px solid rgba(255,255,255,.06);}
+.main{margin-left:240px;min-height:100vh;}
+.topbar{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(10,15,30,.95);}
+.topbar h1{font-weight:800;font-size:1.15rem;}
+.logout-btn{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#fca5a5;padding:.5rem 1rem;border-radius:10px;font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;transition:all .2s;}
+.logout-btn:hover{background:rgba(239,68,68,.25);}
+.content{padding:2rem;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:2rem;}
+.stat-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:1.25rem;}
+.stat-lbl{font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.25);margin-bottom:.5rem;}
+.stat-val{font-weight:800;font-size:1.6rem;color:var(--mint);}
+.panel{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;overflow:hidden;margin-bottom:1.5rem;}
+.panel-head{padding:1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.05);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;}
+.panel-head h3{font-weight:800;font-size:.95rem;}
+.btn{padding:.5rem 1rem;background:var(--blue);color:#fff;border:none;border-radius:10px;font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;transition:all .2s;}
+.btn:hover{opacity:.9;}
+.btn.danger{background:rgba(239,68,68,.2);color:#fca5a5;border:1px solid rgba(239,68,68,.3);}
+.empty-state{padding:2rem;text-align:center;color:rgba(255,255,255,.15);font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:.75rem;}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:1.5rem;}
+.modal-bg.show{display:flex;}
+.modal-box{background:#0f172a;border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:2rem;max-width:480px;width:100%;}
+.modal-title{font-weight:800;font-size:1.2rem;margin-bottom:1.5rem;}
+.m-inp{width:100%;padding:.75rem 1rem;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.08);border-radius:10px;font-family:inherit;font-size:.88rem;color:#fff;outline:none;margin-bottom:1rem;}
+.m-inp:focus{border-color:rgba(0,81,255,.5);}
+.m-btns{display:flex;gap:.75rem;margin-top:1.25rem;}
+.m-btn{flex:1;padding:.75rem;background:var(--blue);color:#fff;border:none;border-radius:10px;font-family:inherit;font-weight:700;cursor:pointer;}
+.m-btn.cancel{background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);}
+.error-banner{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:12px;padding:1rem;color:#fca5a5;margin-bottom:1rem;font-size:.85rem;}
+@media(max-width:768px){.sidebar{width:60px;}.sb-logo{text-align:center;padding:.75rem;}.main{margin-left:60px;}.sb-btn span:last-child{display:none;}.content{padding:1rem;}}
 </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-  <div class="sb-brand">
-    <div class="sb-logo">Swift<span>Data</span></div>
-    <div class="sb-agent-name" id="sb-agent-name">Loading…</div>
-  </div>
-  <nav class="sb-nav">
-    <div class="sb-sec">Main</div>
-    <button class="sb-btn active" onclick="showTab('overview')"><span class="sb-icon">📊</span><span>Overview</span></button>
-    <button class="sb-btn" onclick="showTab('products')"><span class="sb-icon">📦</span><span>My Products</span></button>
-    <button class="sb-btn" onclick="showTab('orders')"><span class="sb-icon">🔄</span><span>My Orders</span></button>
-    <div class="sb-sec">Account</div>
-    <button class="sb-btn" onclick="showTab('wallet')"><span class="sb-icon">💰</span><span>Wallet & Cashout</span></button>
-    <button class="sb-btn" onclick="showTab('store')"><span class="sb-icon">🔗</span><span>My Store Link</span></button>
-  </nav>
-  <div class="sb-footer">
-    <div class="sb-user-row">
-      <div class="sb-avatar" id="sb-initials">?</div>
-      <div><div class="sb-uname" id="sb-uname-txt">Agent</div><div class="sb-email" id="sb-email-txt"></div></div>
-      <button class="logout-btn" onclick="doLogout()" title="Logout">✕</button>
+<!-- GATE (Loading/Error Screen) -->
+<div class="gate" id="gate">
+  <div class="gate-box">
+    <div style="font-size:2.5rem;margin-bottom:1rem;">🔐</div>
+    <h1>Loading Agent Portal</h1>
+    <p>Please wait while we verify your account...</p>
+    <div style="margin:2rem 0;">
+      <div class="spin"></div>
     </div>
-  </div>
-</aside>
-
-<!-- MAIN -->
-<div class="main">
-  <div class="top-bar">
-    <div class="top-title" id="top-title">Overview</div>
-    <div class="top-right">
-      <div class="store-link-chip" onclick="copyStoreLink()" id="store-chip">📎 Copy Store Link</div>
-      <a href="/" style="color:rgba(255,255,255,.35);text-decoration:none;font-size:.82rem;">← Public Store</a>
-    </div>
-  </div>
-
-  <div class="content">
-
-    <!-- OVERVIEW TAB -->
-    <div id="tab-overview">
-      <div class="stats-grid">
-        <div class="stat-card"><div class="stat-lbl">Wallet Balance</div><div class="stat-val" id="stat-wallet" style="color:var(--mint);">GHS 0.00</div><div class="stat-sub">Available to cashout</div></div>
-        <div class="stat-card"><div class="stat-lbl">Total Earned</div><div class="stat-val" id="stat-earned" style="color:var(--yellow);">GHS 0.00</div><div class="stat-sub">All time profits</div></div>
-        <div class="stat-card"><div class="stat-lbl">Total Orders</div><div class="stat-val" id="stat-orders" style="color:var(--sky);">0</div><div class="stat-sub">Through your store</div></div>
-        <div class="stat-card"><div class="stat-lbl">Products Listed</div><div class="stat-val" id="stat-prods" style="color:var(--blue);">0</div><div class="stat-sub">Active in your store</div></div>
-      </div>
-
-      <div class="wallet-card">
-        <div class="wallet-lbl">Wallet Balance</div>
-        <div class="wallet-row">
-          <div>
-            <div class="wallet-bal" id="wallet-bal">GHS 0.00</div>
-            <div class="wallet-sub">Minimum cashout: GHS 5.00</div>
-          </div>
-          <div>
-            <button class="cashout-btn" id="cashout-btn" onclick="openCashoutModal()">Request Cashout</button>
-            <div class="cashout-hint" id="cashout-hint"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- RECENT ORDERS -->
-      <div class="panel">
-        <div class="panel-head"><h3>Recent Orders</h3><button class="add-product-btn" onclick="showTab('orders')" style="background:rgba(255,255,255,.06);">View All</button></div>
-        <div id="recent-orders-list"><div class="empty-state">No orders yet — share your store link!</div></div>
-      </div>
-    </div>
-
-    <!-- PRODUCTS TAB -->
-    <div id="tab-products" class="hidden">
-      <div class="panel">
-        <div class="panel-head">
-          <h3>My Store Products</h3>
-          <button class="add-product-btn" onclick="openAddProduct()">+ Add Product</button>
-        </div>
-        <div id="products-list"><div class="empty-state"><span class="spin"></span> Loading…</div></div>
-      </div>
-      <p style="font-size:.78rem;color:rgba(255,255,255,.2);text-align:center;padding:1rem;">Products you add here will show on your store page with your prices. Customers pay your price; your profit is credited to your wallet.</p>
-    </div>
-
-    <!-- ORDERS TAB -->
-    <div id="tab-orders" class="hidden">
-      <div class="panel">
-        <div class="panel-head"><h3>All My Orders</h3></div>
-        <div id="orders-list"><div class="empty-state">No orders yet.</div></div>
-      </div>
-    </div>
-
-    <!-- WALLET TAB -->
-    <div id="tab-wallet" class="hidden">
-      <div class="wallet-card" style="margin-bottom:1.5rem;">
-        <div class="wallet-lbl">Current Balance</div>
-        <div class="wallet-row">
-          <div>
-            <div class="wallet-bal" id="wallet-bal-2">GHS 0.00</div>
-            <div class="wallet-sub">Profits from your store sales</div>
-          </div>
-          <div>
-            <button class="cashout-btn" id="cashout-btn-2" onclick="openCashoutModal()">Request Cashout</button>
-            <div class="cashout-hint" id="cashout-hint-2"></div>
-          </div>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-head"><h3>Cashout History</h3></div>
-        <div id="cashout-list"><div class="empty-state">No cashout requests yet.</div></div>
-      </div>
-    </div>
-
-    <!-- STORE LINK TAB -->
-    <div id="tab-store" class="hidden">
-      <div class="panel" style="padding:2rem;">
-        <div class="panel-head" style="border:none;padding:0;margin-bottom:1.5rem;"><h3>🔗 Your Store Link</h3></div>
-        <p style="font-size:.88rem;color:rgba(255,255,255,.4);line-height:1.65;margin-bottom:1.25rem;">Share this link with your customers. When they buy through your link, you earn your markup profit — automatically added to your wallet.</p>
-        <div class="link-copy-box">
-          <div class="link-url" id="store-link-url">Loading…</div>
-          <button class="copy-btn" onclick="copyStoreLink()">📋 Copy Link</button>
-        </div>
-        <div style="margin-top:1.5rem;padding:1.25rem;background:rgba(0,229,176,.04);border:1px solid rgba(0,229,176,.1);border-radius:14px;">
-          <div style="font-weight:800;color:var(--mint);margin-bottom:.6rem;font-size:.9rem;">💡 How it works</div>
-          <ul style="font-size:.83rem;color:rgba(255,255,255,.4);line-height:1.8;padding-left:1.25rem;">
-            <li>Customer visits your link and buys a bundle</li>
-            <li>They pay your price (agent cost + your markup)</li>
-            <li>A 2.5% platform fee is added to the total</li>
-            <li>Your profit is instantly credited to your wallet</li>
-            <li>Admin processes the order delivery as normal</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
+    <div id="gate-err" class="gate-err" style="display:none;"></div>
+    <button id="gate-retry" class="gate-btn" onclick="retryLoad()" style="display:none;">Try Again</button>
   </div>
 </div>
 
-<!-- ADD/EDIT PRODUCT MODAL -->
-<div class="modal-bg" id="prod-modal">
-  <div class="modal-box">
-    <div class="modal-title" id="prod-modal-title">Add Product to Store</div>
-    <form onsubmit="saveAgentProduct(event)">
-      <input type="hidden" id="prod-doc-id"/>
-      <div class="m-lbl">Base Product</div>
-      <select class="m-inp" id="prod-base-select" onchange="onBaseProductChange()">
-        <option value="">— Select a product —</option>
-      </select>
-      <div class="m-hint">Products available at your agent price</div>
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+  <aside class="sidebar">
+    <div class="sb-logo">SwiftData<span>GH</span></div>
+    <nav class="sb-nav">
+      <button class="sb-btn active" onclick="switchTab('overview')"><span>📊</span><span>Dashboard</span></button>
+      <button class="sb-btn" onclick="switchTab('products')"><span>📦</span><span>Products</span></button>
+      <button class="sb-btn" onclick="switchTab('orders')"><span>🔄</span><span>Orders</span></button>
+      <button class="sb-btn" onclick="switchTab('wallet')"><span>💰</span><span>Wallet</span></button>
+    </nav>
+    <div class="sb-foot">
+      <button class="logout-btn" onclick="handleLogout()">↪ Logout</button>
+    </div>
+  </aside>
 
-      <div id="agent-price-display" style="display:none;margin-top:.75rem;">
-        <div class="m-lbl">Your Agent Cost (Base Price)</div>
-        <div style="font-weight:800;color:rgba(255,255,255,.6);font-size:1.1rem;padding:.6rem 0;" id="agent-cost-display">—</div>
+  <div class="main">
+    <div class="topbar">
+      <div><h1 id="tab-title">Dashboard</h1></div>
+      <div style="display:flex;gap:.75rem;">
+        <span id="agent-name" style="font-size:.85rem;color:rgba(255,255,255,.5);"></span>
+        <span id="username-display" style="font-size:.85rem;font-weight:700;color:var(--mint);"></span>
       </div>
+    </div>
 
-      <div id="markup-section" style="display:none;">
-        <div class="m-lbl">Your Markup (profit per sale, GHS)</div>
-        <input class="m-inp" type="number" id="prod-markup" step="0.01" min="0" placeholder="e.g. 2.00" oninput="updatePriceCalc()"/>
+    <div class="content">
+      <!-- OVERVIEW -->
+      <div id="tab-overview">
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-lbl">Wallet</div><div class="stat-val" id="s-wallet">GHS 0.00</div></div>
+          <div class="stat-card"><div class="stat-lbl">Earned</div><div class="stat-val" id="s-earned">GHS 0.00</div></div>
+          <div class="stat-card"><div class="stat-lbl">Orders</div><div class="stat-val" id="s-orders">0</div></div>
+          <div class="stat-card"><div class="stat-lbl">Status</div><div class="stat-val" id="s-status" style="font-size:1.1rem;">—</div></div>
+        </div>
 
-        <div class="price-calc" id="price-calc">
-          <div class="calc-row"><span>Agent cost:</span><strong id="calc-agent-cost">—</strong></div>
-          <div class="calc-row profit"><span>Your markup:</span><strong id="calc-markup">GHS 0.00</strong></div>
-          <div class="calc-row"><span>Platform fee (2.5%):</span><strong id="calc-fee">—</strong></div>
-          <div class="calc-total"><span>Customer pays:</span><span id="calc-total" style="color:var(--mint);">—</span></div>
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Your Store Link</h3>
+            <button class="btn" onclick="copyStoreLink()">📋 Copy</button>
+          </div>
+          <div style="padding:1.5rem;font-family:monospace;font-size:.85rem;color:var(--blue);word-break:break-all;background:rgba(0,81,255,.05);border-radius:12px;margin:1rem;">
+            <span id="store-link">https://swiftdatagh.vercel.app/store?agent=username</span>
+          </div>
         </div>
       </div>
 
+      <!-- PRODUCTS -->
+      <div id="tab-products" class="hidden">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Your Products</h3>
+            <button class="btn" onclick="openAddProduct()">+ Add Product</button>
+          </div>
+          <div id="products-list"><div class="empty-state"><span class="spin"></span> Loading...</div></div>
+        </div>
+      </div>
+
+      <!-- ORDERS -->
+      <div id="tab-orders" class="hidden">
+        <div class="panel">
+          <div class="panel-head"><h3>Your Orders</h3></div>
+          <div id="orders-list"><div class="empty-state"><span class="spin"></span> Loading...</div></div>
+        </div>
+      </div>
+
+      <!-- WALLET -->
+      <div id="tab-wallet" class="hidden">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Wallet Management</h3>
+            <button class="btn" onclick="openCashout()">💸 Request Cashout</button>
+          </div>
+          <div style="padding:1.5rem;">
+            <div style="margin-bottom:1.5rem;">
+              <div style="font-size:.75rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.5rem;">Current Balance</div>
+              <div style="font-weight:800;font-size:2rem;color:var(--mint);" id="wallet-balance">GHS 0.00</div>
+            </div>
+            <div style="margin-bottom:1.5rem;">
+              <div style="font-size:.75rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.5rem;">Total Earned</div>
+              <div style="font-weight:800;font-size:1.5rem;" id="wallet-earned">GHS 0.00</div>
+            </div>
+            <div id="cashout-requests"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD PRODUCT MODAL -->
+<div class="modal-bg" id="add-prod-modal">
+  <div class="modal-box">
+    <div class="modal-title">Add Product to Your Store</div>
+    <form onsubmit="saveProduct(event)">
+      <div><div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.28);margin-bottom:.4rem;">Select Base Product</div>
+      <select id="prod-select" class="m-inp" required>
+        <option value="">Loading products...</option>
+      </select></div>
+      <div><div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.28);margin-bottom:.4rem;">Your Markup (GHS)</div>
+      <input id="markup-input" class="m-inp" type="number" step="0.01" placeholder="e.g. 2.00" required/></div>
       <div class="m-btns">
-        <button type="button" class="m-cancel" onclick="closeProdModal()">Cancel</button>
-        <button type="submit" class="m-save" id="save-prod-btn">Add to Store</button>
+        <button type="button" class="m-btn cancel" onclick="document.getElementById('add-prod-modal').classList.remove('show')">Cancel</button>
+        <button type="submit" class="m-btn">Add to Store</button>
       </div>
     </form>
   </div>
@@ -312,21 +186,17 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#060b18;color:#fff;mi
 <!-- CASHOUT MODAL -->
 <div class="modal-bg" id="cashout-modal">
   <div class="modal-box">
-    <div class="modal-title">Request Cashout 💰</div>
+    <div class="modal-title">Request Cashout</div>
     <form onsubmit="submitCashout(event)">
-      <p style="font-size:.85rem;color:rgba(255,255,255,.4);margin-bottom:1.25rem;line-height:1.6;">Your cashout will be processed manually within 24 hours. Ensure your account details are correct.</p>
-      <div class="m-lbl">Amount to Cashout (GHS)</div>
-      <input class="m-inp" type="number" id="cashout-amount" step="0.01" min="5" placeholder="Min: GHS 5.00"/>
-      <div class="m-hint">Available: <span id="cashout-available">GHS 0.00</span></div>
-      <div class="m-lbl" style="margin-top:1rem;">Mobile Money Number</div>
-      <input class="m-inp" type="tel" id="cashout-momo" placeholder="05XXXXXXXX" maxlength="10"/>
-      <div class="m-lbl" style="margin-top:.75rem;">Network (MTN / Telecel / AT)</div>
-      <select class="m-inp" id="cashout-network"><option>MTN MoMo</option><option>Telecel Cash</option><option>AT Money</option></select>
-      <div class="m-lbl" style="margin-top:.75rem;">Account Name</div>
-      <input class="m-inp" type="text" id="cashout-name" placeholder="Name on MoMo account"/>
+      <div><div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.28);margin-bottom:.4rem;">MoMo Number</div>
+      <input id="momo-input" class="m-inp" type="tel" placeholder="0501234567" required/></div>
+      <div><div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.28);margin-bottom:.4rem;">Network</div>
+      <select id="momo-net" class="m-inp"><option>MTN MoMo</option><option>Telecel MoMo</option><option>AT MoMo</option></select></div>
+      <div><div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.28);margin-bottom:.4rem;">Amount (GHS)</div>
+      <input id="cashout-amt" class="m-inp" type="number" step="0.01" placeholder="Minimum GHS 5.00" required/></div>
       <div class="m-btns">
-        <button type="button" class="m-cancel" onclick="closeCashoutModal()">Cancel</button>
-        <button type="submit" class="m-save" id="cashout-submit-btn">Submit Request</button>
+        <button type="button" class="m-btn cancel" onclick="document.getElementById('cashout-modal').classList.remove('show')">Cancel</button>
+        <button type="submit" class="m-btn">Request Cashout</button>
       </div>
     </form>
   </div>
@@ -335,9 +205,9 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#060b18;color:#fff;mi
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, onSnapshot, addDoc, updateDoc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, collection, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-// ✅ FIXED: Using correct Firebase config (dataplus-a93c7)
+// ✅ FIXED: Using CORRECT Firebase config (dataplus-a93c7)
 const firebaseConfig = {
   apiKey: "AIzaSyCs7lN4itvWZPichtFLdEE4swNQHSX_j1M",
   authDomain: "dataplus-a93c7.firebaseapp.com",
@@ -348,481 +218,281 @@ const firebaseConfig = {
   measurementId: "G-GW9DNT0DQ0"
 };
 
-const GLOBAL_ORDERS = 'swiftdata_global_orders';
-const APP_ID = 'swiftdata-main-app';
-const FEE_RATE = 0.025;
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let agentData = null, agentUid = null;
-let baseProducts = [], agentProducts = [], myOrders = [], cashoutRequests = [];
+let S = {
+  agent: null,
+  products: [],
+  baseProducts: [],
+  orders: [],
+  cashouts: []
+};
 
-// ✅ FIXED: Better auth guard with error handling
-onAuthStateChanged(auth, async user => {
-  if (!user) {
-    window.location.href = '/agent.login';
-    return;
-  }
-  
-  agentUid = user.uid;
-  
-  try {
-    const agentDoc = await getDoc(doc(db, 'swiftdata_agents', agentUid));
-    
-    if (!agentDoc.exists()) {
-      console.error('Agent document not found');
-      await signOut(auth);
-      window.location.href = '/agent.login';
-      return;
-    }
-    
-    const status = agentDoc.data().status;
-    if (status !== 'active') {
-      console.warn('Agent status:', status);
-      await signOut(auth);
-      window.location.href = '/agent.login';
-      return;
-    }
-    
-    agentData = agentDoc.data();
-    initDashboard();
-  } catch (error) {
-    console.error('Auth check failed:', error);
-    alert('Connection error. Please refresh the page.');
-  }
-});
+let authCheckTimeout;
 
-function initDashboard() {
-  const initials = (agentData.name || 'A').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
-  document.getElementById('sb-initials').textContent = initials;
-  document.getElementById('sb-agent-name').textContent = `@${agentData.username}`;
-  document.getElementById('sb-uname-txt').textContent = agentData.name || 'Agent';
-  document.getElementById('sb-email-txt').textContent = agentData.email || '';
-  
-  const domain = window.location.origin;
-  const storeUrl = `${domain}/store?agent=${agentData.username}`;
-  document.getElementById('store-link-url').textContent = storeUrl;
-
-  // ✅ FIXED: Added error handlers to all listeners
-  
-  // Live agent data listener
-  onSnapshot(
-    doc(db, 'swiftdata_agents', agentUid),
-    (d) => {
-      if (!d.exists()) return;
-      agentData = {...agentData, ...d.data()};
-      updateWalletUI();
-    },
-    (error) => {
-      console.error('Agent listener error:', error);
-      if (error.code === 'permission-denied') {
-        console.error('Firestore rules may not be configured correctly');
-      }
-    }
-  );
-
-  // Base products listener
-  onSnapshot(
-    collection(db, 'artifacts', APP_ID, 'public', 'data', 'products'),
-    (snap) => {
-      baseProducts = snap.docs.map(d => ({id: d.id, ...d.data()}))
-        .sort((a, b) => (a.rank || 999) - (b.rank || 999));
-      populateProductDropdown();
-    },
-    (error) => {
-      console.error('Products listener error:', error);
-    }
-  );
-
-  // Agent products listener
-  onSnapshot(
-    collection(db, 'swiftdata_agents', agentUid, 'products'),
-    (snap) => {
-      agentProducts = snap.docs.map(d => ({id: d.id, ...d.data()}));
-      renderAgentProducts();
-      const visibleCount = agentProducts.filter(p => p.visible).length;
-      document.getElementById('stat-prods').textContent = visibleCount;
-    },
-    (error) => {
-      console.error('Agent products listener error:', error);
-      if (error.code === 'permission-denied') {
-        document.getElementById('products-list').innerHTML = 
-          '<div class="error-msg">Cannot load products due to permissions. Make sure Firestore rules are configured.</div>';
-      }
-    }
-  );
-
-  // My orders listener
-  onSnapshot(
-    query(collection(db, GLOBAL_ORDERS), where('agentId', '==', agentUid)),
-    (snap) => {
-      myOrders = snap.docs
-        .map(d => ({id: d.id, ...d.data()}))
-        .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-      renderOrders();
-      document.getElementById('stat-orders').textContent = myOrders.length;
-    },
-    (error) => {
-      console.error('Orders listener error:', error);
-    }
-  );
-
-  // Cashout requests listener
-  onSnapshot(
-    query(collection(db, 'swiftdata_cashout_requests'), where('agentId', '==', agentUid)),
-    (snap) => {
-      cashoutRequests = snap.docs
-        .map(d => ({id: d.id, ...d.data()}))
-        .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-      renderCashouts();
-    },
-    (error) => {
-      console.error('Cashout listener error:', error);
-    }
-  );
-}
-
-function updateWalletUI() {
-  const bal = agentData.walletBalance || 0;
-  const earned = agentData.totalEarned || 0;
-  const balStr = `GHS ${bal.toFixed(2)}`;
-  const earnedStr = `GHS ${earned.toFixed(2)}`;
-  
-  document.getElementById('stat-wallet').textContent = balStr;
-  document.getElementById('stat-earned').textContent = earnedStr;
-  document.getElementById('wallet-bal').textContent = balStr;
-  document.getElementById('wallet-bal-2').textContent = balStr;
-  document.getElementById('cashout-available').textContent = balStr;
-  
-  const canCashout = bal >= 5;
-  ['cashout-btn', 'cashout-btn-2'].forEach(id => {
-    const b = document.getElementById(id);
-    if (b) b.disabled = !canCashout;
+window.switchTab = (tab) => {
+  ['overview', 'products', 'orders', 'wallet'].forEach(t => {
+    const el = document.getElementById(`tab-${t}`);
+    if (el) el.classList.toggle('hidden', t !== tab);
   });
-  
-  ['cashout-hint', 'cashout-hint-2'].forEach(id => {
-    const h = document.getElementById(id);
-    if (h) h.textContent = canCashout ? '' : 'Need GHS 5+ to cashout';
-  });
-}
-
-// TABS
-window.showTab = (tab) => {
-  ['overview', 'products', 'orders', 'wallet', 'store'].forEach(t => {
-    document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tab);
-  });
-  
   document.querySelectorAll('.sb-btn').forEach(b => b.classList.remove('active'));
-  const btnMap = {overview: 0, products: 1, orders: 2, wallet: 3, store: 4};
-  const btns = document.querySelectorAll('.sb-btn');
-  if (btns[btnMap[tab]]) btns[btnMap[tab]].classList.add('active');
-  
-  const titles = {overview: 'Overview', products: 'My Products', orders: 'My Orders', wallet: 'Wallet & Cashout', store: 'My Store Link'};
-  document.getElementById('top-title').textContent = titles[tab] || tab;
+  event.target.classList.add('active');
+  document.getElementById('tab-title').textContent = {
+    overview: 'Dashboard',
+    products: 'My Products',
+    orders: 'My Orders',
+    wallet: 'Wallet'
+  }[tab] || 'Dashboard';
 };
 
-// STORE LINK COPY
+window.handleLogout = async () => {
+  try {
+    await signOut(auth);
+    window.location.href = '/agent.login';
+  } catch (e) {
+    alert('Logout error: ' + e.message);
+  }
+};
+
 window.copyStoreLink = () => {
-  const url = document.getElementById('store-link-url').textContent;
-  navigator.clipboard.writeText(url).then(() => {
-    const chip = document.getElementById('store-chip');
-    chip.textContent = '✓ Copied!';
-    setTimeout(() => chip.textContent = '📎 Copy Store Link', 2000);
-  }).catch(() => alert(`Your store link: ${url}`));
+  const link = document.getElementById('store-link').textContent;
+  navigator.clipboard.writeText(link).then(() => {
+    alert('Store link copied!');
+  });
 };
-
-// RENDER AGENT PRODUCTS
-function renderAgentProducts() {
-  const el = document.getElementById('products-list');
-  if (!agentProducts.length) {
-    el.innerHTML = '<div class="empty-state">No products yet. Click "+ Add Product" to get started.</div>';
-    return;
-  }
-  
-  el.innerHTML = agentProducts.map(p => {
-    const profit = (p.markup || 0).toFixed(2);
-    return `<div class="prod-row">
-      <div class="prod-info">
-        <span class="pnet">${p.network}</span>
-        <div class="psize">${p.size}</div>
-        <div class="ptype">${p.type || 'Standard'}</div>
-      </div>
-      <div class="prod-prices">
-        <div class="price-row"><span class="price-label">Agent cost:</span><span class="agent-cost">GHS ${parseFloat(p.agentCost || 0).toFixed(2)}</span></div>
-        <div class="price-row"><span class="price-label">Customer pays:</span><span class="store-price">GHS ${parseFloat(p.storePrice || 0).toFixed(2)}</span></div>
-        <span class="profit-badge">+GHS ${profit} profit</span>
-      </div>
-      <div style="display:flex;gap:.5rem;align-items:center;">
-        <button class="toggle-btn ${p.visible ? 'visible' : 'hidden'}" onclick="toggleProductVisibility('${p.id}',${!p.visible})">${p.visible ? '👁 Visible' : 'Hidden'}</button>
-        <button class="edit-prod-btn" onclick="openEditProduct('${p.id}')">Edit</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// RENDER ORDERS
-function renderOrders() {
-  const el = document.getElementById('orders-list');
-  const recEl = document.getElementById('recent-orders-list');
-  
-  if (!myOrders.length) {
-    const empty = '<div class="empty-state">No orders yet — share your store link to start earning!</div>';
-    el.innerHTML = empty;
-    recEl.innerHTML = empty;
-    return;
-  }
-  
-  const html = myOrders.map(o => `
-    <div class="order-row">
-      <div class="o-top">
-        <span class="o-bundle">${o.size} (${o.network})</span>
-        <span class="o-status s-${o.status}">${o.status}</span>
-      </div>
-      <div class="o-phone">📱 ${o.recipient}</div>
-      <div class="o-meta">${o.orderRef || ''} · ${o.createdAt ? new Date(o.createdAt.seconds * 1000).toLocaleString() : 'Just now'}</div>
-      ${o.agentProfit > 0 ? `<div class="o-profit">+GHS ${parseFloat(o.agentProfit).toFixed(2)} profit</div>` : ''}
-    </div>`).join('');
-  
-  el.innerHTML = html;
-  recEl.innerHTML = myOrders.slice(0, 5).map(o => `
-    <div class="order-row">
-      <div class="o-top"><span class="o-bundle">${o.size} (${o.network})</span><span class="o-status s-${o.status}">${o.status}</span></div>
-      <div class="o-phone">📱 ${o.recipient}</div>
-      ${o.agentProfit > 0 ? `<div class="o-profit">+GHS ${parseFloat(o.agentProfit).toFixed(2)}</div>` : ''}
-    </div>`).join('');
-}
-
-// RENDER CASHOUTS
-function renderCashouts() {
-  const el = document.getElementById('cashout-list');
-  if (!cashoutRequests.length) {
-    el.innerHTML = '<div class="empty-state">No cashout requests yet.</div>';
-    return;
-  }
-  
-  el.innerHTML = cashoutRequests.map(c => `
-    <div class="cashout-row">
-      <div>
-        <div class="cashout-amt">GHS ${parseFloat(c.amount).toFixed(2)}</div>
-        <div style="font-size:.75rem;color:rgba(255,255,255,.3);">${c.momoNumber} (${c.momoNetwork}) · ${c.createdAt ? new Date(c.createdAt.seconds * 1000).toLocaleDateString() : '—'}</div>
-      </div>
-      <span class="cashout-status cs-${c.status || 'pending'}">${c.status || 'Pending'}</span>
-    </div>`).join('');
-}
-
-// PRODUCT MODAL
-function populateProductDropdown() {
-  const sel = document.getElementById('prod-base-select');
-  sel.innerHTML = '<option value="">— Select a product —</option>' +
-    baseProducts.map(p => `<option value="${p.id}" data-agent-price="${p.agent_price || p.price}" data-size="${p.size}" data-network="${p.network}" data-type="${p.type || 'Standard'}">${p.network} · ${p.size} (Agent: GHS ${parseFloat(p.agent_price || p.price).toFixed(2)})</option>`).join('');
-}
 
 window.openAddProduct = () => {
-  document.getElementById('prod-doc-id').value = '';
-  document.getElementById('prod-modal-title').textContent = 'Add Product to Store';
-  document.getElementById('prod-base-select').value = '';
-  document.getElementById('prod-markup').value = '';
-  document.getElementById('agent-price-display').style.display = 'none';
-  document.getElementById('markup-section').style.display = 'none';
-  document.getElementById('prod-modal').classList.add('show');
+  document.getElementById('add-prod-modal').classList.add('show');
 };
 
-window.openEditProduct = (id) => {
-  const p = agentProducts.find(x => x.id === id);
-  if (!p) return;
-  
-  document.getElementById('prod-doc-id').value = id;
-  document.getElementById('prod-modal-title').textContent = 'Edit Product';
-  const sel = document.getElementById('prod-base-select');
-  sel.value = p.baseProductId || '';
-  document.getElementById('prod-markup').value = p.markup || 0;
-  document.getElementById('agent-cost-display').textContent = `GHS ${parseFloat(p.agentCost || 0).toFixed(2)}`;
-  document.getElementById('agent-price-display').style.display = 'block';
-  document.getElementById('markup-section').style.display = 'block';
-  updatePriceCalc();
-  document.getElementById('prod-modal').classList.add('show');
-};
-
-window.onBaseProductChange = () => {
-  const sel = document.getElementById('prod-base-select');
-  const opt = sel.options[sel.selectedIndex];
-  if (!opt.value) {
-    document.getElementById('agent-price-display').style.display = 'none';
-    document.getElementById('markup-section').style.display = 'none';
-    return;
-  }
-  
-  const agentPrice = parseFloat(opt.dataset.agentPrice) || 0;
-  document.getElementById('agent-cost-display').textContent = `GHS ${agentPrice.toFixed(2)}`;
-  document.getElementById('agent-price-display').style.display = 'block';
-  document.getElementById('markup-section').style.display = 'block';
-  document.getElementById('prod-markup').value = '';
-  updatePriceCalc();
-};
-
-window.updatePriceCalc = () => {
-  const sel = document.getElementById('prod-base-select');
-  const opt = sel.options[sel.selectedIndex];
-  if (!opt || !opt.value) return;
-  
-  const agentCost = parseFloat(opt.dataset.agentPrice) || 0;
-  const markup = parseFloat(document.getElementById('prod-markup').value) || 0;
-  const storeBase = agentCost + markup;
-  const fee = storeBase * FEE_RATE;
-  const total = storeBase + fee;
-  
-  document.getElementById('calc-agent-cost').textContent = `GHS ${agentCost.toFixed(2)}`;
-  document.getElementById('calc-markup').textContent = `GHS ${markup.toFixed(2)}`;
-  document.getElementById('calc-fee').textContent = `GHS ${fee.toFixed(2)}`;
-  document.getElementById('calc-total').textContent = `GHS ${total.toFixed(2)}`;
-};
-
-window.closeProdModal = () => document.getElementById('prod-modal').classList.remove('show');
-
-window.saveAgentProduct = async (e) => {
+window.saveProduct = async (e) => {
   e.preventDefault();
+  const baseId = document.getElementById('prod-select').value;
+  const markup = parseFloat(document.getElementById('markup-input').value);
   
-  const docId = document.getElementById('prod-doc-id').value;
-  const sel = document.getElementById('prod-base-select');
-  const opt = sel.options[sel.selectedIndex];
-  
-  if (!opt || !opt.value) {
-    alert('Please select a product.');
+  if (!baseId || !markup || markup <= 0) {
+    alert('Please select a product and enter markup.');
     return;
   }
-  
-  const markup = parseFloat(document.getElementById('prod-markup').value) || 0;
-  const agentCost = parseFloat(opt.dataset.agentPrice) || 0;
-  const storePrice = agentCost + markup;
-  
-  const prodData = {
-    baseProductId: opt.value,
-    network: opt.dataset.network,
-    size: opt.dataset.size,
-    type: opt.dataset.type,
-    agentCost,
-    markup,
-    storePrice,
-    visible: true,
-    agentId: agentUid,
-    updatedAt: serverTimestamp()
-  };
-  
-  const btn = document.getElementById('save-prod-btn');
-  btn.disabled = true;
-  btn.textContent = 'Saving…';
-  
+
   try {
-    if (docId) {
-      await updateDoc(doc(db, 'swiftdata_agents', agentUid, 'products', docId), prodData);
-    } else {
-      await addDoc(collection(db, 'swiftdata_agents', agentUid, 'products'), {
-        ...prodData,
-        createdAt: serverTimestamp()
-      });
+    const baseProduct = S.baseProducts.find(p => p.id === baseId);
+    if (!baseProduct) {
+      alert('Product not found.');
+      return;
     }
-    closeProdModal();
+
+    await addDoc(collection(db, 'swiftdata_agents', S.agent.uid, 'products'), {
+      baseProductId: baseId,
+      network: baseProduct.network,
+      size: baseProduct.size,
+      type: baseProduct.type || '',
+      agentCost: baseProduct.agent_price || baseProduct.price,
+      markup: markup,
+      storePrice: (baseProduct.agent_price || baseProduct.price) + markup,
+      visible: true,
+      createdAt: serverTimestamp()
+    });
+
+    alert('Product added to your store!');
+    document.getElementById('add-prod-modal').classList.remove('show');
+    document.getElementById('prod-select').value = '';
+    document.getElementById('markup-input').value = '';
   } catch (err) {
-    console.error('Save product error:', err);
-    alert('Error saving product: ' + err.message);
+    console.error('Add product error:', err);
+    alert('Error adding product: ' + err.message);
   }
-  
-  btn.disabled = false;
-  btn.textContent = 'Add to Store';
 };
 
-window.toggleProductVisibility = async (id, visible) => {
-  try {
-    await updateDoc(doc(db, 'swiftdata_agents', agentUid, 'products', id), {visible});
-  } catch (err) {
-    console.error('Toggle visibility error:', err);
-    alert('Error updating product visibility');
-  }
-};
-
-// CASHOUT
-window.openCashoutModal = () => {
-  const bal = agentData.walletBalance || 0;
-  if (bal < 5) {
-    alert('You need at least GHS 5.00 to request a cashout.');
-    return;
-  }
-  document.getElementById('cashout-amount').value = bal.toFixed(2);
+window.openCashout = () => {
   document.getElementById('cashout-modal').classList.add('show');
 };
 
-window.closeCashoutModal = () => document.getElementById('cashout-modal').classList.remove('show');
-
 window.submitCashout = async (e) => {
   e.preventDefault();
-  
-  const amount = parseFloat(document.getElementById('cashout-amount').value);
-  const momo = document.getElementById('cashout-momo').value.replace(/\D/g, '');
-  const network = document.getElementById('cashout-network').value;
-  const name = document.getElementById('cashout-name').value.trim();
-  const bal = agentData.walletBalance || 0;
-  
-  if (amount < 5) {
-    alert('Minimum cashout is GHS 5.00');
+  const momo = document.getElementById('momo-input').value.replace(/\D/g, '');
+  const network = document.getElementById('momo-net').value;
+  const amount = parseFloat(document.getElementById('cashout-amt').value);
+
+  if (momo.length !== 10 || amount < 5) {
+    alert('Valid MoMo number and minimum GHS 5.00 required.');
     return;
   }
-  if (amount > bal) {
-    alert('Amount exceeds your wallet balance.');
+
+  if (amount > S.agent.walletBalance) {
+    alert('Insufficient balance.');
     return;
   }
-  if (momo.length !== 10) {
-    alert('Enter a valid 10-digit MoMo number.');
-    return;
-  }
-  if (!name) {
-    alert('Enter the account name.');
-    return;
-  }
-  
-  const btn = document.getElementById('cashout-submit-btn');
-  btn.disabled = true;
-  btn.textContent = 'Submitting…';
-  
+
   try {
     await addDoc(collection(db, 'swiftdata_cashout_requests'), {
-      agentId: agentUid,
-      agentName: agentData.name,
-      agentUsername: agentData.username,
-      amount,
+      agentId: S.agent.uid,
+      agentName: S.agent.name,
+      agentUsername: S.agent.username,
+      amount: amount,
       momoNumber: momo,
       momoNetwork: network,
-      accountName: name,
+      accountName: S.agent.name,
       status: 'pending',
       createdAt: serverTimestamp()
     });
-    
-    // Deduct from wallet
-    await updateDoc(doc(db, 'swiftdata_agents', agentUid), {
-      walletBalance: (bal - amount)
-    });
-    
-    closeCashoutModal();
-    alert(`Cashout request for GHS ${amount.toFixed(2)} submitted! We'll process it within 24 hours.`);
+
+    alert('Cashout request submitted! Admin will process within 24 hours.');
+    document.getElementById('cashout-modal').classList.remove('show');
   } catch (err) {
     console.error('Cashout error:', err);
-    alert('Error submitting cashout request: ' + err.message);
+    alert('Error submitting cashout: ' + err.message);
   }
-  
-  btn.disabled = false;
-  btn.textContent = 'Submit Request';
 };
 
-// LOGOUT
-window.doLogout = async () => {
-  try {
-    await signOut(auth);
-    window.location.href = '/';
-  } catch (err) {
-    console.error('Logout error:', err);
-  }
+window.retryLoad = () => {
+  window.location.reload();
 };
+
+// ✅ FIXED: Better auth state handling with proper error handling
+onAuthStateChanged(auth, async (user) => {
+  clearTimeout(authCheckTimeout);
+
+  if (!user) {
+    // User not logged in
+    document.getElementById('gate').style.display = 'flex';
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('gate-err').textContent = 'Please log in first.';
+    document.getElementById('gate-err').style.display = 'block';
+    document.getElementById('gate-retry').style.display = 'block';
+    return;
+  }
+
+  try {
+    // ✅ FIXED: Fetch agent doc with proper error handling
+    console.log('Auth state changed, user:', user.uid);
+    
+    const agentDocRef = doc(db, 'swiftdata_agents', user.uid);
+    const agentSnap = await getDoc(agentDocRef);
+
+    if (!agentSnap.exists()) {
+      throw new Error('Agent account not found. Please contact support.');
+    }
+
+    S.agent = {uid: user.uid, ...agentSnap.data()};
+    console.log('Agent loaded:', S.agent.username);
+
+    // Check if account is banned
+    if (S.agent.status === 'banned') {
+      document.getElementById('gate-err').textContent = '⛔ Your account has been banned.';
+      document.getElementById('gate-err').style.display = 'block';
+      await signOut(auth);
+      return;
+    }
+
+    // Show dashboard
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+
+    // Update UI
+    document.getElementById('agent-name').textContent = S.agent.name;
+    document.getElementById('username-display').textContent = '@' + S.agent.username;
+    document.getElementById('store-link').textContent = `${window.location.origin}/store?agent=${S.agent.username}`;
+
+    updateStats();
+
+    // ✅ FIXED: Set up listeners with error handlers
+    onSnapshot(
+      collection(db, 'artifacts', 'swiftdata-main-app', 'public', 'data', 'products'),
+      (snap) => {
+        S.baseProducts = snap.docs.map(d => ({id: d.id, ...d.data()}));
+        updateProductSelect();
+      },
+      (error) => {
+        console.error('Products listener error:', error);
+      }
+    );
+
+    onSnapshot(
+      collection(db, 'swiftdata_agents', user.uid, 'products'),
+      (snap) => {
+        S.products = snap.docs.map(d => ({id: d.id, ...d.data()}));
+        renderProducts();
+      },
+      (error) => {
+        console.error('Agent products error:', error);
+      }
+    );
+
+    onSnapshot(
+      collection(db, 'swiftdata_global_orders'),
+      (snap) => {
+        S.orders = snap.docs.filter(d => d.data().agentId === user.uid).map(d => ({id: d.id, ...d.data()}));
+        renderOrders();
+        updateStats();
+      },
+      (error) => {
+        console.error('Orders listener error:', error);
+      }
+    );
+
+  } catch (error) {
+    console.error('Auth setup error:', error.code, error.message);
+    
+    document.getElementById('gate').style.display = 'flex';
+    document.getElementById('dashboard').style.display = 'none';
+    
+    if (error.code === 'permission-denied') {
+      document.getElementById('gate-err').textContent = '⚠ Permission error. Check Firestore rules or contact support.';
+    } else if (error.message.includes('not found')) {
+      document.getElementById('gate-err').textContent = '❌ Account not found. Try logging in again.';
+    } else {
+      document.getElementById('gate-err').textContent = '⚠ Error: ' + error.message;
+    }
+    document.getElementById('gate-err').style.display = 'block';
+    document.getElementById('gate-retry').style.display = 'block';
+  }
+});
+
+function updateStats() {
+  if (!S.agent) return;
+  document.getElementById('s-wallet').textContent = 'GHS ' + (S.agent.walletBalance || 0).toFixed(2);
+  document.getElementById('s-earned').textContent = 'GHS ' + (S.agent.totalEarned || 0).toFixed(2);
+  document.getElementById('s-orders').textContent = S.agent.totalOrders || 0;
+  document.getElementById('s-status').textContent = (S.agent.status || 'unknown').toUpperCase();
+  document.getElementById('wallet-balance').textContent = 'GHS ' + (S.agent.walletBalance || 0).toFixed(2);
+  document.getElementById('wallet-earned').textContent = 'GHS ' + (S.agent.totalEarned || 0).toFixed(2);
+}
+
+function updateProductSelect() {
+  const sel = document.getElementById('prod-select');
+  sel.innerHTML = S.baseProducts.map(p => `<option value="${p.id}">${p.network} - ${p.size}</option>`).join('');
+}
+
+function renderProducts() {
+  const el = document.getElementById('products-list');
+  if (!S.products.length) {
+    el.innerHTML = '<div class="empty-state">No products yet. Add your first!</div>';
+    return;
+  }
+  el.innerHTML = S.products.map(p => `<div style="padding:1rem;border-bottom:1px solid rgba(255,255,255,.05);">
+    <div style="font-weight:700;">${p.size} (${p.network}) — +GHS ${p.markup.toFixed(2)} markup</div>
+    <div style="font-size:.78rem;color:rgba(255,255,255,.3);margin-top:.25rem;">Store Price: GHS ${p.storePrice.toFixed(2)}</div>
+  </div>`).join('');
+}
+
+function renderOrders() {
+  const el = document.getElementById('orders-list');
+  if (!S.orders.length) {
+    el.innerHTML = '<div class="empty-state">No orders yet.</div>';
+    return;
+  }
+  el.innerHTML = S.orders.slice(0, 10).map(o => `<div style="padding:1rem;border-bottom:1px solid rgba(255,255,255,.05);">
+    <div style="display:flex;justify-content:space-between;margin-bottom:.25rem;">
+      <span style="font-weight:700;">${o.size} (${o.network})</span>
+      <span style="font-size:.75rem;padding:.2rem .6rem;border-radius:50px;background:rgba(0,81,255,.2);color:var(--blue);">${o.status}</span>
+    </div>
+    <div style="font-size:.78rem;color:rgba(255,255,255,.4);">📱 ${o.recipient} • Ref: ${o.orderRef}</div>
+    <div style="font-size:.75rem;color:var(--mint);margin-top:.25rem;">+ GHS ${(o.agentProfit || 0).toFixed(2)} profit</div>
+  </div>`).join('');
+}
 </script>
 </body>
-</html>
+                                                                                              </html>
