@@ -1,431 +1,294 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>SwiftData Agent — Login / Register</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
-<script src="https://js.paystack.co/v2/inline.js"></script>
-<style>
-:root{--ink:#0a0f1e;--blue:#0051ff;--sky:#38bdf8;--mint:#00e5b0;--yellow:#f59e0b;--green:#22c55e;--red:#ef4444;--offwht:#f4f7ff;--muted:#6b7a99;--card:#fff;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:#060b18;color:#fff;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;}
-.container{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem 1.5rem;}
-.main-box{background:rgba(255,255,255,.02);border:1px solid rgba(0,81,255,.15);border-radius:28px;padding:3rem;max-width:460px;width:100%;backdrop-filter:blur(10px);}
-.logo-sec{text-align:center;margin-bottom:2.5rem;}
-.logo{font-weight:800;font-size:1.4rem;color:#fff;}.logo span{color:var(--mint);}
-.logo-sub{font-size:.75rem;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:2px;margin-top:.5rem;}
-.page-title{font-weight:800;font-size:1.4rem;text-align:center;margin-bottom:.35rem;}
-.page-sub{font-size:.82rem;color:rgba(255,255,255,.35);text-align:center;margin-bottom:2rem;}
-.toggle-sec{display:flex;gap:.5rem;margin-bottom:2rem;}
-.toggle-btn{flex:1;padding:.7rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.4);border-radius:12px;font-family:inherit;font-weight:700;cursor:pointer;transition:all .2s;font-size:.85rem;}
-.toggle-btn.active{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 6px 18px rgba(0,81,255,.3);}
-.form-sec{display:none;}
-.form-sec.show{display:block;}
-.form-group{margin-bottom:1.25rem;}
-.form-label{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.3);margin-bottom:.5rem;display:block;}
-.form-input{width:100%;padding:.85rem 1rem;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.08);border-radius:12px;font-family:inherit;font-size:.95rem;color:#fff;outline:none;transition:border-color .2s;}
-.form-input::placeholder{color:rgba(255,255,255,.18);}
-.form-input:focus{border-color:rgba(0,81,255,.5);box-shadow:0 0 0 4px rgba(0,81,255,.1);}
-.form-input.error{border-color:var(--red);}
-.error-msg{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;padding:.6rem;border-radius:10px;font-size:.78rem;margin-top:.3rem;display:none;}
-.error-msg.show{display:block;}
-.success-msg{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#86efac;padding:.6rem;border-radius:10px;font-size:.78rem;margin-bottom:1rem;display:none;}
-.success-msg.show{display:block;}
-.hint{font-size:.72rem;color:rgba(255,255,255,.2);margin-top:.3rem;}
-.form-btn{width:100%;padding:.9rem;background:var(--blue);color:#fff;border:none;border-radius:12px;font-family:inherit;font-weight:800;font-size:.95rem;cursor:pointer;transition:all .2s;margin-top:.5rem;}
-.form-btn:hover:not(:disabled){box-shadow:0 10px 28px rgba(0,81,255,.35);transform:translateY(-2px);}
-.form-btn:disabled{opacity:.4;cursor:not-allowed;}
-.form-btn.loading{display:flex;align-items:center;justify-content:center;gap:.5rem;}
-.spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite;}
-@keyframes sp{to{transform:rotate(360deg);}}
-.form-divider{display:flex;align-items:center;gap:.75rem;margin:1.5rem 0;font-size:.8rem;color:rgba(255,255,255,.2);}
-.form-divider::before,.form-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08);}
-.login-link{text-align:center;font-size:.85rem;color:rgba(255,255,255,.4);margin-top:1.5rem;}
-.login-link a{color:var(--mint);text-decoration:none;font-weight:700;}
-.login-link a:hover{text-decoration:underline;}
-.username-status{font-size:.7rem;margin-top:.3rem;display:flex;align-items:center;gap:.3rem;}
-.username-status.available{color:var(--green);}
-.username-status.taken{color:var(--red);}
-.username-status.checking{color:var(--yellow);}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Login / Sign Up — SwiftDeals Gh</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Firebase Compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+          colors: {
+            ink: 'var(--ink)',
+            blue: '#0051ff',
+            offwht: 'var(--offwht)',
+            muted: 'var(--muted)',
+            card: 'var(--card)',
+            mtn: '#FCD116',
+            telecel: '#E30613',
+            airteltigo: '#002F6C'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root { --ink: #0a0f1e; --offwht: #f4f7ff; --muted: #6b7a99; --card: #ffffff; }
+    .dark { --ink: #e2e8f0; --offwht: #0f172a; --card: #1e293b; --muted: #94a3b8; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--offwht); color: var(--ink); min-height: 100vh; transition: all 0.3s; }
+  </style>
 </head>
-<body>
-<div class="container">
-  <div class="main-box">
-    <div class="logo-sec">
-      <div class="logo">SwiftData<span>GH</span></div>
-      <div class="logo-sub">Agent Portal</div>
+<body class="antialiased flex items-center justify-center min-h-screen p-4">
+
+  <div class="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden">
+
+    <!-- Header -->
+    <div class="bg-blue-600 text-white p-6 text-center">
+      <h1 class="text-3xl font-extrabold">
+        Swift<span class="text-mtn">Deals</span><span class="text-telecel">Gh</span>
+      </h1>
+      <p class="mt-2 opacity-90">Agent Portal – Login or Create Account</p>
     </div>
 
-    <!-- LOGIN FORM -->
-    <div class="form-sec show" id="login-form">
-      <h2 class="page-title">Sign In</h2>
-      <p class="page-sub">Access your agent dashboard</p>
+    <!-- Form Container -->
+    <div class="p-8">
 
-      <div class="form-group">
-        <label class="form-label">Email Address</label>
-        <input class="form-input" id="login-email" type="email" placeholder="your@email.com"/>
+      <!-- Tabs -->
+      <div class="flex mb-6 border-b dark:border-slate-700">
+        <button id="tab-login" class="flex-1 py-3 font-semibold border-b-4 border-blue-600 text-blue-600">Login</button>
+        <button id="tab-signup" class="flex-1 py-3 font-semibold text-muted dark:text-slate-400">Sign Up</button>
+        <button id="tab-phone" class="flex-1 py-3 font-semibold text-muted dark:text-slate-400">Phone OTP</button>
       </div>
 
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <input class="form-input" id="login-password" type="password" placeholder="••••••••"/>
-      </div>
+      <!-- Messages -->
+      <div id="message" class="mb-6 text-center text-sm font-medium hidden"></div>
 
-      <div id="login-error" class="error-msg"></div>
+      <!-- Login Form -->
+      <form id="loginForm" class="space-y-5">
+        <div>
+          <label class="block text-sm font-medium mb-1">Email</label>
+          <input type="email" id="loginEmail" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-blue-500" placeholder="you@example.com" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Password</label>
+          <input type="password" id="loginPassword" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-blue-500" placeholder="••••••••" />
+        </div>
+        <button type="submit" class="w-full py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition">Login</button>
+      </form>
 
-      <button class="form-btn" id="login-btn" onclick="handleLogin()">Sign In</button>
+      <!-- Sign Up Form (hidden initially) -->
+      <form id="signupForm" class="space-y-5 hidden">
+        <div>
+          <label class="block text-sm font-medium mb-1">Full Name</label>
+          <input type="text" id="signupName" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-blue-500" placeholder="Kaysam Growth" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Email</label>
+          <input type="email" id="signupEmail" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-blue-500" placeholder="you@example.com" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Password</label>
+          <input type="password" id="signupPassword" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-blue-500" placeholder="At least 6 characters" />
+        </div>
+        <button type="submit" class="w-full py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition">Create Account</button>
+      </form>
 
-      <div class="form-divider">Or</div>
+      <!-- Phone OTP Form (hidden initially) -->
+      <form id="phoneForm" class="space-y-5 hidden">
+        <div>
+          <label class="block text-sm font-medium mb-1">Phone Number (with +233...)</label>
+          <input type="tel" id="phoneNumber" required placeholder="+233551234567" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-blue-500" />
+        </div>
 
-      <div class="login-link">
-        Don't have an account? 
-        <a href="#" onclick="switchForm('signup'); return false;">Create one →</a>
-      </div>
-    </div>
+        <!-- Invisible reCAPTCHA container (Firebase uses it automatically) -->
+        <div id="recaptcha-container" class="hidden"></div>
 
-    <!-- SIGNUP FORM -->
-    <div class="form-sec" id="signup-form">
-      <h2 class="page-title">Create Account</h2>
-      <p class="page-sub">Join SwiftData and start earning</p>
+        <button type="button" id="sendOtpBtn" class="w-full py-3 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 transition">Send OTP</button>
 
-      <div id="signup-success" class="success-msg">
-        ✓ Account created! Redirecting to payment...
-      </div>
+        <div id="otpSection" class="hidden space-y-5">
+          <div>
+            <label class="block text-sm font-medium mb-1">Verification Code</label>
+            <input type="text" id="otpCode" required maxlength="6" placeholder="123456" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-blue-500 text-center tracking-widest" />
+          </div>
+          <button type="button" id="verifyOtpBtn" class="w-full py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition">Verify & Login</button>
+        </div>
+      </form>
 
-      <div class="form-group">
-        <label class="form-label">Full Name</label>
-        <input class="form-input" id="signup-name" type="text" placeholder="Your name"/>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Phone Number</label>
-        <input class="form-input" id="signup-phone" type="tel" placeholder="0501234567" inputmode="numeric"/>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Email Address</label>
-        <input class="form-input" id="signup-email" type="email" placeholder="your@email.com"/>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Username (for store link)</label>
-        <input class="form-input" id="signup-username" type="text" placeholder="username" oninput="checkUsernameAvailability()"/>
-        <div id="username-status" class="username-status" style="display:none;"></div>
-        <div id="username-error" class="error-msg"></div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <input class="form-input" id="signup-password" type="password" placeholder="••••••••"/>
-        <div class="hint">Min 6 characters</div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Confirm Password</label>
-        <input class="form-input" id="signup-password-confirm" type="password" placeholder="••••••••"/>
-      </div>
-
-      <div id="signup-error" class="error-msg"></div>
-
-      <button class="form-btn" id="signup-btn" onclick="handleSignup()">Create Account</button>
-
-      <div class="form-divider">Or</div>
-
-      <div class="login-link">
-        Already have an account? 
-        <a href="#" onclick="switchForm('login'); return false;">Sign in →</a>
-      </div>
+      <!-- Theme Toggle -->
+      <button id="theme-toggle" class="mt-6 mx-auto block p-3 rounded-full bg-gray-200 dark:bg-slate-700 text-xl hover:scale-110 transition">
+        🌙
+      </button>
     </div>
   </div>
-</div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-import { getFirestore, collection, doc, setDoc, getDoc, query, where, getDocs, limit } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+  <!-- Scripts -->
+  <script>
+    // Firebase Config & Init
+    const firebaseConfig = {
+      apiKey: "AIzaSyCs7lN4itvWZPichtFLdEE4swNQHSX_j1M",
+      authDomain: "dataplus-a93c7.firebaseapp.com",
+      projectId: "dataplus-a93c7",
+      storageBucket: "dataplus-a93c7.firebasestorage.app",
+      messagingSenderId: "1040979049946",
+      appId: "1:1040979049946:web:d5d7957a6c209f56dd94e3",
+      measurementId: "G-GW9DNT0DQ0"
+    };
 
-// ✅ FIXED: Using CORRECT Firebase config (dataplus-a93c7)
-const firebaseConfig = {
-  apiKey: "AIzaSyCs7lN4itvWZPichtFLdEE4swNQHSX_j1M",
-  authDomain: "dataplus-a93c7.firebaseapp.com",
-  projectId: "dataplus-a93c7",
-  storageBucket: "dataplus-a93c7.firebasestorage.app",
-  messagingSenderId: "1040979049946",
-  appId: "1:1040979049946:web:d5d7957a6c209f56dd94e3",
-  measurementId: "G-GW9DNT0DQ0"
-};
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+    // Elements
+    const messageEl = document.getElementById('message');
+    const showMessage = (text, isError = false) => {
+      messageEl.textContent = text;
+      messageEl.className = `mb-6 text-center text-sm font-medium ${isError ? 'text-red-600' : 'text-green-600'}`;
+      messageEl.classList.remove('hidden');
+    };
 
-let usernameCheckTimeout;
-let currentUser = null;
+    // Tab Switching
+    const tabs = {
+      login: document.getElementById('tab-login'),
+      signup: document.getElementById('tab-signup'),
+      phone: document.getElementById('tab-phone')
+    };
+    const forms = {
+      login: document.getElementById('loginForm'),
+      signup: document.getElementById('signupForm'),
+      phone: document.getElementById('phoneForm')
+    };
 
-// ✅ FIXED: Monitor auth state
-onAuthStateChanged(auth, (user) => {
-  currentUser = user;
-  if (user) {
-    console.log('User authenticated:', user.uid);
-    // User is already logged in, redirect to dashboard
-    window.location.href = '/agent.dashboard';
-  }
-});
+    const switchTab = (active) => {
+      Object.values(tabs).forEach(t => t.classList.remove('border-blue-600', 'text-blue-600'));
+      Object.values(forms).forEach(f => f.classList.add('hidden'));
+      tabs[active].classList.add('border-blue-600', 'text-blue-600');
+      forms[active].classList.remove('hidden');
+      messageEl.classList.add('hidden');
+    };
 
-window.switchForm = (form) => {
-  document.getElementById('login-form').classList.toggle('show', form === 'login');
-  document.getElementById('signup-form').classList.toggle('show', form === 'signup');
-  // Clear errors
-  document.getElementById('login-error').classList.remove('show');
-  document.getElementById('signup-error').classList.remove('show');
-};
+    tabs.login.onclick = () => switchTab('login');
+    tabs.signup.onclick = () => switchTab('signup');
+    tabs.phone.onclick = () => switchTab('phone');
 
-window.checkUsernameAvailability = async () => {
-  clearTimeout(usernameCheckTimeout);
-  const username = document.getElementById('signup-username').value.trim().toLowerCase();
-  const status = document.getElementById('username-status');
-  const errorMsg = document.getElementById('username-error');
+    // Email/Password Login
+    forms.login.onsubmit = (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
 
-  if (!username) {
-    status.style.display = 'none';
-    errorMsg.classList.remove('show');
-    return;
-  }
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          showMessage('Login successful! Redirecting...');
+          setTimeout(() => window.location.href = 'agent.dashboard.html', 1500);
+        })
+        .catch(err => showMessage(err.message, true));
+    };
 
-  if (username.length < 3) {
-    status.innerHTML = '⚠ At least 3 characters';
-    status.className = 'username-status checking';
-    status.style.display = 'flex';
-    return;
-  }
+    // Email/Password Sign Up
+    forms.signup.onsubmit = (e) => {
+      e.preventDefault();
+      const name = document.getElementById('signupName').value;
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
 
-  status.innerHTML = '<span class="spin"></span> Checking...';
-  status.className = 'username-status checking';
-  status.style.display = 'flex';
+      auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          // Save name & role to Firestore (optional but useful)
+          db.collection('agents').doc(userCredential.user.uid).set({
+            name,
+            email,
+            role: 'agent',
+            balance: 0,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          showMessage('Account created! Redirecting...');
+          setTimeout(() => window.location.href = 'agent.dashboard.html', 1500);
+        })
+        .catch(err => showMessage(err.message, true));
+    };
 
-  usernameCheckTimeout = setTimeout(async () => {
-    try {
-      // ✅ FIXED: Query with proper error handling
-      const q = query(
-        collection(db, 'swiftdata_agents'),
-        where('username', '==', username),
-        limit(1)
-      );
-      const snap = await getDocs(q);
+    // Phone Auth Setup
+    let confirmationResultGlobal;
 
-      if (snap.empty) {
-        status.innerHTML = '✓ Available';
-        status.className = 'username-status available';
-        errorMsg.classList.remove('show');
-      } else {
-        status.innerHTML = '✗ Already taken';
-        status.className = 'username-status taken';
-        errorMsg.textContent = 'This username is taken. Choose another.';
-        errorMsg.classList.add('show');
+    // Invisible reCAPTCHA
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+      'size': 'invisible',
+      'callback': () => {
+        // reCAPTCHA solved → can enable send button if needed
+      },
+      'expired-callback': () => {
+        showMessage('reCAPTCHA expired. Try again.', true);
       }
-    } catch (error) {
-      console.error('Username check error:', error);
-      if (error.code === 'failed-precondition') {
-        errorMsg.textContent = '⚠ Firestore index not ready. Please try again in a moment.';
-      } else if (error.code === 'permission-denied') {
-        errorMsg.textContent = '⚠ Permission denied. Try refreshing the page.';
-      } else {
-        errorMsg.textContent = 'Error checking username. Try again.';
-      }
-      errorMsg.classList.add('show');
-      status.style.display = 'none';
-    }
-  }, 800);
-};
-
-window.handleLogin = async () => {
-  const email = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-password').value;
-  const btn = document.getElementById('login-btn');
-  const errEl = document.getElementById('login-error');
-
-  if (!email || !password) {
-    errEl.textContent = 'Please enter email and password.';
-    errEl.classList.add('show');
-    return;
-  }
-
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spin"></span> Signing in...';
-  btn.classList.add('loading');
-  errEl.classList.remove('show');
-
-  try {
-    // Sign in
-    await signInWithEmailAndPassword(auth, email, password);
-    
-    // ✅ FIXED: Verify agent doc exists before redirect
-    const agentSnap = await getDoc(doc(db, 'swiftdata_agents', auth.currentUser.uid));
-    
-    if (!agentSnap.exists()) {
-      throw new Error('Agent account not found. Please contact support.');
-    }
-
-    const agent = agentSnap.data();
-    if (agent.status === 'banned') {
-      await signOut(auth);
-      errEl.textContent = 'Your account has been banned. Contact support.';
-      errEl.classList.add('show');
-      return;
-    }
-
-    // Successfully logged in
-    console.log('Login successful, redirecting...');
-    setTimeout(() => {
-      window.location.href = '/agent.dashboard';
-    }, 500);
-
-  } catch (error) {
-    console.error('Login error:', error.code, error.message);
-    btn.disabled = false;
-    btn.innerHTML = 'Sign In';
-    btn.classList.remove('loading');
-
-    if (error.code === 'auth/invalid-credential') {
-      errEl.textContent = 'Invalid email or password.';
-    } else if (error.code === 'auth/user-not-found') {
-      errEl.textContent = 'No account found with this email.';
-    } else if (error.code === 'auth/too-many-requests') {
-      errEl.textContent = 'Too many failed attempts. Try again later.';
-    } else {
-      errEl.textContent = error.message || 'Login failed. Please try again.';
-    }
-    errEl.classList.add('show');
-  }
-};
-
-window.handleSignup = async () => {
-  const name = document.getElementById('signup-name').value.trim();
-  const phone = document.getElementById('signup-phone').value.replace(/\D/g, '');
-  const email = document.getElementById('signup-email').value.trim();
-  const username = document.getElementById('signup-username').value.trim().toLowerCase();
-  const password = document.getElementById('signup-password').value;
-  const passwordConfirm = document.getElementById('signup-password-confirm').value;
-
-  const btn = document.getElementById('signup-btn');
-  const errEl = document.getElementById('signup-error');
-  const successEl = document.getElementById('signup-success');
-
-  errEl.classList.remove('show');
-  successEl.classList.remove('show');
-
-  // Validation
-  if (!name || !phone || !email || !username || !password) {
-    errEl.textContent = 'Please fill in all fields.';
-    errEl.classList.add('show');
-    return;
-  }
-
-  if (phone.length !== 10 || !phone.startsWith('0')) {
-    errEl.textContent = 'Enter a valid 10-digit phone number.';
-    errEl.classList.add('show');
-    return;
-  }
-
-  if (username.length < 3) {
-    errEl.textContent = 'Username must be at least 3 characters.';
-    errEl.classList.add('show');
-    return;
-  }
-
-  if (password.length < 6) {
-    errEl.textContent = 'Password must be at least 6 characters.';
-    errEl.classList.add('show');
-    return;
-  }
-
-  if (password !== passwordConfirm) {
-    errEl.textContent = 'Passwords do not match.';
-    errEl.classList.add('show');
-    return;
-  }
-
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spin"></span> Creating account...';
-  btn.classList.add('loading');
-
-  try {
-    // ✅ FIXED: Check username availability first
-    try {
-      const q = query(
-        collection(db, 'swiftdata_agents'),
-        where('username', '==', username),
-        limit(1)
-      );
-      const snap = await getDocs(q);
-
-      if (!snap.empty) {
-        throw new Error('Username already taken.');
-      }
-    } catch (checkErr) {
-      if (checkErr.message === 'Username already taken.') throw checkErr;
-      if (checkErr.code === 'failed-precondition') {
-        throw new Error('Firestore index not ready. Please try again in a moment.');
-      }
-      if (checkErr.code === 'permission-denied') {
-        throw new Error('Permission error. Please refresh and try again.');
-      }
-    }
-
-    // Create Firebase Auth user
-    const authResult = await createUserWithEmailAndPassword(auth, email, password);
-    const uid = authResult.user.uid;
-
-    // ✅ FIXED: Create agent document BEFORE showing success
-    await setDoc(doc(db, 'swiftdata_agents', uid), {
-      uid: uid,
-      name: name,
-      email: email,
-      phone: phone,
-      username: username,
-      status: 'pending',
-      walletBalance: 0,
-      totalEarned: 0,
-      totalOrders: 0,
-      createdAt: new Date(),
-      activatedAt: null,
-      paymentRef: null
     });
 
-    console.log('Agent document created:', uid);
+    // Send OTP
+    document.getElementById('sendOtpBtn').onclick = () => {
+      const phone = document.getElementById('phoneNumber').value.trim();
+      if (!phone.startsWith('+')) {
+        showMessage('Phone must start with country code, e.g., +233...', true);
+        return;
+      }
 
-    successEl.classList.add('show');
-    btn.innerHTML = '<span class="spin"></span> Redirecting to payment...';
+      showMessage('Sending OTP...');
+      auth.signInWithPhoneNumber(phone, window.recaptchaVerifier)
+        .then((confirmationResult) => {
+          confirmationResultGlobal = confirmationResult;
+          document.getElementById('otpSection').classList.remove('hidden');
+          document.getElementById('sendOtpBtn').disabled = true;
+          showMessage('OTP sent! Check your phone.');
+        })
+        .catch(err => {
+          showMessage(err.message, true);
+          // Reset reCAPTCHA on error
+          grecaptcha.reset();
+        });
+    };
 
-    // Redirect to payment page with email
-    setTimeout(() => {
-      const paymentEmail = encodeURIComponent(email);
-      window.location.href = `/payment.html?email=${paymentEmail}&name=${encodeURIComponent(name)}&uid=${uid}`;
-    }, 1500);
+    // Verify OTP
+    document.getElementById('verifyOtpBtn').onclick = () => {
+      const code = document.getElementById('otpCode').value.trim();
+      if (code.length !== 6) {
+        showMessage('Enter 6-digit code', true);
+        return;
+      }
 
-  } catch (error) {
-    console.error('Signup error:', error.code, error.message);
-    btn.disabled = false;
-    btn.innerHTML = 'Create Account';
-    btn.classList.remove('loading');
+      confirmationResultGlobal.confirm(code)
+        .then((result) => {
+          // Optional: If new user, create profile in Firestore
+          showMessage('Phone verified! Welcome.');
+          setTimeout(() => window.location.href = 'agent.dashboard.html', 1500);
+        })
+        .catch(err => showMessage('Invalid code or expired. Try again.', true));
+    };
 
-    if (error.message === 'Username already taken.') {
-      errEl.textContent = 'This username is already taken.';
-    } else if (error.code === 'auth/email-already-in-use') {
-      errEl.textContent = 'Email already registered. Try logging in.';
-    } else if (error.code === 'auth/weak-password') {
-      errEl.textContent = 'Password is too weak. Use at least 6 characters.';
-    } else if (error.code === 'auth/invalid-email') {
-      errEl.textContent = 'Invalid email address.';
+    // Theme Toggle
+    const toggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      html.classList.add('dark');
+      toggle.textContent = '☀️';
     } else {
-      errEl.textContent = error.message || 'Signup failed. Please try again.';
+      toggle.textContent = '🌙';
     }
-    errEl.classList.add('show');
-  }
-};
-</script>
+    toggle.onclick = () => {
+      html.classList.toggle('dark');
+      localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
+      toggle.textContent = html.classList.contains('dark') ? '☀️' : '🌙';
+    };
+
+    // Protect page (redirect if already logged in)
+    auth.onAuthStateChanged(user => {
+      if (user && window.location.pathname.includes('agent.login.html')) {
+        window.location.href = 'agent.dashboard.html';
+      }
+    });
+  </script>
+
 </body>
-  </html>
+            </html>
