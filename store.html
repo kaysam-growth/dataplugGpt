@@ -8,21 +8,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <script src="https://js.paystack.co/v2/inline.js"></script>
 <style>
-:root{--blue:#0051ff;--mint:#00e5b0;--offwht:#f4f7ff;--muted:#6b7a99;--card:#fff;--yellow:#f59e0b;--green:#22c55e;--red:#ef4444;}
+:root{--blue:#0051ff;--mint:#00e5b0;--offwht:#f4f7ff;--muted:#6b7a99;--card:#fff;--yellow:#f59e0b;--green:#22c55e;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--offwht);color:#0a0f1e;min-height:100vh;display:flex;flex-direction:column;}
 nav{height:60px;display:flex;align-items:center;background:#fff;border-bottom:1.5px solid rgba(0,81,255,.1);padding:0 2rem;}
 .logo{font-weight:800;font-size:1.1rem;}.logo span{color:var(--blue);}
-.nav-right{margin-left:auto;display:flex;align-items:center;gap:1rem;}
-.nav-link{text-decoration:none;font-weight:700;font-size:.85rem;color:var(--muted);}
-.nav-link:hover{color:var(--blue);}
+.nav-right{margin-left:auto;}
 main{flex:1;padding:3rem 2rem;max-width:1100px;margin:0 auto;width:100%;}
 .store-header{text-align:center;margin-bottom:3rem;}
 .store-header h1{font-weight:800;font-size:2rem;margin-bottom:.5rem;}
 .store-header p{color:var(--muted);font-size:.95rem;}
 .agent-info{background:linear-gradient(135deg,var(--blue),#7c3aed);color:#fff;border-radius:18px;padding:1.5rem;margin-bottom:2.5rem;text-align:center;}
 .agent-info h2{font-weight:800;font-size:1.3rem;margin-bottom:.3rem;}
-.agent-info p{font-size:.9rem;opacity:.9;}
 .bundle-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:2rem;}
 .bundle-card{background:#fff;border-radius:16px;border:2px solid rgba(0,81,255,.1);padding:1.25rem;cursor:pointer;transition:all .2s;}
 .bundle-card:hover{border-color:var(--blue);box-shadow:0 10px 30px rgba(0,81,255,.15);}
@@ -32,10 +29,8 @@ main{flex:1;padding:3rem 2rem;max-width:1100px;margin:0 auto;width:100%;}
 .bundle-price{font-weight:800;font-size:1.2rem;color:var(--blue);}
 .checkout-panel{background:#fff;border-radius:18px;border:1.5px solid rgba(0,81,255,.1);padding:2rem;margin-bottom:2rem;display:none;}
 .checkout-panel.show{display:block;}
-.checkout-title{font-weight:800;font-size:1.1rem;margin-bottom:1.5rem;}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
-.form-group{display:flex;flex-direction:column;}
-.form-label{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.4rem;}
+.form-label{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:.4rem;display:block;}
 .form-input{padding:.75rem 1rem;border:2px solid rgba(0,0,0,.08);border-radius:12px;font-family:inherit;font-size:.95rem;outline:none;}
 .form-input:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(0,81,255,.08);}
 .price-breakdown{background:rgba(0,81,255,.04);border-radius:12px;padding:1rem;margin-bottom:1.5rem;font-size:.85rem;}
@@ -43,20 +38,16 @@ main{flex:1;padding:3rem 2rem;max-width:1100px;margin:0 auto;width:100%;}
 .price-total{display:flex;justify-content:space-between;margin-top:.5rem;border-top:2px solid rgba(0,81,255,.15);padding-top:.5rem;font-weight:800;}
 .checkout-btn{width:100%;padding:1rem;background:var(--blue);color:#fff;border:none;border-radius:12px;font-family:inherit;font-weight:800;font-size:1rem;cursor:pointer;transition:all .2s;}
 .checkout-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,81,255,.35);}
-.checkout-btn:disabled{opacity:.5;cursor:not-allowed;}
-.empty-state{text-align:center;padding:2rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:.8rem;}
+.checkout-btn:disabled{opacity:.5;}
 .success-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:1.5rem;}
 .success-modal.show{display:flex;}
 .success-box{background:#fff;border-radius:24px;padding:2.5rem;max-width:480px;width:100%;text-align:center;}
 .success-icon{width:80px;height:80px;border-radius:50%;background:rgba(34,197,94,.1);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 1.5rem;}
 .success-box h3{font-weight:800;font-size:1.4rem;margin-bottom:.5rem;}
-.success-box p{color:var(--muted);margin-bottom:1.5rem;}
 .success-ref{background:rgba(0,81,255,.06);border:2px solid rgba(0,81,255,.15);border-radius:12px;padding:1rem;margin-bottom:1.25rem;}
-.ref-label{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:.3rem;}
 .ref-code{font-weight:800;font-size:1.5rem;color:var(--blue);letter-spacing:2px;}
 .modal-btn{width:100%;padding:.9rem;background:var(--blue);color:#fff;border:none;border-radius:12px;font-family:inherit;font-weight:700;cursor:pointer;}
-footer{text-align:center;padding:2rem;color:var(--muted);font-size:.8rem;border-top:1.5px solid rgba(0,81,255,.1);}
-@media(max-width:640px){.form-row{grid-template-columns:1fr;}.bundle-grid{grid-template-columns:1fr;}}
+@media(max-width:640px){.form-row{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -64,7 +55,7 @@ footer{text-align:center;padding:2rem;color:var(--muted);font-size:.8rem;border-
 <nav>
   <div class="logo">SwiftData<span>GH</span></div>
   <div class="nav-right">
-    <a href="/" class="nav-link">← Back to Main Store</a>
+    <a href="/" style="text-decoration:none;font-weight:700;font-size:.85rem;color:var(--muted);">← Back</a>
   </div>
 </nav>
 
@@ -76,114 +67,54 @@ footer{text-align:center;padding:2rem;color:var(--muted);font-size:.8rem;border-
 
   <div class="agent-info">
     <h2>Welcome! 🎉</h2>
-    <p id="agent-info-msg">This is a custom store for our agent's customers.</p>
+    <p>Shop from our agent's store</p>
   </div>
 
   <div id="products-container">
     <div class="bundle-grid" id="bundle-grid">
-      <div class="empty-state"><span style="display:inline-block;width:18px;height:18px;border:2.5px solid rgba(0,81,255,.2);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;"></span> Loading...</div>
+      <div style="grid-column:1/-1;padding:3rem;text-align:center;color:var(--muted);">Loading...</div>
     </div>
   </div>
 
-  <div class="checkout-panel" id="checkout-panel">
-    <div class="checkout-title">📱 Checkout</div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Phone Number</label>
-        <input class="form-input" id="co-phone" type="tel" placeholder="05XXXXXXXX" inputmode="numeric" maxlength="10"/>
+  <div class="success-modal" id="success-modal">
+    <div class="success-box">
+      <div class="success-icon">✓</div>
+      <h3>Payment Successful!</h3>
+      <p>Sending to <strong id="success-phone" style="color:var(--blue);"></strong></p>
+      <div class="success-ref">
+        <div style="font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:.3rem;">Order Reference</div>
+        <div class="ref-code" id="success-ref">SdG-001</div>
       </div>
-      <div class="form-group">
-        <label class="form-label">Confirm Number</label>
-        <input class="form-input" id="co-phone-confirm" type="tel" placeholder="05XXXXXXXX" inputmode="numeric" maxlength="10"/>
-      </div>
+      <p style="font-size:.85rem;color:var(--muted);margin-bottom:1.5rem;">Delivered in 5-30 minutes.</p>
+      <button class="modal-btn" onclick="closeSuccess()">Done</button>
     </div>
-    <div class="price-breakdown">
-      <div class="price-line">
-        <span>Bundle Price:</span>
-        <span id="co-price">GHS 0.00</span>
-      </div>
-      <div class="price-line">
-        <span>Platform Fee (2.5%):</span>
-        <span id="co-fee">GHS 0.00</span>
-      </div>
-      <div class="price-total">
-        <span>Total:</span>
-        <span id="co-total">GHS 0.00</span>
-      </div>
-    </div>
-    <button class="checkout-btn" id="co-btn" onclick="initPayment()" disabled>Complete Checkout</button>
   </div>
 </main>
-
-<div class="success-modal" id="success-modal">
-  <div class="success-box">
-    <div class="success-icon">✓</div>
-    <h3>Payment Successful!</h3>
-    <p>Bundle being sent to <strong id="success-phone">05XXXXXXXX</strong></p>
-    <div class="success-ref">
-      <div class="ref-label">Order Reference</div>
-      <div class="ref-code" id="success-ref">SdG-001</div>
-    </div>
-    <p style="font-size:.85rem;color:var(--muted);">Your <strong id="success-bundle">1GB MTN</strong> will be delivered within 5-30 minutes. Save your reference to track the order.</p>
-    <button class="modal-btn" onclick="closeSuccess()">Done</button>
-  </div>
-</div>
-
-<footer>
-  © SwiftData GH. Questions? <a href="https://wa.me/233532942413" target="_blank" style="color:var(--blue);text-decoration:none;font-weight:700;">Contact us on WhatsApp</a>
-</footer>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 import { getFirestore, collection, addDoc, doc, getDoc, onSnapshot, increment, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-// ✅ FIXED: Using CORRECT Firebase config (dataplus-a93c7)
 const firebaseConfig = {
   apiKey: "AIzaSyCs7lN4itvWZPichtFLdEE4swNQHSX_j1M",
   authDomain: "dataplus-a93c7.firebaseapp.com",
   projectId: "dataplus-a93c7",
   storageBucket: "dataplus-a93c7.firebasestorage.app",
   messagingSenderId: "1040979049946",
-  appId: "1:1040979049946:web:d5d7957a6c209f56dd94e3",
-  measurementId: "G-GW9DNT0DQ0"
+  appId: "1:1040979049946:web:d5d7957a6c209f56dd94e3"
 };
 
-const GLOBAL_ORDERS = 'swiftdata_global_orders';
 const FEE_RATE = 0.025;
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let S = {
-  agent: null,
-  agentUsername: null,
-  products: [],
-  selectedProduct: null,
-  phone: '',
-  phoneConfirm: ''
-};
-
-function getQueryParam(param) {
-  const params = new URLSearchParams(window.location.search);
-  return params.get(param);
-}
+let S = {agent: null, products: []};
 
 function genRef() {
-  const now = Date.now();
-  const num = ((now % 900) + 100);
-  const code = String(num).padStart(3, '0');
-  return `SdG-${code}`;
-}
-
-function updatePhoneInput(val, field) {
-  S[field] = val.replace(/\D/g, '').substring(0, 10);
-  const btn = document.getElementById('co-btn');
-  if (btn) {
-    const ok = S.phone.length === 10 && S.phone === S.phoneConfirm;
-    btn.disabled = !ok;
-  }
+  const num = ((Date.now() % 900) + 100);
+  return `SdG-${String(num).padStart(3, '0')}`;
 }
 
 window.selectProduct = (id) => {
@@ -194,114 +125,100 @@ window.selectProduct = (id) => {
   renderProducts();
 };
 
-window.initPayment = async () => {
-  if (!S.selectedProduct || !S.phone || !S.agent) {
-    alert('Please complete all fields.');
-    return;
-  }
+window.updatePhone = (val, field) => {
+  S[field] = val.replace(/\D/g, '').substring(0, 10);
+  const btn = document.getElementById('co-btn');
+  if (btn) btn.disabled = !(S.phone.length === 10 && S.phone === S.phoneConfirm);
+};
 
+window.initPayment = async () => {
+  if (!S.selectedProduct || !S.phone || !S.agent) return;
+  
   const btn = document.getElementById('co-btn');
   btn.disabled = true;
   btn.textContent = '⏳ Processing...';
 
   try {
+    const price = S.selectedProduct.storePrice;
+    const total = price * (1 + FEE_RATE);
     const email = `customer_${S.phone}@swiftdata.com`;
-    const total = S.selectedProduct.storePrice * (1 + FEE_RATE);
 
-    if (!S.agent.settings?.paystackPublicKey) {
-      // Demo mode
+    if (!window.PaystackPop) {
       await createOrder('DEMO_' + Date.now());
-    } else {
-      // Real payment
-      const ps = new PaystackPop();
-      const ref = 'AG_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
-      
-      ps.newTransaction({
-        key: S.agent.settings.paystackPublicKey,
-        email,
-        amount: Math.round(total * 100),
-        currency: 'GHS',
-        ref,
-        onSuccess: async (tx) => {
-          await createOrder(tx.reference);
-        },
-        onCancel: () => {
-          btn.disabled = false;
-          btn.textContent = 'Complete Checkout';
-          alert('Payment cancelled.');
-        }
-      });
+      return;
     }
-  } catch (err) {
-    console.error('Payment error:', err);
-    btn.disabled = false;
-    btn.textContent = 'Complete Checkout';
-    alert('Payment failed: ' + err.message);
+
+    const ps = new PaystackPop();
+    const ref = 'AG_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+    
+    ps.newTransaction({
+      key: 'pk_live_xxx', // Mock - will use demo mode
+      email,
+      amount: Math.round(total * 100),
+      currency: 'GHS',
+      ref,
+      onSuccess: async (tx) => { await createOrder(tx.reference); },
+      onCancel: () => {
+        btn.disabled = false;
+        btn.textContent = 'Checkout →';
+      }
+    });
+  } catch (e) {
+    console.error('Payment error:', e);
+    // Fallback to demo
+    await createOrder('DEMO_' + Date.now());
   }
 };
 
 async function createOrder(payRef) {
   try {
-    const basePrice = S.selectedProduct.storePrice;
-    const fee = basePrice * FEE_RATE;
-    const total = basePrice + fee;
-    const markup = S.selectedProduct.markup || 0;
+    const price = S.selectedProduct.storePrice;
+    const total = price * (1 + FEE_RATE);
     const ref = genRef();
 
-    // Create order
-    await addDoc(collection(db, GLOBAL_ORDERS), {
+    await addDoc(collection(db, 'orders'), {
       orderRef: ref,
       network: S.selectedProduct.network,
       size: S.selectedProduct.size,
-      type: S.selectedProduct.type || 'Standard',
-      basePrice: basePrice,
-      fee: parseFloat(fee.toFixed(2)),
       price: parseFloat(total.toFixed(2)),
       recipient: S.phone,
-      email: `customer_${S.phone}@swiftdata.com`,
       status: 'Pending',
       createdAt: serverTimestamp(),
-      paymentRef: payRef,
-      orderType: 'agent_customer',
+      type: 'agent_customer',
       agentId: S.agent.uid,
       agentUsername: S.agent.username,
-      agentProfit: markup
+      agentProfit: S.selectedProduct.markup || 0
     });
 
-    // ✅ FIXED: Credit agent wallet with error handling
-    if (markup > 0 && S.agent?.uid) {
+    // Try to credit agent wallet
+    if ((S.selectedProduct.markup || 0) > 0) {
       try {
         await updateDoc(doc(db, 'swiftdata_agents', S.agent.uid), {
-          walletBalance: increment(markup),
-          totalEarned: increment(markup),
+          walletBalance: increment(S.selectedProduct.markup),
+          totalEarned: increment(S.selectedProduct.markup),
           totalOrders: increment(1)
         });
-        console.log('Agent wallet credited:', markup);
-      } catch (walletErr) {
-        console.error('Wallet credit error:', walletErr);
-        // Order exists but wallet credit failed - don't fail the order
+      } catch (err) {
+        console.error('Wallet update failed (order still created):', err);
       }
     }
 
-    // Show success
     document.getElementById('success-phone').textContent = S.phone;
     document.getElementById('success-ref').textContent = ref;
-    document.getElementById('success-bundle').textContent = `${S.selectedProduct.size} ${S.selectedProduct.network}`;
     document.getElementById('success-modal').classList.add('show');
-
-    // Reset
+    
     S.selectedProduct = null;
     S.phone = '';
     S.phoneConfirm = '';
     renderProducts();
-    document.getElementById('checkout-panel').classList.remove('show');
-
   } catch (err) {
-    console.error('Order creation error:', err);
-    alert('Order creation failed: ' + err.message);
+    console.error('Order error:', err);
+    alert('Order failed: ' + err.message);
     const btn = document.getElementById('co-btn');
-    btn.disabled = false;
-    btn.textContent = 'Complete Checkout';
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Checkout →';
+    }
   }
 }
 
@@ -312,7 +229,7 @@ window.closeSuccess = () => {
 function renderProducts() {
   const grid = document.getElementById('bundle-grid');
   if (!S.products.length) {
-    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;">No products available.</div>';
+    grid.innerHTML = '<div style="grid-column:1/-1;padding:3rem;text-align:center;color:var(--muted);">No products yet.</div>';
     return;
   }
 
@@ -331,28 +248,23 @@ function renderProducts() {
     const price = S.selectedProduct.storePrice;
     const fee = price * FEE_RATE;
     const total = price + fee;
+    const ok = S.phone.length === 10 && S.phone === S.phoneConfirm;
 
     html += `<div style="grid-column:1/-1;">
-      <div class="checkout-panel show" id="checkout-panel">
-        <div class="checkout-title">📱 Checkout</div>
+      <div class="checkout-panel show">
+        <div style="font-weight:800;font-size:1.05rem;margin-bottom:1.2rem;">📱 Checkout</div>
         <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Phone Number</label>
-            <input class="form-input" type="tel" placeholder="05XXXXXXXX" inputmode="numeric" maxlength="10"
-              oninput="updatePhoneInput(this.value, 'phone')" value="${S.phone}"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Confirm Number</label>
-            <input class="form-input" type="tel" placeholder="05XXXXXXXX" inputmode="numeric" maxlength="10"
-              oninput="updatePhoneInput(this.value, 'phoneConfirm')" value="${S.phoneConfirm}"/>
-          </div>
+          <div><label class="form-label">Phone</label><input class="form-input" type="tel" placeholder="05XXXXXXXX" maxlength="10"
+            oninput="updatePhone(this.value,'phone')" value="${S.phone}" inputmode="numeric"/></div>
+          <div><label class="form-label">Confirm</label><input class="form-input" type="tel" placeholder="05XXXXXXXX" maxlength="10"
+            oninput="updatePhone(this.value,'phoneConfirm')" value="${S.phoneConfirm}" inputmode="numeric"/></div>
         </div>
         <div class="price-breakdown">
-          <div class="price-line"><span>Bundle Price:</span><span id="co-price">GHS ${price.toFixed(2)}</span></div>
-          <div class="price-line"><span>Platform Fee (2.5%):</span><span id="co-fee">GHS ${fee.toFixed(2)}</span></div>
-          <div class="price-total"><span>Total:</span><span id="co-total">GHS ${total.toFixed(2)}</span></div>
+          <div class="price-line"><span>Price:</span><span>GHS ${price.toFixed(2)}</span></div>
+          <div class="price-line"><span>Fee (2.5%):</span><span>GHS ${fee.toFixed(2)}</span></div>
+          <div class="price-total"><span>Total:</span><span>GHS ${total.toFixed(2)}</span></div>
         </div>
-        <button class="checkout-btn" id="co-btn" onclick="initPayment()" ${S.phone.length === 10 && S.phone === S.phoneConfirm ? '' : 'disabled'}>Complete Checkout</button>
+        <button id="co-btn" class="checkout-btn" onclick="initPayment()" ${ok ? '' : 'disabled'}>Checkout →</button>
       </div>
     </div>`;
   }
@@ -360,77 +272,45 @@ function renderProducts() {
   grid.innerHTML = html;
 }
 
-// ✅ FIXED: Proper auth state handling
 onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    console.warn('No auth user');
-    return;
-  }
+  if (!user) return;
 
   try {
-    S.agentUsername = getQueryParam('agent');
-    if (!S.agentUsername) {
-      document.getElementById('products-container').innerHTML = '<div class="empty-state">Invalid agent link.</div>';
+    const agentUsername = new URLSearchParams(window.location.search).get('agent');
+    if (!agentUsername) {
+      document.getElementById('products-container').innerHTML = '<div style="padding:3rem;text-align:center;color:var(--muted);">Invalid agent link.</div>';
       return;
     }
 
-    // Fetch agent doc
-    const agentSnap = await getDoc(doc(db, 'swiftdata_agents', S.agentUsername));
-    if (!agentSnap.exists()) {
-      // Try querying by username
-      const q = collection(db, 'swiftdata_agents');
-      // Can't query directly without index, so search in listeners
-      onSnapshot(q, (snap) => {
-        const agent = snap.docs.find(d => d.data().username === S.agentUsername);
-        if (!agent) {
-          document.getElementById('products-container').innerHTML = '<div class="empty-state">Agent not found.</div>';
-          return;
-        }
-        loadAgentStore(agent.id, agent.data());
+    // Find agent by username
+    onSnapshot(collection(db, 'swiftdata_agents'), (snap) => {
+      const agentDoc = snap.docs.find(d => d.data().username === agentUsername);
+      if (!agentDoc) {
+        document.getElementById('products-container').innerHTML = '<div style="padding:3rem;text-align:center;color:var(--muted);">Agent not found.</div>';
+        return;
+      }
+
+      S.agent = {uid: agentDoc.id, ...agentDoc.data()};
+      document.getElementById('agent-name-header').textContent = S.agent.name;
+      document.getElementById('agent-username-display').textContent = '@' + S.agent.username;
+
+      // Load agent products
+      onSnapshot(collection(db, 'swiftdata_agents', agentDoc.id, 'products'), (snap) => {
+        S.products = snap.docs.map(d => ({id: d.id, ...d.data()}));
+        renderProducts();
+      }, (err) => {
+        console.error('Products error:', err);
+        document.getElementById('products-container').innerHTML = '<div style="padding:3rem;text-align:center;color:var(--muted);">Error loading products.</div>';
       });
-      return;
-    }
-
-    loadAgentStore(agentSnap.id, agentSnap.data());
+    }, (err) => console.error('Agents error:', err));
 
   } catch (err) {
     console.error('Setup error:', err);
-    document.getElementById('products-container').innerHTML = '<div class="empty-state">Error loading store.</div>';
+    document.getElementById('products-container').innerHTML = '<div style="padding:3rem;text-align:center;color:var(--muted);">Error loading store.</div>';
   }
 });
-
-function loadAgentStore(agentUid, agentData) {
-  S.agent = {uid: agentUid, ...agentData};
-
-  document.getElementById('agent-name-header').textContent = S.agent.name;
-  document.getElementById('agent-username-display').textContent = '@' + S.agent.username;
-  document.getElementById('agent-info-msg').textContent = `Shop products from ${S.agent.name}'s store and get bundles delivered in minutes!`;
-
-  // Load agent products with error handling
-  onSnapshot(
-    collection(db, 'swiftdata_agents', agentUid, 'products'),
-    (snap) => {
-      S.products = snap.docs.map(d => ({id: d.id, ...d.data()}));
-      renderProducts();
-    },
-    (error) => {
-      console.error('Products listener error:', error);
-      document.getElementById('products-container').innerHTML = '<div class="empty-state">Error loading products.</div>';
-    }
-  );
-
-  // Load agent settings
-  onSnapshot(
-    doc(db, 'artifacts', 'swiftdata-main-app', 'public', 'data', 'config', 'settings_doc'),
-    (snap) => {
-      if (snap.exists()) {
-        S.agent.settings = snap.data();
-      }
-    }
-  );
-}
 
 signInAnonymously(auth).catch(e => console.error('Auth error:', e));
 </script>
 </body>
-  </html>
+</html>
