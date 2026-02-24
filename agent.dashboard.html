@@ -7,22 +7,20 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <style>
-:root{--ink:#0a0f1e;--blue:#0051ff;--mint:#00e5b0;--yellow:#f59e0b;--green:#22c55e;--red:#ef4444;--sky:#38bdf8;}
+:root{--blue:#0051ff;--mint:#00e5b0;--yellow:#f59e0b;--green:#22c55e;--red:#ef4444;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:#060b18;color:#fff;min-height:100vh;}
-.gate{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse 70% 60% at 50% 40%,rgba(0,81,255,.07) 0%,transparent 70%);padding:2rem;}
+.gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;}
 .gate-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:28px;padding:3rem;max-width:420px;width:100%;text-align:center;animation:fadeUp .4s ease;}
 .gate-box h1{font-weight:800;font-size:1.6rem;margin-bottom:.35rem;}
 .gate-box p{font-size:.85rem;color:rgba(255,255,255,.3);margin-bottom:1.5rem;line-height:1.6;}
-.gate-box .spin{width:24px;height:24px;border:2.5px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;}
-.spin{display:inline-block;vertical-align:middle;}
+.spin{width:24px;height:24px;border:2.5px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;}
 @keyframes sp{to{transform:rotate(360deg);}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-.gate-err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;padding:1rem;border-radius:12px;margin-bottom:1rem;font-size:.85rem;line-height:1.6;}
-.gate-btn{width:100%;padding:.9rem;background:var(--blue);color:#fff;border:none;border-radius:12px;font-family:inherit;font-weight:800;font-size:.95rem;cursor:pointer;transition:all .2s;}
-.gate-btn:hover{opacity:.9;box-shadow:0 10px 28px rgba(0,81,255,.35);}
+.gate-err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;padding:1rem;border-radius:12px;margin-bottom:1rem;font-size:.85rem;line-height:1.6;display:none;}
+.gate-btn{width:100%;padding:.9rem;background:var(--blue);color:#fff;border:none;border-radius:12px;font-family:inherit;font-weight:800;font-size:.95rem;cursor:pointer;display:none;}
 .dashboard{display:none;}
-.sidebar{width:240px;position:fixed;top:0;left:0;bottom:0;background:#0a0f1e;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;overflow-y:auto;}
+.sidebar{width:240px;position:fixed;top:0;left:0;bottom:0;background:#0a0f1e;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;}
 .sb-logo{padding:1.5rem;border-bottom:1px solid rgba(255,255,255,.06);font-weight:800;font-size:1.05rem;}
 .sb-logo span{color:var(--mint);}
 .sb-nav{flex:1;padding:1rem 0;}
@@ -30,49 +28,34 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#060b18;color:#fff;mi
 .sb-btn:hover{color:#fff;background:rgba(255,255,255,.04);}
 .sb-btn.active{color:#fff;background:rgba(0,81,255,.1);border-left-color:var(--blue);}
 .sb-foot{padding:1.2rem;border-top:1px solid rgba(255,255,255,.06);}
+.logout-btn{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#fca5a5;padding:.5rem 1rem;border-radius:10px;font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;width:100%;transition:all .2s;}
 .main{margin-left:240px;min-height:100vh;}
-.topbar{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(10,15,30,.95);}
+.topbar{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;border-bottom:1px solid rgba(255,255,255,.06);}
 .topbar h1{font-weight:800;font-size:1.15rem;}
-.logout-btn{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#fca5a5;padding:.5rem 1rem;border-radius:10px;font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;transition:all .2s;}
-.logout-btn:hover{background:rgba(239,68,68,.25);}
 .content{padding:2rem;}
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:2rem;}
 .stat-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:1.25rem;}
 .stat-lbl{font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.25);margin-bottom:.5rem;}
 .stat-val{font-weight:800;font-size:1.6rem;color:var(--mint);}
 .panel{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;overflow:hidden;margin-bottom:1.5rem;}
-.panel-head{padding:1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.05);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;}
+.panel-head{padding:1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.05);}
 .panel-head h3{font-weight:800;font-size:.95rem;}
-.btn{padding:.5rem 1rem;background:var(--blue);color:#fff;border:none;border-radius:10px;font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;transition:all .2s;}
+.btn{padding:.5rem 1rem;background:var(--blue);color:#fff;border:none;border-radius:10px;font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;transition:all .2s;margin-top:1rem;}
 .btn:hover{opacity:.9;}
-.btn.danger{background:rgba(239,68,68,.2);color:#fca5a5;border:1px solid rgba(239,68,68,.3);}
-.empty-state{padding:2rem;text-align:center;color:rgba(255,255,255,.15);font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:.75rem;}
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:1.5rem;}
-.modal-bg.show{display:flex;}
-.modal-box{background:#0f172a;border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:2rem;max-width:480px;width:100%;}
-.modal-title{font-weight:800;font-size:1.2rem;margin-bottom:1.5rem;}
-.m-inp{width:100%;padding:.75rem 1rem;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.08);border-radius:10px;font-family:inherit;font-size:.88rem;color:#fff;outline:none;margin-bottom:1rem;}
-.m-inp:focus{border-color:rgba(0,81,255,.5);}
-.m-btns{display:flex;gap:.75rem;margin-top:1.25rem;}
-.m-btn{flex:1;padding:.75rem;background:var(--blue);color:#fff;border:none;border-radius:10px;font-family:inherit;font-weight:700;cursor:pointer;}
-.m-btn.cancel{background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);}
-.error-banner{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:12px;padding:1rem;color:#fca5a5;margin-bottom:1rem;font-size:.85rem;}
-@media(max-width:768px){.sidebar{width:60px;}.sb-logo{text-align:center;padding:.75rem;}.main{margin-left:60px;}.sb-btn span:last-child{display:none;}.content{padding:1rem;}}
+.empty{padding:2rem;text-align:center;color:rgba(255,255,255,.15);font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:.75rem;}
 </style>
 </head>
 <body>
 
-<!-- GATE (Loading/Error Screen) -->
+<!-- GATE (Loading Screen) -->
 <div class="gate" id="gate">
   <div class="gate-box">
     <div style="font-size:2.5rem;margin-bottom:1rem;">🔐</div>
-    <h1>Loading Agent Portal</h1>
-    <p>Please wait while we verify your account...</p>
-    <div style="margin:2rem 0;">
-      <div class="spin"></div>
-    </div>
-    <div id="gate-err" class="gate-err" style="display:none;"></div>
-    <button id="gate-retry" class="gate-btn" onclick="retryLoad()" style="display:none;">Try Again</button>
+    <h1>Loading Dashboard</h1>
+    <p>Verifying your account...</p>
+    <div style="margin:2rem 0;"><div class="spin"></div></div>
+    <div id="gate-err" class="gate-err"></div>
+    <button id="gate-retry" class="gate-btn" onclick="location.reload()">Try Again</button>
   </div>
 </div>
 
@@ -94,10 +77,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#060b18;color:#fff;mi
   <div class="main">
     <div class="topbar">
       <div><h1 id="tab-title">Dashboard</h1></div>
-      <div style="display:flex;gap:.75rem;">
-        <span id="agent-name" style="font-size:.85rem;color:rgba(255,255,255,.5);"></span>
-        <span id="username-display" style="font-size:.85rem;font-weight:700;color:var(--mint);"></span>
-      </div>
+      <div id="agent-info" style="font-size:.85rem;color:rgba(255,255,255,.5);"></div>
     </div>
 
     <div class="content">
@@ -107,16 +87,16 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#060b18;color:#fff;mi
           <div class="stat-card"><div class="stat-lbl">Wallet</div><div class="stat-val" id="s-wallet">GHS 0.00</div></div>
           <div class="stat-card"><div class="stat-lbl">Earned</div><div class="stat-val" id="s-earned">GHS 0.00</div></div>
           <div class="stat-card"><div class="stat-lbl">Orders</div><div class="stat-val" id="s-orders">0</div></div>
-          <div class="stat-card"><div class="stat-lbl">Status</div><div class="stat-val" id="s-status" style="font-size:1.1rem;">—</div></div>
+          <div class="stat-card"><div class="stat-lbl">Status</div><div class="stat-val" id="s-status">—</div></div>
         </div>
 
         <div class="panel">
           <div class="panel-head">
             <h3>Your Store Link</h3>
-            <button class="btn" onclick="copyStoreLink()">📋 Copy</button>
+            <button class="btn" onclick="copyLink()">📋 Copy</button>
           </div>
-          <div style="padding:1.5rem;font-family:monospace;font-size:.85rem;color:var(--blue);word-break:break-all;background:rgba(0,81,255,.05);border-radius:12px;margin:1rem;">
-            <span id="store-link">https://swiftdatagh.vercel.app/store?agent=username</span>
+          <div style="padding:1.5rem;font-family:monospace;font-size:.85rem;color:var(--blue);word-break:break-all;">
+            <span id="store-link">https://yoursite.com/store?agent=username</span>
           </div>
         </div>
       </div>
@@ -126,9 +106,9 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#060b18;color:#fff;mi
         <div class="panel">
           <div class="panel-head">
             <h3>Your Products</h3>
-            <button class="btn" onclick="openAddProduct()">+ Add Product</button>
+            <button class="btn" onclick="alert('Add from base products modal')">+ Add</button>
           </div>
-          <div id="products-list"><div class="empty-state"><span class="spin"></span> Loading...</div></div>
+          <div id="products-list"><div class="empty"><div class="spin" style="margin:0 auto;"></div></div></div>
         </div>
       </div>
 
@@ -136,27 +116,18 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#060b18;color:#fff;mi
       <div id="tab-orders" class="hidden">
         <div class="panel">
           <div class="panel-head"><h3>Your Orders</h3></div>
-          <div id="orders-list"><div class="empty-state"><span class="spin"></span> Loading...</div></div>
+          <div id="orders-list"><div class="empty"><div class="spin" style="margin:0 auto;"></div></div></div>
         </div>
       </div>
 
       <!-- WALLET -->
       <div id="tab-wallet" class="hidden">
         <div class="panel">
-          <div class="panel-head">
-            <h3>Wallet Management</h3>
-            <button class="btn" onclick="openCashout()">💸 Request Cashout</button>
-          </div>
+          <div class="panel-head"><h3>Wallet</h3></div>
           <div style="padding:1.5rem;">
-            <div style="margin-bottom:1.5rem;">
-              <div style="font-size:.75rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.5rem;">Current Balance</div>
-              <div style="font-weight:800;font-size:2rem;color:var(--mint);" id="wallet-balance">GHS 0.00</div>
-            </div>
-            <div style="margin-bottom:1.5rem;">
-              <div style="font-size:.75rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.5rem;">Total Earned</div>
-              <div style="font-weight:800;font-size:1.5rem;" id="wallet-earned">GHS 0.00</div>
-            </div>
-            <div id="cashout-requests"></div>
+            <div><div style="font-size:.75rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.5rem;">Balance</div>
+            <div style="font-weight:800;font-size:2rem;color:var(--mint);" id="wallet-bal">GHS 0.00</div></div>
+            <button class="btn" onclick="alert('Request cashout')">💸 Request Cashout</button>
           </div>
         </div>
       </div>
@@ -164,73 +135,25 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#060b18;color:#fff;mi
   </div>
 </div>
 
-<!-- ADD PRODUCT MODAL -->
-<div class="modal-bg" id="add-prod-modal">
-  <div class="modal-box">
-    <div class="modal-title">Add Product to Your Store</div>
-    <form onsubmit="saveProduct(event)">
-      <div><div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.28);margin-bottom:.4rem;">Select Base Product</div>
-      <select id="prod-select" class="m-inp" required>
-        <option value="">Loading products...</option>
-      </select></div>
-      <div><div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.28);margin-bottom:.4rem;">Your Markup (GHS)</div>
-      <input id="markup-input" class="m-inp" type="number" step="0.01" placeholder="e.g. 2.00" required/></div>
-      <div class="m-btns">
-        <button type="button" class="m-btn cancel" onclick="document.getElementById('add-prod-modal').classList.remove('show')">Cancel</button>
-        <button type="submit" class="m-btn">Add to Store</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- CASHOUT MODAL -->
-<div class="modal-bg" id="cashout-modal">
-  <div class="modal-box">
-    <div class="modal-title">Request Cashout</div>
-    <form onsubmit="submitCashout(event)">
-      <div><div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.28);margin-bottom:.4rem;">MoMo Number</div>
-      <input id="momo-input" class="m-inp" type="tel" placeholder="0501234567" required/></div>
-      <div><div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.28);margin-bottom:.4rem;">Network</div>
-      <select id="momo-net" class="m-inp"><option>MTN MoMo</option><option>Telecel MoMo</option><option>AT MoMo</option></select></div>
-      <div><div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.28);margin-bottom:.4rem;">Amount (GHS)</div>
-      <input id="cashout-amt" class="m-inp" type="number" step="0.01" placeholder="Minimum GHS 5.00" required/></div>
-      <div class="m-btns">
-        <button type="button" class="m-btn cancel" onclick="document.getElementById('cashout-modal').classList.remove('show')">Cancel</button>
-        <button type="submit" class="m-btn">Request Cashout</button>
-      </div>
-    </form>
-  </div>
-</div>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, collection, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-// ✅ FIXED: Using CORRECT Firebase config (dataplus-a93c7)
 const firebaseConfig = {
   apiKey: "AIzaSyCs7lN4itvWZPichtFLdEE4swNQHSX_j1M",
   authDomain: "dataplus-a93c7.firebaseapp.com",
   projectId: "dataplus-a93c7",
   storageBucket: "dataplus-a93c7.firebasestorage.app",
   messagingSenderId: "1040979049946",
-  appId: "1:1040979049946:web:d5d7957a6c209f56dd94e3",
-  measurementId: "G-GW9DNT0DQ0"
+  appId: "1:1040979049946:web:d5d7957a6c209f56dd94e3"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let S = {
-  agent: null,
-  products: [],
-  baseProducts: [],
-  orders: [],
-  cashouts: []
-};
-
-let authCheckTimeout;
+let S = {agent: null, products: [], orders: []};
 
 window.switchTab = (tab) => {
   ['overview', 'products', 'orders', 'wallet'].forEach(t => {
@@ -239,12 +162,11 @@ window.switchTab = (tab) => {
   });
   document.querySelectorAll('.sb-btn').forEach(b => b.classList.remove('active'));
   event.target.classList.add('active');
-  document.getElementById('tab-title').textContent = {
-    overview: 'Dashboard',
-    products: 'My Products',
-    orders: 'My Orders',
-    wallet: 'Wallet'
-  }[tab] || 'Dashboard';
+  document.getElementById('tab-title').textContent = {overview: 'Dashboard', products: 'Products', orders: 'Orders', wallet: 'Wallet'}[tab] || 'Dashboard';
+};
+
+window.copyLink = () => {
+  navigator.clipboard.writeText(document.getElementById('store-link').textContent).then(() => alert('Link copied!'));
 };
 
 window.handleLogout = async () => {
@@ -256,107 +178,21 @@ window.handleLogout = async () => {
   }
 };
 
-window.copyStoreLink = () => {
-  const link = document.getElementById('store-link').textContent;
-  navigator.clipboard.writeText(link).then(() => {
-    alert('Store link copied!');
-  });
-};
+function updateStats() {
+  if (!S.agent) return;
+  document.getElementById('s-wallet').textContent = 'GHS ' + (S.agent.walletBalance || 0).toFixed(2);
+  document.getElementById('s-earned').textContent = 'GHS ' + (S.agent.totalEarned || 0).toFixed(2);
+  document.getElementById('s-orders').textContent = S.agent.totalOrders || 0;
+  document.getElementById('s-status').textContent = (S.agent.status || 'unknown').toUpperCase();
+  document.getElementById('wallet-bal').textContent = 'GHS ' + (S.agent.walletBalance || 0).toFixed(2);
+  document.getElementById('agent-info').textContent = `@${S.agent.username}`;
+  document.getElementById('store-link').textContent = `${window.location.origin}/store?agent=${S.agent.username}`;
+}
 
-window.openAddProduct = () => {
-  document.getElementById('add-prod-modal').classList.add('show');
-};
-
-window.saveProduct = async (e) => {
-  e.preventDefault();
-  const baseId = document.getElementById('prod-select').value;
-  const markup = parseFloat(document.getElementById('markup-input').value);
-  
-  if (!baseId || !markup || markup <= 0) {
-    alert('Please select a product and enter markup.');
-    return;
-  }
-
-  try {
-    const baseProduct = S.baseProducts.find(p => p.id === baseId);
-    if (!baseProduct) {
-      alert('Product not found.');
-      return;
-    }
-
-    await addDoc(collection(db, 'swiftdata_agents', S.agent.uid, 'products'), {
-      baseProductId: baseId,
-      network: baseProduct.network,
-      size: baseProduct.size,
-      type: baseProduct.type || '',
-      agentCost: baseProduct.agent_price || baseProduct.price,
-      markup: markup,
-      storePrice: (baseProduct.agent_price || baseProduct.price) + markup,
-      visible: true,
-      createdAt: serverTimestamp()
-    });
-
-    alert('Product added to your store!');
-    document.getElementById('add-prod-modal').classList.remove('show');
-    document.getElementById('prod-select').value = '';
-    document.getElementById('markup-input').value = '';
-  } catch (err) {
-    console.error('Add product error:', err);
-    alert('Error adding product: ' + err.message);
-  }
-};
-
-window.openCashout = () => {
-  document.getElementById('cashout-modal').classList.add('show');
-};
-
-window.submitCashout = async (e) => {
-  e.preventDefault();
-  const momo = document.getElementById('momo-input').value.replace(/\D/g, '');
-  const network = document.getElementById('momo-net').value;
-  const amount = parseFloat(document.getElementById('cashout-amt').value);
-
-  if (momo.length !== 10 || amount < 5) {
-    alert('Valid MoMo number and minimum GHS 5.00 required.');
-    return;
-  }
-
-  if (amount > S.agent.walletBalance) {
-    alert('Insufficient balance.');
-    return;
-  }
-
-  try {
-    await addDoc(collection(db, 'swiftdata_cashout_requests'), {
-      agentId: S.agent.uid,
-      agentName: S.agent.name,
-      agentUsername: S.agent.username,
-      amount: amount,
-      momoNumber: momo,
-      momoNetwork: network,
-      accountName: S.agent.name,
-      status: 'pending',
-      createdAt: serverTimestamp()
-    });
-
-    alert('Cashout request submitted! Admin will process within 24 hours.');
-    document.getElementById('cashout-modal').classList.remove('show');
-  } catch (err) {
-    console.error('Cashout error:', err);
-    alert('Error submitting cashout: ' + err.message);
-  }
-};
-
-window.retryLoad = () => {
-  window.location.reload();
-};
-
-// ✅ FIXED: Better auth state handling with proper error handling
+// ✅ PROPER AUTH HANDLING - NO AUTO-LOGOUT
 onAuthStateChanged(auth, async (user) => {
-  clearTimeout(authCheckTimeout);
-
   if (!user) {
-    // User not logged in
+    // User not logged in - show gate
     document.getElementById('gate').style.display = 'flex';
     document.getElementById('dashboard').style.display = 'none';
     document.getElementById('gate-err').textContent = 'Please log in first.';
@@ -366,11 +202,11 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   try {
-    // ✅ FIXED: Fetch agent doc with proper error handling
-    console.log('Auth state changed, user:', user.uid);
+    console.log('Auth user:', user.uid);
     
-    const agentDocRef = doc(db, 'swiftdata_agents', user.uid);
-    const agentSnap = await getDoc(agentDocRef);
+    // ✅ Fetch agent doc - THIS IS THE CRITICAL PART
+    const agentRef = doc(db, 'swiftdata_agents', user.uid);
+    const agentSnap = await getDoc(agentRef);
 
     if (!agentSnap.exists()) {
       throw new Error('Agent account not found. Please contact support.');
@@ -379,120 +215,62 @@ onAuthStateChanged(auth, async (user) => {
     S.agent = {uid: user.uid, ...agentSnap.data()};
     console.log('Agent loaded:', S.agent.username);
 
-    // Check if account is banned
-    if (S.agent.status === 'banned') {
-      document.getElementById('gate-err').textContent = '⛔ Your account has been banned.';
-      document.getElementById('gate-err').style.display = 'block';
-      await signOut(auth);
-      return;
-    }
-
     // Show dashboard
     document.getElementById('gate').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
 
-    // Update UI
-    document.getElementById('agent-name').textContent = S.agent.name;
-    document.getElementById('username-display').textContent = '@' + S.agent.username;
-    document.getElementById('store-link').textContent = `${window.location.origin}/store?agent=${S.agent.username}`;
-
     updateStats();
 
-    // ✅ FIXED: Set up listeners with error handlers
-    onSnapshot(
-      collection(db, 'artifacts', 'swiftdata-main-app', 'public', 'data', 'products'),
-      (snap) => {
-        S.baseProducts = snap.docs.map(d => ({id: d.id, ...d.data()}));
-        updateProductSelect();
-      },
-      (error) => {
-        console.error('Products listener error:', error);
-      }
-    );
-
+    // ✅ Set up listeners with error handlers
     onSnapshot(
       collection(db, 'swiftdata_agents', user.uid, 'products'),
       (snap) => {
         S.products = snap.docs.map(d => ({id: d.id, ...d.data()}));
-        renderProducts();
+        const list = document.getElementById('products-list');
+        if (!S.products.length) {
+          list.innerHTML = '<div class="empty">No products yet.</div>';
+        } else {
+          list.innerHTML = S.products.map(p => `<div style="padding:1rem;border-bottom:1px solid rgba(255,255,255,.05);">
+            <div style="font-weight:700;">${p.size} (${p.network})</div>
+            <div style="font-size:.78rem;color:rgba(255,255,255,.3);">+GHS ${p.markup.toFixed(2)} markup</div>
+          </div>`).join('');
+        }
       },
-      (error) => {
-        console.error('Agent products error:', error);
-      }
+      (err) => console.error('Products listener error:', err)
     );
 
     onSnapshot(
-      collection(db, 'swiftdata_global_orders'),
+      collection(db, 'orders'),
       (snap) => {
         S.orders = snap.docs.filter(d => d.data().agentId === user.uid).map(d => ({id: d.id, ...d.data()}));
-        renderOrders();
+        const list = document.getElementById('orders-list');
+        if (!S.orders.length) {
+          list.innerHTML = '<div class="empty">No orders yet.</div>';
+        } else {
+          list.innerHTML = S.orders.slice(0, 10).map(o => `<div style="padding:1rem;border-bottom:1px solid rgba(255,255,255,.05);">
+            <div style="display:flex;justify-content:space-between;margin-bottom:.25rem;">
+              <span style="font-weight:700;">${o.size} (${o.network})</span>
+              <span style="font-size:.75rem;padding:.2rem .6rem;border-radius:50px;background:rgba(0,81,255,.2);color:var(--blue);">${o.status}</span>
+            </div>
+            <div style="font-size:.78rem;color:rgba(255,255,255,.4);">Ref: ${o.orderRef}</div>
+          </div>`).join('');
+        }
         updateStats();
       },
-      (error) => {
-        console.error('Orders listener error:', error);
-      }
+      (err) => console.error('Orders listener error:', err)
     );
 
   } catch (error) {
     console.error('Auth setup error:', error.code, error.message);
     
+    // Show error - NOT logout
     document.getElementById('gate').style.display = 'flex';
     document.getElementById('dashboard').style.display = 'none';
-    
-    if (error.code === 'permission-denied') {
-      document.getElementById('gate-err').textContent = '⚠ Permission error. Check Firestore rules or contact support.';
-    } else if (error.message.includes('not found')) {
-      document.getElementById('gate-err').textContent = '❌ Account not found. Try logging in again.';
-    } else {
-      document.getElementById('gate-err').textContent = '⚠ Error: ' + error.message;
-    }
+    document.getElementById('gate-err').textContent = '⚠ ' + error.message;
     document.getElementById('gate-err').style.display = 'block';
     document.getElementById('gate-retry').style.display = 'block';
   }
 });
-
-function updateStats() {
-  if (!S.agent) return;
-  document.getElementById('s-wallet').textContent = 'GHS ' + (S.agent.walletBalance || 0).toFixed(2);
-  document.getElementById('s-earned').textContent = 'GHS ' + (S.agent.totalEarned || 0).toFixed(2);
-  document.getElementById('s-orders').textContent = S.agent.totalOrders || 0;
-  document.getElementById('s-status').textContent = (S.agent.status || 'unknown').toUpperCase();
-  document.getElementById('wallet-balance').textContent = 'GHS ' + (S.agent.walletBalance || 0).toFixed(2);
-  document.getElementById('wallet-earned').textContent = 'GHS ' + (S.agent.totalEarned || 0).toFixed(2);
-}
-
-function updateProductSelect() {
-  const sel = document.getElementById('prod-select');
-  sel.innerHTML = S.baseProducts.map(p => `<option value="${p.id}">${p.network} - ${p.size}</option>`).join('');
-}
-
-function renderProducts() {
-  const el = document.getElementById('products-list');
-  if (!S.products.length) {
-    el.innerHTML = '<div class="empty-state">No products yet. Add your first!</div>';
-    return;
-  }
-  el.innerHTML = S.products.map(p => `<div style="padding:1rem;border-bottom:1px solid rgba(255,255,255,.05);">
-    <div style="font-weight:700;">${p.size} (${p.network}) — +GHS ${p.markup.toFixed(2)} markup</div>
-    <div style="font-size:.78rem;color:rgba(255,255,255,.3);margin-top:.25rem;">Store Price: GHS ${p.storePrice.toFixed(2)}</div>
-  </div>`).join('');
-}
-
-function renderOrders() {
-  const el = document.getElementById('orders-list');
-  if (!S.orders.length) {
-    el.innerHTML = '<div class="empty-state">No orders yet.</div>';
-    return;
-  }
-  el.innerHTML = S.orders.slice(0, 10).map(o => `<div style="padding:1rem;border-bottom:1px solid rgba(255,255,255,.05);">
-    <div style="display:flex;justify-content:space-between;margin-bottom:.25rem;">
-      <span style="font-weight:700;">${o.size} (${o.network})</span>
-      <span style="font-size:.75rem;padding:.2rem .6rem;border-radius:50px;background:rgba(0,81,255,.2);color:var(--blue);">${o.status}</span>
-    </div>
-    <div style="font-size:.78rem;color:rgba(255,255,255,.4);">📱 ${o.recipient} • Ref: ${o.orderRef}</div>
-    <div style="font-size:.75rem;color:var(--mint);margin-top:.25rem;">+ GHS ${(o.agentProfit || 0).toFixed(2)} profit</div>
-  </div>`).join('');
-}
 </script>
 </body>
-                                                                                              </html>
+</html>
