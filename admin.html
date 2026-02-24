@@ -2,888 +2,276 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>SwiftData — Secure Access</title>
+<title>Admin Panel — SwiftData</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <style>
-:root{--blue:#0051ff;--mint:#00e5b0;--sky:#38bdf8;--yellow:#f59e0b;--green:#22c55e;--red:#ef4444;--purple:#8b5cf6;}
+:root{--blue:#0051ff;--mint:#00e5b0;--red:#ef4444;--green:#22c55e;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:#060b18;color:#fff;min-height:100vh;}
-/* GATE */
-#gate{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse 70% 60% at 50% 40%,rgba(0,81,255,.07) 0%,transparent 70%);padding:2rem;}
-.gate-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:28px;padding:3rem;max-width:400px;width:100%;text-align:center;}
-.gate-icon{font-size:2.5rem;margin-bottom:1rem;}
-.gate-box h1{font-weight:800;font-size:1.5rem;margin-bottom:.35rem;}
-.gate-box p{font-size:.85rem;color:rgba(255,255,255,.3);margin-bottom:2rem;}
-.g-inp{width:100%;padding:.85rem 1rem;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.08);border-radius:12px;color:#fff;font-family:inherit;font-size:.95rem;outline:none;margin-bottom:1rem;text-align:center;letter-spacing:2px;}
-.g-inp:focus{border-color:rgba(0,81,255,.5);}
-.g-btn{width:100%;padding:.9rem;background:var(--blue);color:#fff;border:none;border-radius:12px;font-family:inherit;font-weight:800;font-size:.95rem;cursor:pointer;}
-.g-btn:hover{opacity:.9;}
-.g-err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;border-radius:10px;padding:.65rem;font-size:.82rem;margin-bottom:1rem;display:none;}
-.g-err.show{display:block;}
-/* DASHBOARD */
-#dashboard{display:none;min-height:100vh;}
-.sidebar{width:230px;position:fixed;top:0;left:0;bottom:0;background:#0a0f1e;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;z-index:50;}
-.sb-logo{padding:1.5rem;border-bottom:1px solid rgba(255,255,255,.06);}
-.sb-logo .name{font-weight:800;font-size:1.1rem;}.sb-logo .badge{display:inline-block;margin-top:.35rem;background:rgba(239,68,68,.15);color:#fca5a5;font-size:.65rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:.18rem .6rem;border-radius:50px;}
-.sb-nav{flex:1;padding:1rem 0;overflow-y:auto;}
-.sb-sec{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.18);padding:.5rem 1.25rem;margin-top:.5rem;}
-.sb-btn{display:flex;align-items:center;gap:.7rem;padding:.68rem 1.25rem;color:rgba(255,255,255,.38);border:none;background:none;font-family:inherit;font-size:.87rem;font-weight:600;cursor:pointer;width:100%;text-align:left;border-left:3px solid transparent;transition:all .2s;}
-.sb-btn:hover{color:#fff;background:rgba(255,255,255,.04);}
-.sb-btn.active{color:#fff;background:rgba(0,81,255,.1);border-left-color:var(--blue);}
-.sb-badge-count{margin-left:auto;background:var(--red);color:#fff;font-size:.65rem;font-weight:800;padding:.15rem .5rem;border-radius:50px;min-width:18px;text-align:center;}
-.sb-foot{padding:1.25rem;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:.65rem;}
-.sb-av{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--sky));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;flex-shrink:0;}
-.sb-uname{font-size:.82rem;font-weight:700;}
-.sb-role{font-size:.68rem;color:rgba(255,255,255,.3);}
-.lg-btn{margin-left:auto;background:none;border:none;color:rgba(255,255,255,.25);cursor:pointer;font-size:.9rem;transition:color .2s;}
-.lg-btn:hover{color:var(--red);}
-.main{margin-left:230px;min-height:100vh;}
-.topbar{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(10,15,30,.95);position:sticky;top:0;z-index:40;}
-.topbar h1{font-weight:800;font-size:1.2rem;}
-.topbar-date{font-size:.78rem;color:rgba(255,255,255,.25);}
-.act-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.55);padding:.48rem 1rem;border-radius:10px;font-family:inherit;font-size:.82rem;cursor:pointer;transition:all .2s;}
-.act-btn:hover{background:rgba(255,255,255,.1);color:#fff;}
-.act-btn.primary{background:var(--blue);border-color:var(--blue);color:#fff;}
-.act-btn.primary:hover{box-shadow:0 6px 18px rgba(0,81,255,.35);}
-.content{padding:2rem 2.5rem;}
-/* STATS */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.1rem;margin-bottom:2rem;}
-.stat-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:1.4rem;}
-.stat-lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.28);margin-bottom:.5rem;}
-.stat-val{font-weight:800;font-size:1.8rem;}
-/* PANEL */
+.gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;}
+.gate-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:28px;padding:3rem;max-width:420px;width:100%;text-align:center;}
+.gate-box h1{font-weight:800;font-size:1.6rem;margin-bottom:.35rem;}
+.gate-input{width:100%;padding:.9rem;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.08);border-radius:12px;font-family:inherit;color:#fff;font-size:1rem;outline:none;margin-bottom:1rem;}
+.gate-btn{width:100%;padding:.9rem;background:var(--blue);color:#fff;border:none;border-radius:12px;font-family:inherit;font-weight:800;cursor:pointer;}
+.gate-err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;padding:1rem;border-radius:12px;margin-bottom:1rem;font-size:.85rem;display:none;}
+.dashboard{display:none;margin-left:0;}
+.topbar{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;border-bottom:1px solid rgba(255,255,255,.06);}
+.logout{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#fca5a5;padding:.5rem 1rem;border-radius:10px;font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;}
+.content{padding:2rem;}
 .panel{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;overflow:hidden;margin-bottom:1.5rem;}
-.panel-head{padding:1.1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;}
-.panel-head h3{font-weight:800;font-size:.95rem;}
-/* FILTER TABS */
-.filter-tabs{display:flex;flex-wrap:wrap;gap:.5rem;}
-.ftab{padding:.35rem .85rem;border-radius:8px;border:none;background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s;}
-.ftab.active{background:var(--blue);color:#fff;}
-/* ORDER ROWS */
-.order-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;padding:1.1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s;}
-.order-row:last-child{border-bottom:none;}
-.order-row:hover{background:rgba(255,255,255,.02);}
-.o-info .o-bundle{font-weight:800;color:var(--blue);font-size:.95rem;}
-.o-tags{display:flex;gap:.35rem;flex-wrap:wrap;margin:.2rem 0;}
-.o-tag{font-size:.68rem;font-weight:700;background:rgba(255,255,255,.06);color:rgba(255,255,255,.45);padding:.15rem .55rem;border-radius:6px;}
-.o-tag.agent-tag{background:rgba(0,229,176,.1);color:var(--mint);}
-.o-phone{font-weight:700;font-size:1rem;margin:.25rem 0;}
-.o-ref{font-size:.72rem;font-weight:700;color:var(--blue);font-family:monospace;letter-spacing:1px;}
-.o-price-row{display:flex;align-items:center;gap:.6rem;margin-top:.3rem;}
-.o-total{font-weight:700;color:var(--green);font-size:.88rem;}
-.o-breakdown{font-size:.72rem;color:rgba(255,255,255,.25);}
-.o-agent-profit{font-size:.75rem;color:var(--mint);font-weight:700;}
-.o-time{font-size:.72rem;color:rgba(255,255,255,.28);margin-top:.2rem;}
-.o-ref-txn{font-size:.68rem;color:rgba(255,255,255,.18);font-family:monospace;}
-.status-sel{padding:.42rem .7rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;font-family:inherit;font-size:.8rem;font-weight:600;color:#fff;outline:none;cursor:pointer;}
-.status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.sd-Pending{background:var(--yellow)}.sd-Processing{background:var(--blue)}.sd-Delivered{background:var(--green)}.sd-Failed{background:var(--red)}
-/* AGENTS TABLE */
-.agents-table{width:100%;border-collapse:collapse;}
-.agents-table th{padding:.75rem 1.5rem;text-align:left;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.25);border-bottom:1px solid rgba(255,255,255,.05);}
-.agents-table td{padding:1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle;}
-.agents-table tr:last-child td{border-bottom:none;}
-.agents-table tr:hover td{background:rgba(255,255,255,.02);}
-.a-name{font-weight:700;}
-.a-username{font-size:.78rem;color:var(--blue);font-family:monospace;}
-.a-status{font-size:.72rem;font-weight:800;padding:.22rem .7rem;border-radius:50px;color:#fff;display:inline-block;}
-.as-active{background:var(--green)}.as-pending{background:var(--yellow)}.as-banned{background:var(--red)}
-.a-wallet{font-weight:700;color:var(--mint);}
-.a-actions{display:flex;gap:.4rem;flex-wrap:wrap;}
-.a-act-btn{padding:.35rem .75rem;border-radius:8px;font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;border:none;transition:all .2s;}
-.a-act-btn.approve{background:rgba(34,197,94,.1);color:var(--green);}
-.a-act-btn.approve:hover{background:rgba(34,197,94,.2);}
-.a-act-btn.ban{background:rgba(239,68,68,.1);color:var(--red);}
-.a-act-btn.ban:hover{background:rgba(239,68,68,.2);}
-.a-act-btn.unban{background:rgba(245,158,11,.1);color:var(--yellow);}
-.a-act-btn.unban:hover{background:rgba(245,158,11,.2);}
-/* PRODUCTS GRID */
-.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;padding:1.5rem;}
-.prod-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:1.25rem;cursor:pointer;position:relative;transition:border-color .2s;}
-.prod-card:hover{border-color:rgba(0,81,255,.3);}
-.prod-net{font-size:.7rem;font-weight:700;background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);padding:.22rem .55rem;border-radius:6px;display:inline-block;margin-bottom:.5rem;}
-.prod-size{font-weight:800;font-size:1.2rem;}.prod-type{font-size:.7rem;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:1px;margin-top:.2rem;}
-.prod-prices{margin-top:.65rem;display:flex;flex-direction:column;gap:.3rem;}
-.price-line{display:flex;justify-content:space-between;font-size:.78rem;}
-.price-lbl{color:rgba(255,255,255,.3);}.price-val{font-weight:700;}
-.price-val.direct{color:#fff;}.price-val.agent{color:var(--mint);}
-.del-prod{position:absolute;top:.75rem;right:.75rem;width:28px;height:28px;background:rgba(239,68,68,.08);border:none;border-radius:8px;color:var(--red);cursor:pointer;font-size:.85rem;display:none;align-items:center;justify-content:center;}
-.prod-card:hover .del-prod{display:flex;}
-/* CASHOUT ROWS */
-.cashout-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;padding:1.1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.04);}
-.cashout-row:last-child{border-bottom:none;}
-.co-agent{font-weight:700;}.co-amount{font-weight:800;color:var(--mint);font-size:1rem;}
-.co-momo{font-size:.78rem;color:rgba(255,255,255,.4);}
-.co-time{font-size:.72rem;color:rgba(255,255,255,.25);}
-.co-status-badge{font-size:.72rem;font-weight:800;padding:.22rem .7rem;border-radius:50px;color:#fff;}
-.cos-pending{background:var(--yellow)}.cos-paid{background:var(--green)}.cos-rejected{background:var(--red)}
-.co-actions{display:flex;gap:.4rem;}
-/* MODALS */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:1.5rem;}
-.modal-bg.show{display:flex;}
-.modal-box{background:#0f172a;border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:2rem;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;}
-.modal-title{font-weight:800;font-size:1.15rem;margin-bottom:1.5rem;}
-.m-lbl{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.28);margin-bottom:.4rem;margin-top:.9rem;}
-.m-inp,.m-sel,.m-ta{width:100%;padding:.75rem 1rem;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.08);border-radius:10px;font-family:inherit;font-size:.88rem;color:#fff;outline:none;transition:border-color .2s;}
-.m-inp:focus,.m-sel:focus,.m-ta:focus{border-color:rgba(0,81,255,.5);}
-.m-ta{resize:none;}
-.m-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;}
-.m-sec{margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,.06);}
-.m-sec-title{font-weight:800;font-size:.95rem;margin-bottom:.75rem;color:rgba(255,255,255,.7);}
-.m-check{display:flex;align-items:center;gap:.6rem;cursor:pointer;margin-top:.5rem;}
-.m-check input{accent-color:var(--blue);width:15px;height:15px;}
-.m-check span{font-weight:600;font-size:.88rem;}
-.m-hint{font-size:.72rem;color:rgba(255,255,255,.22);margin-top:.3rem;}
-.m-btns{display:flex;gap:.75rem;margin-top:1.75rem;}
-.m-cancel{flex:1;padding:.8rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;color:rgba(255,255,255,.45);font-family:inherit;font-weight:700;cursor:pointer;}
-.m-save{flex:1;padding:.8rem;background:var(--blue);border:none;border-radius:10px;color:#fff;font-family:inherit;font-weight:800;cursor:pointer;}
-.m-save:hover{box-shadow:0 6px 18px rgba(0,81,255,.35);}
-.logo-preview-row{display:none;align-items:center;gap:.75rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:.75rem 1rem;margin-top:.5rem;}
-.logo-preview-row.show{display:flex;}
-.logo-preview-row img{width:36px;height:36px;object-fit:contain;border-radius:8px;}
-.clear-logo{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:var(--red);padding:.45rem .85rem;border-radius:8px;font-size:.72rem;font-weight:700;cursor:pointer;}
-.error-msg{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;padding:1rem;border-radius:10px;margin-bottom:1rem;font-size:.82rem;}
-.empty-state{padding:3rem;text-align:center;color:rgba(255,255,255,.18);font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:.75rem;}
-.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;display:inline-block;vertical-align:middle;}
-@keyframes sp{to{transform:rotate(360deg);}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-.content{animation:fadeUp .3s ease;}
-@media(max-width:900px){.sidebar{width:56px;}.sb-logo .name,.sb-logo .badge,.sb-btn span:last-child,.sb-badge-count,.sb-sec,.sb-uname,.sb-role{display:none;}.sb-btn{justify-content:center;padding:.8rem;}.main{margin-left:56px;}.topbar,.content{padding:0 1.25rem;}.content{padding:1.25rem;}.stats-grid{grid-template-columns:1fr 1fr;}}
-.hidden{display:none!important;}
+.panel-head{padding:1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.05);display:flex;justify-content:space-between;align-items:center;}
+.panel h3{font-weight:800;font-size:.95rem;}
+.btn{padding:.5rem 1rem;background:var(--blue);color:#fff;border:none;border-radius:10px;font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;}
+.table{width:100%;border-collapse:collapse;}
+.table th{background:rgba(0,81,255,.1);padding:.75rem 1rem;text-align:left;font-weight:800;font-size:.75rem;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid rgba(255,255,255,.05);}
+.table td{padding:.75rem 1rem;border-bottom:1px solid rgba(255,255,255,.05);font-size:.85rem;}
+.table tr:hover{background:rgba(255,255,255,.02);}
+.status-badge{display:inline-block;padding:.2rem .6rem;border-radius:50px;font-size:.7rem;font-weight:700;text-transform:uppercase;}
+.status-Pending{background:rgba(245,158,11,.2);color:#fbbf24;}
+.status-Processing{background:rgba(59,130,246,.2);color:#93c5fd;}
+.status-Delivered{background:rgba(34,197,94,.2);color:#86efac;}
+.empty{padding:2rem;text-align:center;color:rgba(255,255,255,.15);font-weight:700;}
 </style>
 </head>
 <body>
 
-<!-- GATE -->
-<div id="gate">
+<!-- AUTH GATE -->
+<div class="gate" id="gate">
   <div class="gate-box">
-    <div class="gate-icon">🔐</div>
-    <h1>Restricted Access</h1>
-    <p>Authorised personnel only. All access attempts are logged.</p>
-    <div class="g-err" id="gate-err">Incorrect password. Access denied.</div>
-    <form onsubmit="checkAccess(event)">
-      <input type="password" class="g-inp" id="gate-pass" placeholder="Enter access code" autocomplete="off"/>
-      <button type="submit" class="g-btn">Authenticate</button>
-    </form>
+    <div style="font-size:2.5rem;margin-bottom:1rem;">🔐</div>
+    <h1>Admin Login</h1>
+    <p style="font-size:.85rem;color:rgba(255,255,255,.3);margin-bottom:1.5rem;">Enter your admin password</p>
+    <div id="gate-err" class="gate-err"></div>
+    <input class="gate-input" id="admin-password" type="password" placeholder="••••••••" onkeypress="if(event.key==='Enter') verifyAdmin()"/>
+    <button class="gate-btn" onclick="verifyAdmin()">Login</button>
   </div>
 </div>
 
 <!-- DASHBOARD -->
-<div id="dashboard">
-  <aside class="sidebar">
-    <div class="sb-logo">
-      <div class="name">SwiftData<span style="color:var(--mint);">GH</span></div>
-      <div class="badge">Admin</div>
-    </div>
-    <nav class="sb-nav">
-      <div class="sb-sec">Overview</div>
-      <button class="sb-btn active" onclick="switchTab('overview')"><span>📊</span><span>Dashboard</span></button>
-      <div class="sb-sec">Operations</div>
-      <button class="sb-btn" onclick="switchTab('orders')"><span>🔄</span><span>All Orders</span><span class="sb-badge-count" id="pending-count-badge">0</span></button>
-      <button class="sb-btn" onclick="switchTab('products')"><span>📦</span><span>Products</span></button>
-      <button class="sb-btn" onclick="switchTab('agents')"><span>👥</span><span>Agents</span></button>
-      <button class="sb-btn" onclick="switchTab('cashouts')"><span>💰</span><span>Cashout Requests</span><span class="sb-badge-count" id="co-count-badge">0</span></button>
-      <div class="sb-sec">System</div>
-      <button class="sb-btn" onclick="openSettings()"><span>⚙️</span><span>Settings</span></button>
-    </nav>
-    <div class="sb-foot">
-      <div class="sb-av">SA</div>
-      <div><div class="sb-uname">Super Admin</div><div class="sb-role">Full Access</div></div>
-      <button class="lg-btn" onclick="doLogout()">✕</button>
-    </div>
-  </aside>
-
-  <div class="main">
-    <div class="topbar">
-      <div><h1 id="tab-title">Dashboard</h1><div class="topbar-date" id="topbar-date"></div></div>
-      <div style="display:flex;gap:.6rem;">
-        <button class="act-btn" onclick="openSettings()">⚙️ Settings</button>
-        <button class="act-btn primary hidden" id="add-prod-btn" onclick="openProductModal()">+ Add Product</button>
-      </div>
-    </div>
-
-    <div class="content">
-
-      <!-- OVERVIEW -->
-      <div id="tab-overview">
-        <div class="stats-grid">
-          <div class="stat-card"><div class="stat-lbl">Total Revenue</div><div class="stat-val" id="s-rev" style="color:var(--mint);">GHS 0</div></div>
-          <div class="stat-card"><div class="stat-lbl">Pending Orders</div><div class="stat-val" id="s-pending" style="color:var(--yellow);">0</div></div>
-          <div class="stat-card"><div class="stat-lbl">Delivered</div><div class="stat-val" id="s-delivered" style="color:var(--green);">0</div></div>
-          <div class="stat-card"><div class="stat-lbl">Total Orders</div><div class="stat-val" id="s-total" style="color:var(--sky);">0</div></div>
-          <div class="stat-card"><div class="stat-lbl">Active Agents</div><div class="stat-val" id="s-agents" style="color:var(--blue);">0</div></div>
-          <div class="stat-card"><div class="stat-lbl">Agent Revenue</div><div class="stat-val" id="s-agent-rev" style="color:var(--purple);">GHS 0</div></div>
-          <div class="stat-card"><div class="stat-lbl">Pending Cashouts</div><div class="stat-val" id="s-cashouts" style="color:var(--red);">0</div></div>
-          <div class="stat-card"><div class="stat-lbl">Total Products</div><div class="stat-val" id="s-prods" style="color:rgba(255,255,255,.6);">0</div></div>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>Recent Orders (All Types)</h3></div>
-          <div id="overview-orders"><div class="empty-state"><span class="spin"></span> Loading…</div></div>
-        </div>
-      </div>
-
-      <!-- ORDERS -->
-      <div id="tab-orders" class="hidden">
-        <div class="panel">
-          <div class="panel-head">
-            <h3>All Orders</h3>
-            <div class="filter-tabs">
-              <button class="ftab active" onclick="filterOrders('all',this)">All</button>
-              <button class="ftab" onclick="filterOrders('direct',this)">Direct</button>
-              <button class="ftab" onclick="filterOrders('agent_customer',this)">Agent Store</button>
-              <button class="ftab" onclick="filterOrders('Pending',this)">Pending</button>
-              <button class="ftab" onclick="filterOrders('Delivered',this)">Delivered</button>
-            </div>
-          </div>
-          <div id="orders-list"><div class="empty-state"><span class="spin"></span> Loading…</div></div>
-        </div>
-      </div>
-
-      <!-- PRODUCTS -->
-      <div id="tab-products" class="hidden">
-        <div class="panel">
-          <div class="panel-head"><h3>Products (Dual Pricing)</h3></div>
-          <div class="prod-grid" id="prod-grid"><div class="empty-state" style="grid-column:1/-1;"><span class="spin"></span> Loading…</div></div>
-        </div>
-        <p style="font-size:.78rem;color:rgba(255,255,255,.2);text-align:center;padding:.75rem;">Each product has a <strong style="color:#fff;">Direct Customer Price</strong> and an <strong style="color:var(--mint);">Agent Price</strong>. Agents add their own markup on top of agent price.</p>
-      </div>
-
-      <!-- AGENTS -->
-      <div id="tab-agents" class="hidden">
-        <div class="panel">
-          <div class="panel-head">
-            <h3>All Agents</h3>
-            <div class="filter-tabs">
-              <button class="ftab active" onclick="filterAgents('all',this)">All</button>
-              <button class="ftab" onclick="filterAgents('active',this)">Active</button>
-              <button class="ftab" onclick="filterAgents('pending',this)">Pending</button>
-              <button class="ftab" onclick="filterAgents('banned',this)">Banned</button>
-            </div>
-          </div>
-          <div style="overflow-x:auto;">
-            <table class="agents-table">
-              <thead><tr><th>Name / Username</th><th>Email</th><th>Status</th><th>Wallet</th><th>Orders</th><th>Joined</th><th>Actions</th></tr></thead>
-              <tbody id="agents-tbody"><tr><td colspan="7" class="empty-state"><span class="spin"></span> Loading…</td></tr></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- CASHOUTS -->
-      <div id="tab-cashouts" class="hidden">
-        <div class="panel">
-          <div class="panel-head"><h3>Cashout Requests</h3></div>
-          <div id="cashout-list"><div class="empty-state"><span class="spin"></span> Loading…</div></div>
-        </div>
-      </div>
-
-    </div>
+<div class="dashboard" id="dashboard">
+  <div class="topbar">
+    <h1>Admin Panel</h1>
+    <button class="logout" onclick="logout()">Logout</button>
   </div>
-</div>
 
-<!-- PRODUCT MODAL -->
-<div class="modal-bg" id="prod-modal">
-  <div class="modal-box">
-    <div class="modal-title" id="prod-modal-title">Add Product</div>
-    <form onsubmit="saveProduct(event)">
-      <input type="hidden" id="prod-id"/>
-      <div class="m-grid">
-        <div><div class="m-lbl">Network</div><select id="p-net" class="m-sel"><option>MTN</option><option>Telecel</option><option>AT</option></select></div>
-        <div><div class="m-lbl">Type (SME, CG, etc)</div><input id="p-type" class="m-inp" placeholder="SME"/></div>
+  <div class="content">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1rem;margin-bottom:2rem;">
+      <div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:1.25rem;text-align:center;">
+        <div style="font-size:.65rem;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:.5rem;">Total Orders</div>
+        <div style="font-weight:800;font-size:1.6rem;color:var(--mint);" id="stat-orders">0</div>
       </div>
-      <div><div class="m-lbl">Data Size</div><input id="p-size" class="m-inp" placeholder="e.g. 1GB" required/></div>
-      <div class="m-sec">
-        <div class="m-sec-title">💰 Pricing (Dual Price Control)</div>
-        <div class="m-grid">
-          <div>
-            <div class="m-lbl">Direct Customer Price (GHS)</div>
-            <input id="p-direct-price" class="m-inp" type="number" step="0.01" placeholder="e.g. 12.00" required/>
-            <div class="m-hint">Price shown on main store to regular customers</div>
-          </div>
-          <div>
-            <div class="m-lbl">Agent Price (GHS)</div>
-            <input id="p-agent-price" class="m-inp" type="number" step="0.01" placeholder="e.g. 9.00" required/>
-            <div class="m-hint">Base cost for agents — they add their own markup</div>
-          </div>
-        </div>
+      <div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:1.25rem;text-align:center;">
+        <div style="font-size:.65rem;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:.5rem;">Total Agents</div>
+        <div style="font-weight:800;font-size:1.6rem;color:var(--mint);" id="stat-agents">0</div>
       </div>
-      <div><div class="m-lbl">Sort Rank (1 = top)</div><input id="p-rank" class="m-inp" type="number" placeholder="999"/></div>
-      <div class="m-btns">
-        <button type="button" class="m-cancel" onclick="closeProdModal()">Cancel</button>
-        <button type="submit" class="m-save">Save Product</button>
+      <div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:1.25rem;text-align:center;">
+        <div style="font-size:.65rem;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:.5rem;">Total Products</div>
+        <div style="font-weight:800;font-size:1.6rem;color:var(--mint);" id="stat-products">0</div>
       </div>
-    </form>
-  </div>
-</div>
+    </div>
 
-<!-- SETTINGS MODAL -->
-<div class="modal-bg" id="settings-modal">
-  <div class="modal-box">
-    <div class="modal-title">Store Settings</div>
-    <form onsubmit="saveSettings(event)">
-      <!-- LOGO -->
-      <div class="m-sec" style="margin-top:0;padding-top:0;border:none;">
-        <div class="m-sec-title">🖼 Brand Logo</div>
-        <div class="m-hint" style="margin-bottom:.5rem;">Direct image URL. Leave blank to use default ⚡ icon.</div>
-        <div style="display:flex;gap:.6rem;align-items:center;">
-          <input id="s-logo" class="m-inp" type="url" placeholder="https://i.imgur.com/logo.png"/>
-          <button type="button" class="clear-logo" onclick="clearLogo()">Clear</button>
-        </div>
-        <div class="logo-preview-row" id="logo-preview">
-          <img id="logo-img" src="" alt=""/><span style="font-size:.78rem;color:rgba(255,255,255,.3);">Logo preview</span>
-        </div>
+    <!-- ORDERS -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>📦 All Orders</h3>
+        <input type="text" id="search-orders" placeholder="Search..." style="padding:.5rem .75rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;font-family:inherit;color:#fff;font-size:.85rem;width:200px;"/>
       </div>
-      <!-- PAYSTACK -->
-      <div class="m-sec">
-        <div class="m-sec-title">💳 Paystack</div>
-        <div class="m-lbl">Public Key</div>
-        <input id="s-pk" class="m-inp" placeholder="pk_live_xxxxx"/>
-        <div class="m-hint">Paystack Dashboard → Settings → API Keys</div>
-        <div class="m-lbl" style="margin-top:.75rem;">Secret Key</div>
-        <input id="s-sk" class="m-inp" type="password" placeholder="sk_live_xxxxx"/>
+      <div style="overflow-x:auto;">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Ref</th>
+              <th>Size</th>
+              <th>Recipient</th>
+              <th>Status</th>
+              <th>Price</th>
+              <th>Agent</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="orders-tbody">
+            <tr><td colspan="7" class="empty">Loading...</td></tr>
+          </tbody>
+        </table>
       </div>
-      <!-- STORE -->
-      <div class="m-sec">
-        <div class="m-sec-title">🏪 Store Status</div>
-        <label class="m-check"><input type="checkbox" id="s-open"/><span>Store is Open</span></label>
-        <div class="m-hint" style="margin-left:1.5rem;">When disabled, customers cannot place orders.</div>
+    </div>
+
+    <!-- AGENTS -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>👤 All Agents</h3>
       </div>
-      <!-- ANNOUNCEMENT -->
-      <div class="m-sec">
-        <div class="m-sec-title">📢 Announcement Banner</div>
-        <label class="m-check"><input type="checkbox" id="s-ann-active"/><span>Show Announcement</span></label>
-        <div class="m-lbl" style="margin-top:.75rem;">Message</div>
-        <textarea id="s-ann-text" class="m-ta" rows="2" placeholder="Flash Sale: 20% off all MTN bundles!"></textarea>
+      <div style="overflow-x:auto;">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Wallet</th>
+              <th>Orders</th>
+            </tr>
+          </thead>
+          <tbody id="agents-tbody">
+            <tr><td colspan="6" class="empty">Loading...</td></tr>
+          </tbody>
+        </table>
       </div>
-      <!-- POPUP -->
-      <div class="m-sec">
-        <div class="m-sec-title">🔔 Welcome Popup</div>
-        <div class="m-lbl">Title</div>
-        <input id="s-popup-title" class="m-inp" placeholder="Welcome to SwiftData GH 👋"/>
-        <div class="m-lbl" style="margin-top:.75rem;">Message</div>
-        <textarea id="s-popup-body" class="m-ta" rows="3" placeholder="🛎 Don't forget to..."></textarea>
+    </div>
+
+    <!-- BASE PRODUCTS -->
+    <div class="panel">
+      <div class="panel-head">
+        <h3>📦 Base Products</h3>
+        <button class="btn" onclick="alert('Add new product')">+ Add Product</button>
       </div>
-      <div class="m-btns">
-        <button type="button" class="m-cancel" onclick="closeSettings()">Cancel</button>
-        <button type="submit" class="m-save">Save All Settings</button>
+      <div style="overflow-x:auto;">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Network</th>
+              <th>Size</th>
+              <th>Agent Price</th>
+              <th>Direct Price</th>
+              <th>Type</th>
+            </tr>
+          </thead>
+          <tbody id="products-tbody">
+            <tr><td colspan="5" class="empty">Loading...</td></tr>
+          </tbody>
+        </table>
       </div>
-    </form>
+    </div>
   </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, setDoc, serverTimestamp, limit, query } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-const ADMIN_PIN="0202148015@Gh";
-const GLOBAL_ORDERS='swiftdata_global_orders';
-const APP_ID='swiftdata-main-app';
-
-// ✅ FIXED: Using CORRECT Firebase project (dataplus-a93c7)
 const firebaseConfig = {
   apiKey: "AIzaSyCs7lN4itvWZPichtFLdEE4swNQHSX_j1M",
   authDomain: "dataplus-a93c7.firebaseapp.com",
   projectId: "dataplus-a93c7",
   storageBucket: "dataplus-a93c7.firebasestorage.app",
   messagingSenderId: "1040979049946",
-  appId: "1:1040979049946:web:d5d7957a6c209f56dd94e3",
-  measurementId: "G-GW9DNT0DQ0"
+  appId: "1:1040979049946:web:d5d7957a6c209f56dd94e3"
 };
 
+const ADMIN_PASSWORD = '0202148015@Gh';
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let orders = [], products = [], agents = [], cashouts = [], settings = {}, announcement = {}, popup = {};
-let orderFilter = 'all', agentFilter = 'all';
+let allOrders = [], allAgents = [], allProducts = [];
 
-/* GATE */
-window.checkAccess = (e) => {
-  e.preventDefault();
-  const val = document.getElementById('gate-pass').value;
+window.verifyAdmin = () => {
+  const pwd = document.getElementById('admin-password').value;
   const err = document.getElementById('gate-err');
-  if (val === ADMIN_PIN) {
+
+  if (pwd === ADMIN_PASSWORD) {
     document.getElementById('gate').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
-    document.getElementById('topbar-date').textContent = new Date().toLocaleDateString('en-GH', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
-    initData();
+    loadData();
   } else {
-    err.classList.add('show');
-    document.getElementById('gate-pass').value = '';
-    setTimeout(() => err.classList.remove('show'), 3500);
+    err.textContent = 'Invalid password.';
+    err.style.display = 'block';
   }
 };
 
-window.doLogout = () => {
-  document.getElementById('dashboard').style.display = 'none';
+window.logout = () => {
   document.getElementById('gate').style.display = 'flex';
-  document.getElementById('gate-pass').value = '';
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('admin-password').value = '';
 };
 
-/* TABS */
-const TAB_TITLES = {overview:'Dashboard',orders:'All Orders',products:'Products',agents:'Agents',cashouts:'Cashout Requests'};
-window.switchTab = (tab) => {
-  ['overview','orders','products','agents','cashouts'].forEach(t => {
-    document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tab);
-  });
-  document.querySelectorAll('.sb-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-title').textContent = TAB_TITLES[tab] || tab;
-  document.getElementById('add-prod-btn').classList.toggle('hidden', tab !== 'products');
-  const map = {overview:0,orders:1,products:2,agents:3,cashouts:4};
-  const btns = document.querySelectorAll('.sb-btn');
-  if (btns[map[tab]]) btns[map[tab]].classList.add('active');
-};
+function loadData() {
+  // Load ALL orders
+  onSnapshot(collection(db, 'orders'), (snap) => {
+    allOrders = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+    renderOrders();
+    document.getElementById('stat-orders').textContent = allOrders.length;
+  }, (err) => console.error('Orders error:', err));
 
-/* STATS */
-function updateStats() {
-  const rev = orders.filter(o => o.status !== 'Failed').reduce((s,o) => s + (o.price||0), 0);
-  const agentRev = orders.filter(o => o.orderType === 'agent_customer' && o.status !== 'Failed').reduce((s,o) => s + (o.price||0), 0);
-  document.getElementById('s-rev').textContent = 'GHS ' + rev.toFixed(2);
-  document.getElementById('s-pending').textContent = orders.filter(o => o.status === 'Pending').length;
-  document.getElementById('s-delivered').textContent = orders.filter(o => o.status === 'Delivered').length;
-  document.getElementById('s-total').textContent = orders.length;
-  document.getElementById('s-agents').textContent = agents.filter(a => a.status === 'active').length;
-  document.getElementById('s-agent-rev').textContent = 'GHS ' + agentRev.toFixed(2);
-  document.getElementById('s-cashouts').textContent = cashouts.filter(c => c.status === 'pending').length;
-  document.getElementById('s-prods').textContent = products.length;
-  const pendCount = orders.filter(o => o.status === 'Pending').length;
-  document.getElementById('pending-count-badge').textContent = pendCount;
-  document.getElementById('co-count-badge').textContent = cashouts.filter(c => c.status === 'pending').length;
-}
+  // Load all agents
+  onSnapshot(collection(db, 'swiftdata_agents'), (snap) => {
+    allAgents = snap.docs.map(d => ({id: d.id, ...d.data()}));
+    renderAgents();
+    document.getElementById('stat-agents').textContent = allAgents.length;
+  }, (err) => console.error('Agents error:', err));
 
-/* ORDERS */
-function orderRowHtml(o) {
-  const displayPrice = (o.price || 0).toFixed(2);
-  const base = o.basePrice ? `GHS ${o.basePrice.toFixed(2)}` : '';
-  const fee = o.fee ? `+ GHS ${o.fee.toFixed(2)} fee` : '';
-  const isAgent = o.orderType === 'agent_customer';
-  return `<div class="order-row">
-    <div class="o-info">
-      <div class="o-bundle">${o.size}</div>
-      <div class="o-tags">
-        <span class="o-tag">${o.network}</span>
-        <span class="o-tag">${o.type || 'Standard'}</span>
-        ${isAgent ? `<span class="o-tag agent-tag">Agent: @${o.agentUsername || '—'}</span>` : '<span class="o-tag">Direct</span>'}
-      </div>
-      <div class="o-phone">📱 ${o.recipient}</div>
-      ${o.orderRef ? `<div class="o-ref">${o.orderRef}</div>` : ''}
-      <div class="o-price-row">
-        <span class="o-total">GHS ${displayPrice}</span>
-        ${base ? `<span class="o-breakdown">(${base} ${fee})</span>` : ''}
-        ${isAgent && o.agentProfit > 0 ? `<span class="o-agent-profit">💰 Agent profit: GHS ${parseFloat(o.agentProfit).toFixed(2)}</span>` : ''}
-      </div>
-      <div class="o-time">${o.createdAt ? new Date(o.createdAt.seconds*1000).toLocaleString() : 'Just now'}</div>
-      ${o.paymentRef ? `<div class="o-ref-txn">Ref: ${o.paymentRef}</div>` : ''}
-    </div>
-    <div style="display:flex;align-items:center;gap:.6rem;flex-shrink:0;">
-      <select class="status-sel" onchange="updateOrderStatus('${o.id}', this.value)">
-        <option ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
-        <option ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
-        <option ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
-        <option ${o.status === 'Failed' ? 'selected' : ''}>Failed</option>
-      </select>
-      <div class="status-dot sd-${o.status}"></div>
-    </div>
-  </div>`;
+  // Load base products
+  onSnapshot(collection(db, 'products'), (snap) => {
+    allProducts = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => (a.rank || 999) - (b.rank || 999));
+    renderProducts();
+    document.getElementById('stat-products').textContent = allProducts.length;
+  }, (err) => console.error('Products error:', err));
 }
 
 function renderOrders() {
-  let filtered = orders;
-  if (orderFilter === 'direct') filtered = orders.filter(o => o.orderType === 'direct' || !o.orderType);
-  else if (orderFilter === 'agent_customer') filtered = orders.filter(o => o.orderType === 'agent_customer');
-  else if (['Pending','Processing','Delivered','Failed'].includes(orderFilter)) filtered = orders.filter(o => o.status === orderFilter);
+  const tbody = document.getElementById('orders-tbody');
+  const searchVal = document.getElementById('search-orders')?.value.toLowerCase() || '';
   
-  const el = document.getElementById('orders-list');
-  el.innerHTML = filtered.length ? filtered.map(orderRowHtml).join('') : '<div class="empty-state">No orders found.</div>';
-  
-  // Overview
-  const ovEl = document.getElementById('overview-orders');
-  ovEl.innerHTML = orders.slice(0,8).map(orderRowHtml).join('') || '<div class="empty-state">No orders yet.</div>';
+  const filtered = allOrders.filter(o => 
+    o.orderRef?.toLowerCase().includes(searchVal) ||
+    o.recipient?.toLowerCase().includes(searchVal) ||
+    o.network?.toLowerCase().includes(searchVal)
+  );
+
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty">No orders</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.slice(0, 100).map(o => `<tr>
+    <td><strong>${o.orderRef || '-'}</strong></td>
+    <td>${o.size}</td>
+    <td>${o.recipient}</td>
+    <td><span class="status-badge status-${o.status}">${o.status}</span></td>
+    <td>GHS ${(o.price || 0).toFixed(2)}</td>
+    <td>${o.agentId ? '@' + (allAgents.find(a => a.id === o.agentId)?.username || 'unknown') : 'Direct'}</td>
+    <td>${o.createdAt ? new Date(o.createdAt.seconds * 1000).toLocaleDateString() : '-'}</td>
+  </tr>`).join('');
 }
 
-window.filterOrders = (filter, btn) => {
-  orderFilter = filter;
-  document.querySelectorAll('#tab-orders .ftab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderOrders();
-};
-
-window.updateOrderStatus = async (id, status) => {
-  try {
-    await updateDoc(doc(db, GLOBAL_ORDERS, id), {status, updatedAt: serverTimestamp()});
-    console.log(`Order ${id} updated to ${status}`);
-  } catch (e) {
-    console.error('Update error:', e);
-    alert('Failed to update order status: ' + (e.message || 'Unknown error'));
-  }
-};
-
-/* PRODUCTS */
-function renderProducts() {
-  const el = document.getElementById('prod-grid');
-  if (!products.length) {
-    el.innerHTML = '<div class="empty-state" style="grid-column:1/-1;">No products yet.</div>';
-    return;
-  }
-  el.innerHTML = products.map(p => `
-    <div class="prod-card" onclick="openProductModal('${p.id}')">
-      <div class="prod-net">${p.network}</div>
-      <div class="prod-size">${p.size}</div>
-      <div class="prod-type">${p.type || ''} · Rank ${p.rank || 999}</div>
-      <div class="prod-prices">
-        <div class="price-line"><span class="price-lbl">Direct:</span><span class="price-val direct">GHS ${parseFloat(p.direct_price || p.price || 0).toFixed(2)}</span></div>
-        <div class="price-line"><span class="price-lbl">Agent:</span><span class="price-val agent">GHS ${parseFloat(p.agent_price || 0).toFixed(2)}</span></div>
-      </div>
-      <button class="del-prod" onclick="event.stopPropagation();deleteProd('${p.id}')">🗑</button>
-    </div>`).join('');
-}
-
-window.openProductModal = (id = null) => {
-  document.getElementById('prod-modal').classList.add('show');
-  document.getElementById('prod-id').value = id || '';
-  if (id) {
-    const p = products.find(x => x.id === id);
-    if (!p) {
-      alert('Product not found');
-      return;
-    }
-    document.getElementById('prod-modal-title').textContent = 'Edit Product';
-    document.getElementById('p-net').value = p.network;
-    document.getElementById('p-type').value = p.type || '';
-    document.getElementById('p-size').value = p.size;
-    document.getElementById('p-direct-price').value = p.direct_price || p.price || '';
-    document.getElementById('p-agent-price').value = p.agent_price || '';
-    document.getElementById('p-rank').value = p.rank || '';
-  } else {
-    document.getElementById('prod-modal-title').textContent = 'Add Product';
-    ['p-type','p-size','p-direct-price','p-agent-price','p-rank'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('p-net').value = 'MTN';
-  }
-};
-
-window.closeProdModal = () => document.getElementById('prod-modal').classList.remove('show');
-
-window.saveProduct = async (e) => {
-  e.preventDefault();
-  
-  // ✅ VALIDATION
-  const directPrice = parseFloat(document.getElementById('p-direct-price').value);
-  const agentPrice = parseFloat(document.getElementById('p-agent-price').value);
-  const size = document.getElementById('p-size').value.trim();
-  
-  if (!size) {
-    alert('Please enter product size');
-    return;
-  }
-  
-  if (isNaN(directPrice) || directPrice <= 0) {
-    alert('Invalid direct customer price');
-    return;
-  }
-  
-  if (isNaN(agentPrice) || agentPrice <= 0) {
-    alert('Invalid agent price');
-    return;
-  }
-  
-  if (directPrice < agentPrice) {
-    alert('Direct price must be >= agent price');
-    return;
-  }
-  
-  const id = document.getElementById('prod-id').value;
-  const data = {
-    network: document.getElementById('p-net').value,
-    type: document.getElementById('p-type').value,
-    size: size,
-    direct_price: directPrice,
-    agent_price: agentPrice,
-    price: directPrice, // backwards compat
-    rank: parseInt(document.getElementById('p-rank').value) || 999
-  };
-  
-  try {
-    if (id) {
-      await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', id), data);
-      console.log(`Product ${id} updated`);
-    } else {
-      await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'products'), data);
-      console.log('Product created');
-    }
-    closeProdModal();
-    alert('Product saved successfully!');
-  } catch (e) {
-    console.error('Save error:', e);
-    alert('Error saving product: ' + (e.message || 'Unknown error'));
-  }
-};
-
-window.deleteProd = async (id) => {
-  const p = products.find(x => x.id === id);
-  if (!p) return;
-  
-  if (!confirm(`Delete "${p.size}" product? Agents currently using this cannot sell it.`)) return;
-  
-  try {
-    await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'products', id));
-    console.log(`Product ${id} deleted`);
-    alert('Product deleted successfully');
-  } catch (e) {
-    console.error('Delete error:', e);
-    alert('Error deleting product: ' + (e.message || 'Unknown error'));
-  }
-};
-
-/* AGENTS */
 function renderAgents() {
   const tbody = document.getElementById('agents-tbody');
-  let filtered = agents;
-  if (agentFilter !== 'all') filtered = agents.filter(a => a.status === agentFilter);
-  
-  if (!filtered.length) {
-    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No agents found.</td></tr>';
+  if (!allAgents.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="empty">No agents</td></tr>';
     return;
   }
-  
-  tbody.innerHTML = filtered.map(a => `
-    <tr>
-      <td><div class="a-name">${a.name || '—'}</div><div class="a-username">@${a.username || '—'}</div></td>
-      <td style="font-size:.82rem;color:rgba(255,255,255,.5);">${a.email || '—'}</td>
-      <td><span class="a-status as-${a.status || 'pending'}">${a.status || 'pending'}</span></td>
-      <td class="a-wallet">GHS ${parseFloat(a.walletBalance || 0).toFixed(2)}</td>
-      <td style="font-weight:700;">${a.totalOrders || 0}</td>
-      <td style="font-size:.75rem;color:rgba(255,255,255,.3);">${a.createdAt ? new Date(a.createdAt.seconds*1000).toLocaleDateString() : '—'}</td>
-      <td>
-        <div class="a-actions">
-          ${a.status === 'pending' ? `<button class="a-act-btn approve" onclick="updateAgentStatus('${a.uid}','active')">Approve</button>` : ''}
-          ${a.status === 'active' ? `<button class="a-act-btn ban" onclick="updateAgentStatus('${a.uid}','banned')">Ban</button>` : ''}
-          ${a.status === 'banned' ? `<button class="a-act-btn unban" onclick="updateAgentStatus('${a.uid}','active')">Unban</button>` : ''}
-        </div>
-      </td>
-    </tr>`).join('');
+
+  tbody.innerHTML = allAgents.map(a => `<tr>
+    <td>${a.name}</td>
+    <td><strong>@${a.username}</strong></td>
+    <td>${a.email}</td>
+    <td><span class="status-badge status-${a.status}">${a.status}</span></td>
+    <td>GHS ${(a.walletBalance || 0).toFixed(2)}</td>
+    <td>${a.totalOrders || 0}</td>
+  </tr>`).join('');
 }
 
-window.filterAgents = (filter, btn) => {
-  agentFilter = filter;
-  document.querySelectorAll('#tab-agents .ftab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderAgents();
-};
-
-window.updateAgentStatus = async (uid, status) => {
-  const action = status === 'banned' ? 'ban' : 'change status of';
-  if (!confirm(`Are you sure you want to ${action} this agent?`)) return;
-  
-  try {
-    await updateDoc(doc(db, 'swiftdata_agents', uid), {status, updatedAt: serverTimestamp()});
-    alert(`Agent status updated to: ${status}`);
-    console.log(`Agent ${uid} status changed to ${status}`);
-  } catch (e) {
-    console.error('Update error:', e);
-    alert('Error updating agent: ' + (e.message || 'Unknown error'));
-  }
-};
-
-/* CASHOUTS */
-function renderCashouts() {
-  const el = document.getElementById('cashout-list');
-  if (!cashouts.length) {
-    el.innerHTML = '<div class="empty-state">No cashout requests yet.</div>';
+function renderProducts() {
+  const tbody = document.getElementById('products-tbody');
+  if (!allProducts.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="empty">No products</td></tr>';
     return;
   }
-  
-  el.innerHTML = cashouts.map(c => `
-    <div class="cashout-row">
-      <div>
-        <div class="co-agent">${c.agentName || '—'} <span style="color:var(--blue);font-size:.78rem;">@${c.agentUsername || '—'}</span></div>
-        <div class="co-amount">GHS ${parseFloat(c.amount || 0).toFixed(2)}</div>
-        <div class="co-momo">📱 ${c.momoNumber || '—'} (${c.momoNetwork || '—'}) · ${c.accountName || '—'}</div>
-        <div class="co-time">${c.createdAt ? new Date(c.createdAt.seconds*1000).toLocaleString() : '—'}</div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;">
-        <span class="co-status-badge cos-${c.status || 'pending'}">${c.status || 'Pending'}</span>
-        ${c.status === 'pending' ? `
-          <div class="co-actions">
-            <button class="a-act-btn approve" onclick="processCashout('${c.id}','paid')">Mark Paid</button>
-            <button class="a-act-btn ban" onclick="processCashout('${c.id}','rejected')">Reject</button>
-          </div>` : ''
-        }
-      </div>
-    </div>`).join('');
+
+  tbody.innerHTML = allProducts.map(p => `<tr>
+    <td>${p.network}</td>
+    <td><strong>${p.size}</strong></td>
+    <td>GHS ${(p.agent_price || 0).toFixed(2)}</td>
+    <td>GHS ${(p.direct_price || 0).toFixed(2)}</td>
+    <td>${p.type || 'Standard'}</td>
+  </tr>`).join('');
 }
 
-window.processCashout = async (id, status) => {
-  const action = status === 'paid' ? 'mark as paid' : 'reject';
-  if (!confirm(`${action.charAt(0).toUpperCase() + action.slice(1)} this cashout request?`)) return;
-  
-  try {
-    await updateDoc(doc(db, 'swiftdata_cashout_requests', id), {status, processedAt: serverTimestamp()});
-    alert(`Cashout ${status === 'paid' ? 'marked as paid!' : 'rejected.'}`);
-    console.log(`Cashout ${id} processed as ${status}`);
-  } catch (e) {
-    console.error('Process error:', e);
-    alert('Error processing cashout: ' + (e.message || 'Unknown error'));
-  }
-};
-
-/* SETTINGS */
-window.openSettings = () => {
-  document.getElementById('settings-modal').classList.add('show');
-  document.getElementById('s-pk').value = settings.paystackPublicKey || '';
-  document.getElementById('s-sk').value = settings.paystackSecretKey || '';
-  document.getElementById('s-open').checked = settings.storeOpen !== false;
-  document.getElementById('s-ann-active').checked = announcement.active || false;
-  document.getElementById('s-ann-text').value = announcement.text || '';
-  document.getElementById('s-popup-title').value = popup.title || '';
-  document.getElementById('s-popup-body').value = popup.body || '';
-  
-  const logoUrl = settings.logoUrl || '';
-  document.getElementById('s-logo').value = logoUrl;
-  const prev = document.getElementById('logo-preview'), img = document.getElementById('logo-img');
-  if (logoUrl) {
-    img.src = logoUrl;
-    prev.classList.add('show');
-  } else {
-    prev.classList.remove('show');
-  }
-  
-  document.getElementById('s-logo').oninput = () => {
-    const v = document.getElementById('s-logo').value.trim();
-    if (v) {
-      img.src = v;
-      prev.classList.add('show');
-    } else {
-      prev.classList.remove('show');
-    }
-  };
-};
-
-window.closeSettings = () => document.getElementById('settings-modal').classList.remove('show');
-
-window.clearLogo = () => {
-  document.getElementById('s-logo').value = '';
-  document.getElementById('logo-preview').classList.remove('show');
-};
-
-window.saveSettings = async (e) => {
-  e.preventDefault();
-  
-  try {
-    await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config', 'settings_doc'), {
-      paystackPublicKey: document.getElementById('s-pk').value,
-      paystackSecretKey: document.getElementById('s-sk').value,
-      storeOpen: document.getElementById('s-open').checked,
-      logoUrl: document.getElementById('s-logo').value.trim()
-    });
-    
-    await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config', 'announcement_doc'), {
-      active: document.getElementById('s-ann-active').checked,
-      text: document.getElementById('s-ann-text').value
-    });
-    
-    await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config', 'popup_doc'), {
-      title: document.getElementById('s-popup-title').value || 'Welcome to SwiftData GH 👋',
-      body: document.getElementById('s-popup-body').value || "🛎 Don't forget to follow our WhatsApp channel!"
-    });
-    
-    closeSettings();
-    alert('Settings saved successfully!');
-    console.log('Settings saved');
-  } catch (e) {
-    console.error('Settings error:', e);
-    alert('Error saving settings: ' + (e.message || 'Unknown error'));
-  }
-};
-
-/* FIREBASE INIT */
-function initData() {
-  // ✅ ADDED: Error handlers to all listeners
-  
-  onSnapshot(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config', 'settings_doc'), 
-    (d) => {
-      if (d.exists()) settings = d.data();
-    },
-    (error) => {
-      console.error('Settings listener error:', error);
-    }
-  );
-  
-  onSnapshot(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config', 'announcement_doc'),
-    (d) => {
-      if (d.exists()) announcement = d.data();
-    },
-    (error) => {
-      console.error('Announcement listener error:', error);
-    }
-  );
-  
-  onSnapshot(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config', 'popup_doc'),
-    (d) => {
-      if (d.exists()) popup = d.data();
-    },
-    (error) => {
-      console.error('Popup listener error:', error);
-    }
-  );
-  
-  onSnapshot(collection(db, 'artifacts', APP_ID, 'public', 'data', 'products'),
-    (snap) => {
-      products = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => (a.rank || 999) - (b.rank || 999));
-      renderProducts();
-      updateStats();
-    },
-    (error) => {
-      console.error('Products listener error:', error);
-      if (error.code === 'permission-denied') {
-        console.error('Firestore rules may not allow product reads');
-      }
-    }
-  );
-  
-  onSnapshot(collection(db, GLOBAL_ORDERS),
-    (snap) => {
-      orders = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-      renderOrders();
-      updateStats();
-    },
-    (error) => {
-      console.error('Orders listener error:', error);
-      if (error.code === 'permission-denied') {
-        document.getElementById('orders-list').innerHTML = '<div class="error-msg">Permission denied. Check Firestore rules.</div>';
-      }
-    }
-  );
-  
-  onSnapshot(collection(db, 'swiftdata_agents'),
-    (snap) => {
-      agents = snap.docs.map(d => ({...d.data(), uid: d.id})).sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-      renderAgents();
-      updateStats();
-    },
-    (error) => {
-      console.error('Agents listener error:', error);
-      if (error.code === 'permission-denied') {
-        document.getElementById('agents-tbody').innerHTML = '<tr><td colspan="7" class="error-msg">Permission denied. Check Firestore rules.</td></tr>';
-      }
-    }
-  );
-  
-  onSnapshot(collection(db, 'swiftdata_cashout_requests'),
-    (snap) => {
-      cashouts = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-      renderCashouts();
-      updateStats();
-    },
-    (error) => {
-      console.error('Cashouts listener error:', error);
-    }
-  );
-}
-
-signInAnonymously(auth).catch(e => console.error('Auth error:', e));
+document.getElementById('search-orders')?.addEventListener('keyup', renderOrders);
 </script>
 </body>
-                                                                           </html>
+</html>
