@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="light">
+<html lang="en">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Track Order — SwiftData GH</title>
@@ -7,84 +7,65 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <style>
-:root{--ink:#0a0f1e;--blue:#0051ff;--offwht:#f4f7ff;--muted:#6b7a99;--card:#fff;--yellow:#f59e0b;--green:#22c55e;--red:#ef4444;}
-.dark{--ink:#e2e8f0;--offwht:#0f172a;--card:#1e293b;--muted:#94a3b8;}
+:root{--blue:#0051ff;--offwht:#f4f7ff;--muted:#6b7a99;--card:#fff;--red:#ef4444;--yellow:#f59e0b;--green:#22c55e;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--offwht);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;transition:background .3s,color .3s;}
-nav{height:64px;display:flex;align-items:center;background:rgba(244,247,255,0.85);backdrop-filter:blur(20px);border-bottom:1.5px solid rgba(0,81,255,.1);}
-.dark nav{background:rgba(15,23,42,0.85);border-bottom-color:rgba(0,81,255,.2);}
-.nav-inner{max-width:1100px;margin:0 auto;width:100%;padding:0 5%;display:flex;align-items:center;justify-content:space-between;}
-.logo{font-weight:800;font-size:1.25rem;color:var(--ink);text-decoration:none;}
-.logo span{color:var(--blue);}
-.nav-right{display:flex;align-items:center;gap:.75rem;}
-.theme-btn{background:rgba(0,0,0,.06);border:none;cursor:pointer;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;}
-.dark .theme-btn{background:rgba(255,255,255,.08);}
-.back-nav{background:var(--ink);color:var(--offwht);text-decoration:none;padding:.5rem 1.1rem;border-radius:50px;font-size:.82rem;font-weight:700;}
-.dark .back-nav{background:var(--blue);}
-main{flex:1;display:flex;align-items:center;justify-content:center;padding:3rem 1.5rem;}
-.track-card{background:var(--card);border-radius:28px;padding:2.75rem;max-width:520px;width:100%;box-shadow:0 20px 60px rgba(0,81,255,.08);border:1.5px solid rgba(0,81,255,.07);animation:fadeUp .4s ease;}
-.dark .track-card{border-color:rgba(255,255,255,.06);}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--offwht);color:#0a0f1e;min-height:100vh;display:flex;flex-direction:column;}
+nav{height:60px;display:flex;align-items:center;background:#fff;border-bottom:1.5px solid rgba(0,81,255,.1);padding:0 2rem;}
+.logo{font-weight:800;font-size:1.1rem;}.logo span{color:var(--blue);}
+.nav-right{margin-left:auto;}
+main{flex:1;padding:3rem 2rem;display:flex;align-items:center;justify-content:center;}
+.track-card{background:var(--card);border-radius:28px;padding:2.75rem;max-width:520px;width:100%;box-shadow:0 20px 60px rgba(0,81,255,.08);border:1.5px solid rgba(0,81,255,.07);}
 .card-icon{width:72px;height:72px;background:rgba(0,81,255,.08);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1.5rem;}
 .track-card h2{font-weight:800;font-size:1.6rem;text-align:center;margin-bottom:.4rem;}
 .track-card .sub{font-size:.88rem;color:var(--muted);text-align:center;margin-bottom:2rem;line-height:1.6;}
-.t-input{width:100%;padding:1rem 1.25rem;border:2px solid rgba(0,0,0,.08);border-radius:14px;font-family:inherit;font-size:1rem;font-weight:600;background:var(--offwht);color:var(--ink);outline:none;transition:border-color .2s;text-align:center;margin-bottom:.9rem;}
-.dark .t-input{border-color:rgba(255,255,255,.1);background:#0f172a;}
+.t-input{width:100%;padding:1rem 1.25rem;border:2px solid rgba(0,0,0,.08);border-radius:14px;font-family:inherit;font-size:1rem;font-weight:600;background:var(--offwht);color:#0a0f1e;outline:none;transition:border-color .2s;margin-bottom:.9rem;}
 .t-input:focus{border-color:var(--blue);}
-.t-btn{width:100%;padding:.9rem;background:var(--blue);color:#fff;border:none;border-radius:14px;font-family:inherit;font-weight:800;font-size:1rem;cursor:pointer;transition:transform .2s,box-shadow .2s;}
+.t-btn{width:100%;padding:.9rem;background:var(--blue);color:#fff;border:none;border-radius:14px;font-family:inherit;font-weight:800;font-size:1rem;cursor:pointer;transition:all .2s;}
 .t-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,81,255,.35);}
-.t-btn:disabled{opacity:.5;cursor:not-allowed;}
 .results{margin-top:1.75rem;}
 .result-card{background:var(--offwht);border-radius:14px;padding:1.1rem 1.25rem;border:1.5px solid rgba(0,0,0,.06);margin-bottom:.7rem;}
-.dark .result-card{background:#0f172a;border-color:rgba(255,255,255,.06);}
 .r-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.45rem;}
 .r-bundle{font-weight:800;font-size:.95rem;}
 .r-status{font-size:.7rem;font-weight:800;padding:.22rem .7rem;border-radius:50px;color:#fff;}
-.rs-Pending{background:var(--yellow)}.rs-Processing{background:var(--blue)}.rs-Delivered{background:var(--green)}.rs-Failed{background:var(--red)}
+.rs-Pending{background:var(--yellow);}.rs-Processing{background:var(--blue);}.rs-Delivered{background:var(--green);}.rs-Failed{background:var(--red);}
 .r-ref{font-size:.75rem;font-weight:700;color:var(--blue);font-family:monospace;letter-spacing:1px;margin-bottom:.25rem;}
 .r-time{font-size:.75rem;color:var(--muted);}
 .no-results{text-align:center;color:var(--red);font-weight:700;padding:1.5rem;font-size:.9rem;}
 .back-link{display:block;text-align:center;margin-top:2rem;font-size:.8rem;font-weight:700;color:var(--muted);text-decoration:none;text-transform:uppercase;letter-spacing:1.5px;transition:color .2s;}
 .back-link:hover{color:var(--blue);}
-.spin{width:18px;height:18px;border:2.5px solid rgba(0,81,255,.2);border-top-color:var(--blue);border-radius:50%;animation:sp .7s linear infinite;display:inline-block;vertical-align:middle;}
-@keyframes sp{to{transform:rotate(360deg);}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 </style>
 </head>
 <body>
 <nav>
-  <div class="nav-inner">
-    <a href="/" class="logo">SwiftData<span>GH</span></a>
-    <div class="nav-right">
-      <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">🌙</button>
-      <a href="/" class="back-nav">← Home</a>
-    </div>
+  <div class="logo">SwiftData<span>GH</span></div>
+  <div class="nav-right">
+    <a href="/" class="back-link">← Home</a>
   </div>
 </nav>
 <main>
   <div class="track-card">
     <div class="card-icon">📦</div>
     <h2>Track Your Order</h2>
-    <p class="sub">Enter your phone number or order reference (e.g. <strong>SdG-001</strong>)</p>
-    <input class="t-input" type="text" id="t-input" placeholder="05XXXXXXXX  or  SdG-001"/>
-    <button class="t-btn" id="search-btn" onclick="checkStatus()">Check Status</button>
+    <p class="sub">Enter phone number or order reference (e.g. <strong>SdG-001</strong>)</p>
+    <input class="t-input" type="text" id="t-input" placeholder="05XXXXXXXX or SdG-001"/>
+    <button class="t-btn" onclick="checkStatus()">Check Status</button>
     <div class="results" id="results"></div>
     <a class="back-link" href="/">← Return to Store</a>
   </div>
 </main>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-// ✅ FIXED: Using CORRECT Firebase config (dataplus-a93c7)
 const firebaseConfig = {
   apiKey: "AIzaSyCs7lN4itvWZPichtFLdEE4swNQHSX_j1M",
   authDomain: "dataplus-a93c7.firebaseapp.com",
   projectId: "dataplus-a93c7",
   storageBucket: "dataplus-a93c7.firebasestorage.app",
   messagingSenderId: "1040979049946",
-  appId: "1:1040979049946:web:d5d7957a6c209f56dd94e3",
-  measurementId: "G-GW9DNT0DQ0"
+  appId: "1:1040979049946:web:d5d7957a6c209f56dd94e3"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -93,116 +74,51 @@ const db = getFirestore(app);
 
 let allOrders = [];
 
-window.toggleTheme = () => {
-  const d = document.documentElement;
-  const b = document.getElementById('theme-btn');
-  if (d.classList.contains('dark')) {
-    d.classList.remove('dark');
-    localStorage.setItem('theme', 'light');
-    b.textContent = '🌙';
-  } else {
-    d.classList.add('dark');
-    localStorage.setItem('theme', 'dark');
-    b.textContent = '☀️';
-  }
-};
-
-if (localStorage.getItem('theme') === 'dark') {
-  document.documentElement.classList.add('dark');
-  document.getElementById('theme-btn').textContent = '☀️';
-}
-
 window.checkStatus = () => {
   const raw = document.getElementById('t-input').value.trim();
   const res = document.getElementById('results');
-  const btn = document.getElementById('search-btn');
   
   if (!raw) {
-    res.innerHTML = '<div class="no-results">Please enter your phone number or order reference.</div>';
+    res.innerHTML = '<div class="no-results">Please enter phone or reference.</div>';
     return;
   }
-  
+
   let found = [];
-  const isRef = /^sdg-/i.test(raw);
-  
-  if (isRef) {
-    // Search by order reference
+  if (/^sdg-/i.test(raw)) {
     found = allOrders.filter(o => o.orderRef && o.orderRef.toLowerCase() === raw.toLowerCase());
   } else {
-    // Search by phone number
     const phone = raw.replace(/\D/g, '');
     if (phone.length !== 10) {
-      res.innerHTML = '<div class="no-results">Enter a valid 10-digit phone number or order ref (e.g. SdG-001).</div>';
+      res.innerHTML = '<div class="no-results">Enter 10-digit phone or SdG-001</div>';
       return;
     }
     found = allOrders.filter(o => o.recipient === phone);
   }
-  
+
   if (!found.length) {
-    res.innerHTML = '<div class="no-results">❌ No orders found. Please check and try again.</div>';
+    res.innerHTML = '<div class="no-results">❌ No orders found.</div>';
     return;
   }
-  
-  // ✅ Display results
-  res.innerHTML = found.slice(0, 5).map(o => {
-    const status = o.status || 'Unknown';
-    const timestamp = o.createdAt ? new Date(o.createdAt.seconds * 1000).toLocaleString() : 'Just now';
-    return `
-      <div class="result-card">
-        <div class="r-top">
-          <span class="r-bundle">${o.size} (${o.network})</span>
-          <span class="r-status rs-${status}">${status}</span>
-        </div>
-        ${o.orderRef ? `<div class="r-ref">${o.orderRef}</div>` : ''}
-        <div class="r-time">${timestamp}</div>
-      </div>
-    `;
-  }).join('') + (found.length > 5 ? '<p style="text-align:center;font-size:.75rem;color:var(--muted);margin-top:.5rem;">Showing 5 most recent orders</p>' : '');
+
+  res.innerHTML = found.slice(0, 5).map(o => `<div class="result-card">
+    <div class="r-top">
+      <span class="r-bundle">${o.size} (${o.network})</span>
+      <span class="r-status rs-${o.status}">${o.status}</span>
+    </div>
+    ${o.orderRef ? `<div class="r-ref">${o.orderRef}</div>` : ''}
+    <div class="r-time">${o.createdAt ? new Date(o.createdAt.seconds * 1000).toLocaleString() : 'Just now'}</div>
+  </div>`).join('');
 };
 
-// Allow Enter key to trigger search
 document.getElementById('t-input').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    window.checkStatus();
-  }
+  if (e.key === 'Enter') window.checkStatus();
 });
 
-// ✅ FIXED: Better auth state management with error handling
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    console.warn('No authenticated user');
-    return;
-  }
-  
-  try {
-    // ✅ FIXED: Error handler on listener
-    onSnapshot(
-      collection(db, 'swiftdata_global_orders'),
-      (snap) => {
-        allOrders = snap.docs
-          .map(d => ({id: d.id, ...d.data()}))
-          .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-        console.log(`Loaded ${allOrders.length} orders`);
-      },
-      (error) => {
-        console.error('Orders listener error:', error);
-        if (error.code === 'permission-denied') {
-          console.error('Permission denied reading orders. Check Firestore rules.');
-        }
-      }
-    );
-  } catch (err) {
-    console.error('Setup error:', err);
-  }
-});
+signInAnonymously(auth).catch(e => console.error('Auth error:', e));
 
-// ✅ FIXED: Better error handling for anonymous auth
-signInAnonymously(auth).catch((err) => {
-  console.error('Anonymous auth error:', err.code, err.message);
-  if (err.code === 'auth/configuration-not-found' || err.code === 'auth/operation-not-allowed') {
-    console.warn('Anonymous sign-in not enabled. Enable in Firebase Console.');
-  }
-});
+onSnapshot(collection(db, 'orders'), (snap) => {
+  allOrders = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+}, (err) => console.error('Orders error:', err));
 </script>
 </body>
-  </html>
+</html>
